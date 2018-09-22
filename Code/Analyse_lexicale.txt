@@ -1,0 +1,166 @@
+Commentaire	 # TEST_RETURN_CODE = PASS	 1
+
+Retour à la ligne	  	 1
+
+Commentaire	 #allons au ru	 2
+
+Retour à la ligne	  	 2
+
+Directive	 .set	 3
+
+Complement Directive .set	 noreorder	 3
+
+Directive	 noreorder	 3
+
+Retour à la ligne	  	 3
+
+Directive	 .text	 4
+
+Retour à la ligne	  	 4
+
+Instruction	 LW	 5
+
+Registre	 $t0	 5
+
+Délimiteur	 ,	 5
+
+Renvoie vers une étiquette	 LUNCHTIME	 5
+
+Retour à la ligne	  	 5
+
+Instruction	 LW	 6
+
+Registre	 $6	 6
+
+Délimiteur	 ,	 6
+
+Délimiteur	 -	 6
+
+Valeur Décimale	 200	 6
+
+Délimiteur	 (	 6
+
+Registre	 $7	 6
+
+Délimiteur	 )	 6
+
+Retour à la ligne	  	 6
+
+Instruction	 ADDI	 7
+
+Registre	 $t1	 7
+
+Délimiteur	 ,	 7
+
+Registre	 $zero	 7
+
+Délimiteur	 ,	 7
+
+Valeur Décimale	 8	 7
+
+Retour à la ligne	  	 7
+
+Etiquette	 BOUCLE	 8
+
+Délimiteur	 :	 8
+
+Retour à la ligne	  	 8
+
+Instruction	 BEQ	 9
+
+Registre	 $t0	 9
+
+Délimiteur	 ,	 9
+
+Registre	 $t1	 9
+
+Délimiteur	 ,	 9
+
+Renvoie vers une étiquette	 BYEBYE	 9
+
+Retour à la ligne	  	 9
+
+Instruction	 NOP	 10
+
+Retour à la ligne	  	 10
+
+Instruction	 ADDI	 11
+
+Registre	 $t1	 11
+
+Délimiteur	 ,	 11
+
+Registre	 $t1	 11
+
+Délimiteur	 ,	 11
+
+Valeur Décimale	 1	 11
+
+Retour à la ligne	  	 11
+
+Instruction	 J	 12
+
+Renvoie vers une étiquette	 BOUCLE	 12
+
+Retour à la ligne	  	 12
+
+Instruction	 NOP	 13
+
+Retour à la ligne	  	 13
+
+Etiquette	 BYEBYE	 14
+
+Délimiteur	 :	 14
+
+Retour à la ligne	  	 14
+
+Instruction	 JAL	 15
+
+Renvoie vers une étiquette	 VITEVITEAURU	 15
+
+Retour à la ligne	  	 15
+
+Directive	 .data	 17
+
+Retour à la ligne	  	 17
+
+Etiquette	 LUNCHTIME	 18
+
+Délimiteur	 :	 18
+
+Retour à la ligne	  	 18
+
+Directive	 .word	 19
+
+Valeur Décimale	 12	 19
+
+Retour à la ligne	  	 19
+
+Directive	 .word	 20
+
+Renvoie vers une étiquette	 MENU	 20
+
+Retour à la ligne	  	 20
+
+Directive	 .asciiz	 21
+
+Chaine de caractère	 " ils disent : \"au ru!\""	 21
+
+Retour à la ligne	  	 21
+
+Directive	 .bss	 22
+
+Retour à la ligne	  	 22
+
+Etiquette	 MENU	 23
+
+Délimiteur	 :	 23
+
+Retour à la ligne	  	 23
+
+Directive	 .space	 24
+
+Valeur Décimale	 24	 24
+
+Retour à la ligne	  	 24
+
