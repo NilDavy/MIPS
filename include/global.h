@@ -1,10 +1,3 @@
-/**
- * @file global.h
- * @brief Global definitions.
- *
- * Global definitions.
- */
-
 #ifndef _GLOBAL_H
 #define _GLOBAL_H
 
