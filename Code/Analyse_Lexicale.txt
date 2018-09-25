@@ -2,15 +2,13 @@ Commentaire	 # TEST_RETURN_CODE = PASS	 1
 
 Retour à la ligne	  	 1
 
-Commentaire	 #allons au ru	 2
+Commentaire	 # allons au ru	 2
 
 Retour à la ligne	  	 2
 
 Directive	 .set	 3
 
 Complement Directive .set	 noreorder	 3
-
-Directive	 noreorder	 3
 
 Retour à la ligne	  	 3
 
@@ -104,63 +102,89 @@ Renvoie vers une étiquette	 BOUCLE	 12
 
 Retour à la ligne	  	 12
 
-Instruction	 NOP	 13
+Valeur Hexadécimale	 0x12323	 13
 
 Retour à la ligne	  	 13
 
-Etiquette	 BYEBYE	 14
-
-Délimiteur	 :	 14
-
 Retour à la ligne	  	 14
-
-Instruction	 JAL	 15
-
-Renvoie vers une étiquette	 VITEVITEAURU	 15
 
 Retour à la ligne	  	 15
 
-Directive	 .data	 17
+Instruction	 NOP	 16
+
+Retour à la ligne	  	 16
+
+Etiquette	 BYEBYE	 17
+
+Délimiteur	 :	 17
 
 Retour à la ligne	  	 17
 
-Etiquette	 LUNCHTIME	 18
+Instruction	 JAL	 18
 
-Délimiteur	 :	 18
+Renvoie vers une étiquette	 AURU	 18
 
 Retour à la ligne	  	 18
 
-Directive	 .word	 19
-
-Valeur Décimale	 12	 19
+Renvoie vers une étiquette	 WORD	 19
 
 Retour à la ligne	  	 19
 
-Directive	 .word	 20
-
-Renvoie vers une étiquette	 MENU	 20
+Directive	 .data	 20
 
 Retour à la ligne	  	 20
 
-Directive	 .asciiz	 21
-
-Chaine de caractère	 " ils disent : \"au ru!\""	 21
+Délimiteur	 :	 21
 
 Retour à la ligne	  	 21
 
-Directive	 .bss	 22
+Directive	 .word	 22
+
+Valeur Décimale	 12	 22
 
 Retour à la ligne	  	 22
 
-Etiquette	 MENU	 23
+Directive	 .word	 23
 
-Délimiteur	 :	 23
+Renvoie vers une étiquette	 MENU	 23
 
 Retour à la ligne	  	 23
 
-Directive	 .space	 24
+Directive	 .asciiz	 24
 
-Valeur Décimale	 24	 24
+Chaine de caractère	 "ils disent : \"au ru\\\""	 24
 
 Retour à la ligne	  	 24
+
+Valeur Décimale	 12	 25
+
+Retour à la ligne	  	 25
+
+Etiquette	 AA	 26
+
+Délimiteur	 :	 26
+
+Etiquette	 A	 26
+
+Délimiteur	 :	 26
+
+Retour à la ligne	  	 26
+
+Commentaire	 #aa a:	 27
+
+Retour à la ligne	  	 27
+
+Directive	 .bss	 28
+
+Retour à la ligne	  	 28
+
+Délimiteur	 :	 29
+
+Retour à la ligne	  	 29
+
+Directive	 .space	 30
+
+Valeur Décimale	 24	 30
+
+Retour à la ligne	  	 30
 

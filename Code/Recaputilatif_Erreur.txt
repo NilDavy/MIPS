@@ -1,0 +1,16 @@
+Ligne : 14	 Erreur Héxadecimale	 0X123123123123
+
+Ligne : 15	 Erreur valeur numérique	 0xG
+
+Ligne : 18	 Erreur chaine de caractère 	 VITEVITE
+
+Ligne : 19	 Erreur directive : 	 .
+
+Ligne : 21	 Mauvais caractere au debut de la chaine	 _lunchtime
+
+Ligne : 25	 Erreur directive : 	 .wo
+
+Ligne : 25	 Erreur chaine de caractère 	 RD
+
+Ligne : 29	 Mauvais caractere au debut de la chaine	 %menu
+

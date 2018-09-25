@@ -60,10 +60,9 @@ void liberer(Liste_jeu_instruction  l) {
 
 /* Ajout d'un element en queue de la liste basique */
 Liste_jeu_instruction ajout_queue(char*nom,char*carac,int line, Liste_jeu_instruction l) {
-	
 	Liste_jeu_instruction c = NULL;
 	Liste_jeu_instruction p = NULL;
-
+	
 	if (liste_vide(l)) {
 		return ajout_tete(nom,carac,line,l);
 	}

@@ -72,7 +72,7 @@ Liste_hach*creation_liste_registre(){
 	int n;
 	char mot[8];
 	Liste_hach*tab_registre=NULL;
-	tab_registre = calloc(32, sizeof(*tab_registre));
+	tab_registre = calloc(dim_tab_registre, sizeof(*tab_registre));
 	
 	if (tab_registre == NULL) {
 		fprintf( stderr, "Memory error : tab_registre\n" );
@@ -89,7 +89,8 @@ Liste_hach*creation_liste_registre(){
 		n=hachage(mot, dim_tab_registre);
 		tab_registre[n]=ajout_tete_hachage(mot,tab_registre[n]);
 	}
-	
+	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);*/
+
 	
 	fclose(fregistre);
 	return tab_registre;
@@ -101,7 +102,7 @@ Liste_hach*creation_liste_instruction(){
 	int n;
 	char mot[8];
 	Liste_hach*tab_instruction=NULL;
-	tab_instruction = calloc(32, sizeof(*tab_instruction));
+	tab_instruction = calloc(dim_tab_instruction, sizeof(*tab_instruction));
 	
 	if (tab_instruction == NULL) {
 		fprintf( stderr, "Memory error : tab_instruction\n" );
@@ -119,7 +120,7 @@ Liste_hach*creation_liste_instruction(){
 		n=hachage(mot, dim_tab_instruction);
 		tab_instruction[n]=ajout_tete_hachage(mot,tab_instruction[n]);
 	}
-	
+	/*visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
 	
 	fclose(finstruction);
 	return tab_instruction;

@@ -10,6 +10,7 @@
 
 #define dim_tab_registre 32
 #define dim_tab_instruction 15
+
 /* Structure de liste pour le hachage */
 typedef char* instruction;
 struct cellule {

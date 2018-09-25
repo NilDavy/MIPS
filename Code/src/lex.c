@@ -12,7 +12,7 @@
 
 /* note that MIPS assembly supports distinctions between lower and upper case*/
 char* getNextToken(char* current_address,char* delimiteur) {
-	return strtok(NULL,delimiteur);
+		return strtok(NULL,delimiteur);
 }
 
 
@@ -24,9 +24,9 @@ char* getNextToken(char* current_address,char* delimiteur) {
  * @ brief This function performs lexical analysis of one standardized line.
  *
  */
-void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab_instruction,Liste_jeu_instruction*Liste,unsigned int nlines,FILE*f_erreur) {
+void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab_instruction,Liste_jeu_instruction*Liste,unsigned int nlines,Liste_jeu_instruction*Liste_erreur) {
     char* token = NULL;
-    char* current_address=strdup(line);
+    char* current_address=line;
 	char* delimiteur = " ";
 
 	token=strtok(current_address, delimiteur);
@@ -34,7 +34,7 @@ void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab
     /* TODO : faire l'analyse lexical de chaque token ici et les ajouter dans une collection*/
     /* ATTENTION: getNextToken est à recoder completement*/
     while( token != NULL ){
-		token=analyse_lexicale(token, current_address,delimiteur,tab_registre,tab_instruction,Liste,nlines,f_erreur);
+		token=analyse_lexicale(token, current_address,delimiteur,tab_registre,tab_instruction,Liste,nlines,Liste_erreur);
     }
 	*Liste=ajout_queue("Retour à la ligne", " ", nlines, *Liste);
 	return;
@@ -48,7 +48,7 @@ void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab
  * @ brief This function loads an assembly code from a file into memory.
  *
  */
-void lex_load_file( char *file, unsigned int *nlines,Liste_hach*tab_registre,Liste_hach*tab_instruction,Liste_jeu_instruction*Liste,FILE*f_erreur) {
+void lex_load_file( char *file, unsigned int *nlines,Liste_hach*tab_registre,Liste_hach*tab_instruction,Liste_jeu_instruction*Liste,Liste_jeu_instruction*Liste_erreur) {
 
     FILE        *fp   = NULL;
     char         line[STRLEN]; /* original source line */
@@ -71,7 +71,7 @@ void lex_load_file( char *file, unsigned int *nlines,Liste_hach*tab_registre,Lis
             (*nlines)++;
 
             if ( 0 != strlen(line) ) {
-                lex_read_line(line,*nlines,tab_registre,tab_instruction,Liste,*nlines,f_erreur);
+                lex_read_line(line,*nlines,tab_registre,tab_instruction,Liste,*nlines,Liste_erreur);
             }
         }
     }
