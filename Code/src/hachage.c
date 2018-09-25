@@ -11,7 +11,8 @@ int est_vide_hachage(Liste_hach L) {return !L;}
 Liste_hach ajout_tete_hachage(instruction e, Liste_hach L){
 	Liste_hach p=(Liste_hach) calloc(1,sizeof(*p));
 	if (p==NULL) return NULL;
-	p->val=strdup(e);
+	p->val=malloc(strlen(e));
+	p->val= (p->val? strcpy(p->val,e) : NULL);   /*evite les warning de compilation*/
 	p->suiv=L;
 	return p;
 }
