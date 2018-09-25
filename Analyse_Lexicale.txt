@@ -2,13 +2,11 @@ Commentaire	 # TEST_RETURN_CODE = PASS	 1
 
 Retour à la ligne	  	 1
 
-Commentaire	 # allons au ru	 2
+Commentaire	 #allons au ru	 2
 
 Retour à la ligne	  	 2
 
 Directive	 .set	 3
-
-Complement Directive .set	 noreorder	 3
 
 Retour à la ligne	  	 3
 
@@ -28,7 +26,7 @@ Retour à la ligne	  	 5
 
 Instruction	 LW	 6
 
-Registre	 $6	 6
+Registre	 $12	 6
 
 Délimiteur	 ,	 6
 
@@ -42,15 +40,13 @@ Registre	 $7	 6
 
 Délimiteur	 )	 6
 
-Retour à la ligne	  	 6
+Commentaire	 #test	 6
 
-Instruction	 ADDI	 7
+Retour à la ligne	  	 6
 
 Registre	 $t1	 7
 
 Délimiteur	 ,	 7
-
-Registre	 $zero	 7
 
 Délimiteur	 ,	 7
 
@@ -58,133 +54,121 @@ Valeur Décimale	 8	 7
 
 Retour à la ligne	  	 7
 
-Etiquette	 BOUCLE	 8
-
-Délimiteur	 :	 8
-
-Retour à la ligne	  	 8
-
-Instruction	 BEQ	 9
-
-Registre	 $t0	 9
-
-Délimiteur	 ,	 9
-
-Registre	 $t1	 9
-
-Délimiteur	 ,	 9
-
-Renvoie vers une étiquette	 BYEBYE	 9
+Valeur Hexadécimale	 0x12323	 9
 
 Retour à la ligne	  	 9
 
-Instruction	 NOP	 10
-
 Retour à la ligne	  	 10
-
-Instruction	 ADDI	 11
-
-Registre	 $t1	 11
-
-Délimiteur	 ,	 11
-
-Registre	 $t1	 11
-
-Délimiteur	 ,	 11
-
-Valeur Décimale	 1	 11
 
 Retour à la ligne	  	 11
 
-Instruction	 J	 12
+Etiquette	 BOUCLE	 12
 
-Renvoie vers une étiquette	 BOUCLE	 12
+Délimiteur	 :	 12
+
+Commentaire	 #test	 12
 
 Retour à la ligne	  	 12
 
-Valeur Hexadécimale	 0x12323	 13
+Instruction	 BEQ	 13
+
+Registre	 $t0	 13
+
+Délimiteur	 ,	 13
+
+Registre	 $t1	 13
+
+Délimiteur	 ,	 13
+
+Renvoie vers une étiquette	 BYEBYE	 13
+
+Commentaire	 #test	 13
 
 Retour à la ligne	  	 13
 
+Instruction	 NOP	 14
+
 Retour à la ligne	  	 14
+
+Instruction	 ADDI	 15
+
+Registre	 $t1	 15
+
+Délimiteur	 ,	 15
+
+Registre	 $t1	 15
+
+Délimiteur	 ,	 15
+
+Valeur Décimale	 1	 15
 
 Retour à la ligne	  	 15
 
-Instruction	 NOP	 16
+Instruction	 J	 16
+
+Renvoie vers une étiquette	 BOUCLE	 16
+
+Commentaire	 #test	 16
 
 Retour à la ligne	  	 16
 
-Etiquette	 BYEBYE	 17
-
-Délimiteur	 :	 17
+Instruction	 NOP	 17
 
 Retour à la ligne	  	 17
 
-Instruction	 JAL	 18
+Etiquette	 BYEBYE	 18
 
-Renvoie vers une étiquette	 AURU	 18
+Délimiteur	 :	 18
 
 Retour à la ligne	  	 18
 
-Renvoie vers une étiquette	 WORD	 19
+Instruction	 JAL	 19
+
+Renvoie vers une étiquette	 VITEVITEAURU	 19
+
+Commentaire	 # test	 19
 
 Retour à la ligne	  	 19
 
-Directive	 .data	 20
-
-Retour à la ligne	  	 20
-
-Délimiteur	 :	 21
+Directive	 .data	 21
 
 Retour à la ligne	  	 21
 
-Directive	 .word	 22
+Etiquette	 LUNCHTIME	 22
 
-Valeur Décimale	 12	 22
+Délimiteur	 :	 22
 
 Retour à la ligne	  	 22
 
 Directive	 .word	 23
 
-Renvoie vers une étiquette	 MENU	 23
+Valeur Décimale	 12	 23
 
 Retour à la ligne	  	 23
 
-Directive	 .asciiz	 24
+Directive	 .word	 24
 
-Chaine de caractère	 "ils disent : \"au ru\\\""	 24
+Renvoie vers une étiquette	 MENU	 24
 
 Retour à la ligne	  	 24
 
-Valeur Décimale	 12	 25
+Directive	 .asciiz	 25
 
 Retour à la ligne	  	 25
 
-Etiquette	 AA	 26
-
-Délimiteur	 :	 26
-
-Etiquette	 A	 26
-
-Délimiteur	 :	 26
+Directive	 .bss	 26
 
 Retour à la ligne	  	 26
 
-Commentaire	 #aa a:	 27
+Etiquette	 MENU	 28
 
-Retour à la ligne	  	 27
-
-Directive	 .bss	 28
+Délimiteur	 :	 28
 
 Retour à la ligne	  	 28
 
-Délimiteur	 :	 29
+Directive	 .space	 29
+
+Valeur Décimale	 24	 29
 
 Retour à la ligne	  	 29
-
-Directive	 .space	 30
-
-Valeur Décimale	 24	 30
-
-Retour à la ligne	  	 30
 

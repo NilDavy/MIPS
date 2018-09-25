@@ -123,7 +123,6 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 			}
 			else
 			{
-				printf("%s\n", mot1);
 				*Liste_erreur=ajout_queue("Mauvais caractere au debut de la chaine", mot1, nlines, *Liste_erreur);
 			}
 	}
@@ -222,7 +221,7 @@ void verif_numero(char*token,Liste_jeu_instruction*Liste,unsigned int nlines,Lis
 		i=i+1;
 	}
 	
-	if(strlen(token)==i){
+	if(strlen(token)==i&& atoi(token)<4294967295){
 		*Liste=ajout_queue("Valeur Décimale", token, nlines, *Liste);
 	}
 	else{
