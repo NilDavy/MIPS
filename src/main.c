@@ -9,7 +9,7 @@
 #include "lex.h"
 #include "analyse_lexicale.h"
 #include "hachage.h"
-#include "liste.h"
+#include "file.h"
 
 /**
  * @ param exec Name of executable.
@@ -67,7 +67,7 @@ int main ( int argc, char *argv[] ) {
 	
 	
 	
-	/** ouverture du fichier contenant le code instancié **/
+	/** ouverture ou creation du fichier contenant le code instancié **/
 
 	FILE*fp=NULL;
 	fp=fopen("Analyse_Lexicale.txt", "w+t");
@@ -76,7 +76,7 @@ int main ( int argc, char *argv[] ) {
 		exit(EXIT_FAILURE);
 	}
 	
-	/** ouverture du fichier contenant le rapport des erreurs **/
+	/** ouverture ou creation du fichier contenant le rapport des erreurs **/
 	FILE*f_erreur=NULL;
 	f_erreur=fopen("Recaputilatif_Erreur.txt", "wt");
 	if (f_erreur == NULL) {
@@ -95,49 +95,43 @@ int main ( int argc, char *argv[] ) {
 	
 	
 	/** variable interne contenant le code instancié **/
-	Liste_jeu_instruction Liste_lexeme=creer_liste();
-	Liste_jeu_instruction Liste_erreur=creer_liste();
-	Liste_jeu_instruction i=creer_liste();
+	file_jeu_instruction file_lexeme=creer_file();
+	file_jeu_instruction file_erreur=creer_file();
 	
 	
 	
 	/* ---------------- do the lexical analysis -------------------*/
-	lex_load_file( file, &nlines,tab_registre,tab_instruction,&Liste_lexeme,&Liste_erreur);
+	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
 	DEBUG_MSG("Le code source contient %d lignes",nlines);
 	
 
 	
 	/** Ecriture du code instancié dans le fichier **/
-	for(i=Liste_lexeme;!liste_vide(i);i=i->suiv){
-		fprintf(fp, "%s\t %s\t %d\n\n" ,i->identifiant,i->caractere,i->ligne);
-	}
+
 
 	
 	/** Vérification si présence d'erreurs **/
 
 	
-	if(!(liste_vide(Liste_erreur))){
-		for(i=Liste_erreur;!liste_vide(i);i=i->suiv){
-			fprintf(f_erreur, "Ligne : %d\t %s\t %s\n\n" ,i->ligne, i->identifiant,i->caractere);
-		}
-		
-		
+	ecrire_file(file_lexeme, fp);
+	
+	if(!(file_vide(file_erreur))){
 		WARNING_MSG("Il y a des erreurs de lexique dans le code source !");
 		printf("************************  ERREUR  ************************\n \n");
+		
+		visualiser_file(file_erreur);
+		ecrire_file(file_erreur, f_erreur);
 	}
 	else{
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 	}
 	
-	for(i=Liste_erreur;!liste_vide(i);i=i->suiv){
-			printf("Ligne : %d\t %s\t %s\n\n" ,i->ligne, i->identifiant,i->caractere);
-		}
 	printf("\n**********************************************************\n");
 	/* ---------------- Free memory and terminate -------------------*/
 	
 	/** Libération des mémoires **/
-	liberer(Liste_lexeme);
-	liberer(Liste_erreur);
+	liberer_file(file_lexeme);
+	liberer_file(file_erreur);
 	liberer_tab_hachage(tab_registre, dim_tab_registre);
 	liberer_tab_hachage(tab_instruction, dim_tab_instruction);
 	fclose(fp);

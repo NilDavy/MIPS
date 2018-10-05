@@ -24,7 +24,7 @@ char* getNextToken(char* current_address,char* delimiteur) {
  * @ brief This function performs lexical analysis of one standardized line.
  *
  */
-void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab_instruction,Liste_jeu_instruction*Liste,unsigned int nlines,Liste_jeu_instruction*Liste_erreur) {
+void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab_instruction,file_jeu_instruction*file,unsigned int nlines,file_jeu_instruction*file_erreur) {
     char* token = NULL;
     char* current_address=line;
 	char* delimiteur = " ";
@@ -34,9 +34,9 @@ void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab
     /* TODO : faire l'analyse lexical de chaque token ici et les ajouter dans une collection*/
     /* ATTENTION: getNextToken est à recoder completement*/
     while( token != NULL ){
-		token=analyse_lexicale(token, current_address,delimiteur,tab_registre,tab_instruction,Liste,nlines,Liste_erreur);
+		token=analyse_lexicale(token, current_address,delimiteur,tab_registre,tab_instruction,file,nlines,file_erreur);
     }
-	*Liste=ajout_queue("Retour à la ligne", " ", nlines, *Liste);
+	*file=enfiler("Retour à la ligne", " ", nlines, *file);
 	return;
 }
 
@@ -48,7 +48,7 @@ void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab
  * @ brief This function loads an assembly code from a file into memory.
  *
  */
-void lex_load_file( char *file, unsigned int *nlines,Liste_hach*tab_registre,Liste_hach*tab_instruction,Liste_jeu_instruction*Liste,Liste_jeu_instruction*Liste_erreur) {
+void lex_load_file( char *file, unsigned int *nlines,Liste_hach*tab_registre,Liste_hach*tab_instruction,file_jeu_instruction*files,file_jeu_instruction*file_erreur) {
 
     FILE        *fp   = NULL;
     char         line[STRLEN]; /* original source line */
@@ -71,7 +71,7 @@ void lex_load_file( char *file, unsigned int *nlines,Liste_hach*tab_registre,Lis
             (*nlines)++;
 
             if ( 0 != strlen(line) ) {
-                lex_read_line(line,*nlines,tab_registre,tab_instruction,Liste,*nlines,Liste_erreur);
+                lex_read_line(line,*nlines,tab_registre,tab_instruction,files,*nlines,file_erreur);
             }
         }
     }
