@@ -1,0 +1,174 @@
+Ligne : 1	 Commentaire	 # TEST_RETURN_CODE = PASS
+
+Ligne : 1	 Retour à la ligne	  
+
+Ligne : 2	 Commentaire	 #allons au ru
+
+Ligne : 2	 Retour à la ligne	  
+
+Ligne : 3	 Directive	 .set
+
+Ligne : 3	 Retour à la ligne	  
+
+Ligne : 4	 Directive	 .text
+
+Ligne : 4	 Retour à la ligne	  
+
+Ligne : 5	 Instruction	 LW
+
+Ligne : 5	 Registre	 $t0
+
+Ligne : 5	 Délimiteur	 ,
+
+Ligne : 5	 Renvoie vers une étiquette	 LUNCHTIME
+
+Ligne : 5	 Retour à la ligne	  
+
+Ligne : 6	 Instruction	 LW
+
+Ligne : 6	 Registre	 $12
+
+Ligne : 6	 Délimiteur	 ,
+
+Ligne : 6	 Délimiteur	 -
+
+Ligne : 6	 Valeur Décimale	 200
+
+Ligne : 6	 Délimiteur	 (
+
+Ligne : 6	 Registre	 $7
+
+Ligne : 6	 Délimiteur	 )
+
+Ligne : 6	 Commentaire	 #test
+
+Ligne : 6	 Retour à la ligne	  
+
+Ligne : 7	 Registre	 $t1
+
+Ligne : 7	 Délimiteur	 ,
+
+Ligne : 7	 Délimiteur	 ,
+
+Ligne : 7	 Valeur Décimale	 8
+
+Ligne : 7	 Retour à la ligne	  
+
+Ligne : 9	 Valeur Hexadécimale	 0x12323
+
+Ligne : 9	 Retour à la ligne	  
+
+Ligne : 10	 Retour à la ligne	  
+
+Ligne : 11	 Retour à la ligne	  
+
+Ligne : 12	 Etiquette	 BOUCLE
+
+Ligne : 12	 Délimiteur	 :
+
+Ligne : 12	 Commentaire	 #test
+
+Ligne : 12	 Retour à la ligne	  
+
+Ligne : 13	 Instruction	 BEQ
+
+Ligne : 13	 Registre	 $t0
+
+Ligne : 13	 Délimiteur	 ,
+
+Ligne : 13	 Registre	 $t1
+
+Ligne : 13	 Délimiteur	 ,
+
+Ligne : 13	 Renvoie vers une étiquette	 BYEBYE
+
+Ligne : 13	 Commentaire	 #test
+
+Ligne : 13	 Retour à la ligne	  
+
+Ligne : 14	 Instruction	 NOP
+
+Ligne : 14	 Retour à la ligne	  
+
+Ligne : 15	 Instruction	 ADDI
+
+Ligne : 15	 Registre	 $t1
+
+Ligne : 15	 Délimiteur	 ,
+
+Ligne : 15	 Registre	 $t1
+
+Ligne : 15	 Délimiteur	 ,
+
+Ligne : 15	 Valeur Décimale	 1
+
+Ligne : 15	 Retour à la ligne	  
+
+Ligne : 16	 Instruction	 J
+
+Ligne : 16	 Renvoie vers une étiquette	 BOUCLE
+
+Ligne : 16	 Commentaire	 #test
+
+Ligne : 16	 Retour à la ligne	  
+
+Ligne : 17	 Instruction	 NOP
+
+Ligne : 17	 Retour à la ligne	  
+
+Ligne : 18	 Etiquette	 BYEBYE
+
+Ligne : 18	 Délimiteur	 :
+
+Ligne : 18	 Retour à la ligne	  
+
+Ligne : 19	 Instruction	 JAL
+
+Ligne : 19	 Renvoie vers une étiquette	 VITEVITEAURU
+
+Ligne : 19	 Commentaire	 # test
+
+Ligne : 19	 Retour à la ligne	  
+
+Ligne : 21	 Directive	 .data
+
+Ligne : 21	 Retour à la ligne	  
+
+Ligne : 22	 Etiquette	 LUNCHTIME
+
+Ligne : 22	 Délimiteur	 :
+
+Ligne : 22	 Retour à la ligne	  
+
+Ligne : 23	 Directive	 .word
+
+Ligne : 23	 Valeur Décimale	 12
+
+Ligne : 23	 Retour à la ligne	  
+
+Ligne : 24	 Directive	 .word
+
+Ligne : 24	 Renvoie vers une étiquette	 MENU
+
+Ligne : 24	 Retour à la ligne	  
+
+Ligne : 25	 Directive	 .asciiz
+
+Ligne : 25	 Retour à la ligne	  
+
+Ligne : 26	 Directive	 .bss
+
+Ligne : 26	 Retour à la ligne	  
+
+Ligne : 28	 Etiquette	 MENU
+
+Ligne : 28	 Délimiteur	 :
+
+Ligne : 28	 Retour à la ligne	  
+
+Ligne : 29	 Directive	 .space
+
+Ligne : 29	 Valeur Décimale	 24
+
+Ligne : 29	 Retour à la ligne	  
+

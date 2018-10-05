@@ -31,7 +31,7 @@ void ecrire_file(file_jeu_instruction f,FILE*a){
 		g=g->suiv;
 	}
 	fprintf(a, "Ligne : %d\t %s\t %s\n\n" ,g->ligne, g->identifiant,g->caractere);
-	liberer_file(g);
+	
 }
 file_jeu_instruction enfiler(char*nom,char*carac,int line, file_jeu_instruction f){
 	file_jeu_instruction e=calloc(1,sizeof(*e));
@@ -65,20 +65,28 @@ int defiler(file_jeu_instruction* pf,char*nom,char*carac){
 }
 
 void liberer_file(file_jeu_instruction f){
-	file_jeu_instruction g=f->suiv;
-	f->suiv=NULL;
+	file_jeu_instruction g= f->suiv	;
+ 	f->suiv = NULL;	
 	while(g!=NULL){
 		g=supprimer_tete(g);
 	}
+	
 }
 
 file_jeu_instruction supprimer_tete(file_jeu_instruction g){
-	file_jeu_instruction c = NULL;
+	file_jeu_instruction c, d;
 	if (file_vide(g)) {
 		return NULL;
 	}
-	c = g->suiv;
-	free(g);
+	if(g->suiv == g){
+		free(g);
+		return NULL;
+	}
+	c = g;
+	d = c->suiv;
+	c->suiv = d->suiv;
+	printf("%p\n", c->suiv);
+	free(g->suiv);
 	return c;
 }
 

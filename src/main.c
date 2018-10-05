@@ -130,8 +130,8 @@ int main ( int argc, char *argv[] ) {
 	/* ---------------- Free memory and terminate -------------------*/
 	
 	/** Libération des mémoires **/
-	liberer_file(file_lexeme);
-	liberer_file(file_erreur);
+	/*liberer_file(file_lexeme);
+	liberer_file(file_erreur);*/
 	liberer_tab_hachage(tab_registre, dim_tab_registre);
 	liberer_tab_hachage(tab_instruction, dim_tab_instruction);
 	fclose(fp);
