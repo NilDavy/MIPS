@@ -1,8 +1,7 @@
 #include "lex.h"
 
 /** Fonction principale qui distingue les cas **/
-char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hach*tab_registre,Liste_hach*tab_instruction,file_jeu_instruction *file,unsigned int nlines,file_jeu_instruction*file_erreur){
-	char commentaire[longueur_max]="";
+char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hach*tab_registre,Liste_hach*tab_instruction,file_jeu_instruction *file,unsigned int nlines,file_jeu_instruction*file_erreur,int*compteur){
 	char*mot1=calloc(strlen(token),sizeof(token));
 	if(mot1==NULL){
 		fprintf( stderr, "Memory error : mot1\n" );
@@ -17,40 +16,27 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 	
 	j=verif_delimitateur(token,mot1,mot2);
 	
-	/*printf("1: %s\n",mot1);
-	printf("2: %s\n",mot2);*/
-	
+
 	switch (mot1[0]) {
 			
 /** Commentaire **/
 		case '#':
-			/** Vérification si la chaine n'est pas trop longue puis concaténation en une seule chaine**/
-			if((strlen(token)+strlen(commentaire))<longueur_max){
-				strcat(commentaire, token);
-			}
-			else{
-				fprintf( stderr, "La chaine de caractère est trop longue\n" );
-				exit(EXIT_FAILURE);
-				
-			}
-			token=getNextToken(current_address,delimiteur);
-			while( token != NULL){
-				if((strlen(token)+strlen(commentaire)+strlen(" "))<longueur_max){
-					strcat(commentaire, " ");
-					strcat(commentaire, token);
-				}
-				else{
-					fprintf( stderr, "La chaine de caractère est trop longue\n" );
-					exit(EXIT_FAILURE);
-				}
+			while(token!=NULL){
+				*file=enfiler("Commentaire", token, nlines, *file);
 				token=getNextToken(current_address,delimiteur);
+				if(token!=NULL){
+					*compteur=*compteur+strlen(token);
+					if(*compteur>longeur_ligne){
+						*file_erreur=enfiler("Ligne trop longue", "Doit etre inférieure à 200 caractères sans espaces", nlines, *file_erreur);
+						token=NULL;
+					}
+				}
 			}
-			 *file=enfiler("Commentaire", commentaire,nlines, *file);
 			break;
 			
 /** directive **/
 		case '.':
-			verif_directive(mot1,current_address,delimiteur,file,nlines,file_erreur);
+			verif_directive(mot1,current_address,delimiteur,file,nlines,file_erreur,compteur);
 			break;
 
 /** registre **/
@@ -89,25 +75,26 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 		
 /** Chaine de caractere **/
 		case '"':
-			verif_chaine_de_caractere(mot1,current_address,delimiteur,file,nlines,file_erreur);
+			verif_chaine_de_caractere(mot1,current_address,delimiteur,file,nlines,file_erreur,compteur);
 			break;
 		case 9 :
 			break;
 		default:
 /** Caractere alphabetique **/
-			if (isalpha(mot1[0])){
+			if (isalpha(mot1[0]) || mot1[0]=='_'){
 				int c;
 				for (c = 1; c < strlen(mot1); c++)
 				{
-					if( !(isalpha(mot1[c]) || isdigit(mot1[c]) || mot1[c] == '_'))
+					if( (mot1[c]!= '_')&&!isalpha(mot1[c]) && !isdigit(mot1[c]))
 					{
 						*file_erreur=enfiler("Mauvais caractere dans la chaine", mot1, nlines, *file_erreur);
+						return mot1;
 					}
 					
 				}
 				
 				if(strlen(mot2)==0){
-					mot2=getNextToken(current_address, delimiteur);
+					mot2=getNextToken(NULL, delimiteur);
 					verif_caractere(mot1,mot2,current_address,delimiteur,tab_instruction,file,nlines,file_erreur);
 					return mot2;
 				}
@@ -126,42 +113,56 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 				*file_erreur=enfiler("Mauvais caractere au debut de la chaine", mot1, nlines, *file_erreur);
 			}
 	}
-	
 	if(j){
-		token=analyse_lexicale(mot2,current_address,delimiteur,tab_registre,tab_instruction,file,nlines,file_erreur);
+		token=analyse_lexicale(mot2,current_address,delimiteur,tab_registre,tab_instruction,file,nlines,file_erreur,compteur);
 	}
 	else{
-		token=getNextToken(current_address,delimiteur);
+		if(token!=NULL){
+			token=getNextToken(current_address,delimiteur);
+			if(token!=NULL){
+				*compteur=*compteur+strlen(token);
+				if(*compteur>longeur_ligne){
+					*file_erreur=enfiler("Ligne trop longue", "Doit etre inférieure à 200 caractères sans espaces", nlines, *file_erreur);
+					token=NULL;
+				}
+			}
+		}
 	}
 	free(mot1);
 	free(mot2);
+
 	return token;
 }
 
 /** Verifie l'orthographe des directives **/
-void verif_directive(char*token,char*current_address,char*delimiteur,file_jeu_instruction*file,unsigned int nlines,file_jeu_instruction*file_erreur){
+void verif_directive(char*token,char*current_address,char*delimiteur,file_jeu_instruction*file,unsigned int nlines,file_jeu_instruction*file_erreur,int*compteur){
 	int i;
-	int compteur=0;
+	int compteur1=0;
 	char*not="noreorder";
 	char*tab[8]={".word",".bss",".data",".text",".byte",".asciiz",".space"};
-	
 	/** Verification qu'apres .set il y ait bien noreorder **/
 	if(strcmp(token,".set")==0){
 		*file=enfiler("Directive", token, nlines, *file);
 		token=getNextToken(current_address,delimiteur);
+		if(token!=NULL){
+			*compteur=*compteur+strlen(token);
+			if(*compteur>longeur_ligne){
+				*file_erreur=enfiler("Ligne trop longue", "Doit etre inférieure à 200 caractères sans espaces", nlines, *file_erreur);
+				token=NULL;
+			}
+		}
 		if(strcmp(token,not) ==0){
 			*file=enfiler("Complement Directive .set", token, nlines, *file);
 		}
 		return;
 	}
-		
 
 	for(i=0;i<7;i++){
 		if(strcmp(token,tab[i])!=0){
-			compteur=compteur+1;
+			compteur1=compteur1+1;
 		}
 	}
-	if(compteur==7){
+	if(compteur1==7){
 		*file_erreur=enfiler("Erreur directive : ", token, nlines, *file_erreur);
 	}else{	
 	*file=enfiler("Directive", token, nlines, *file);
@@ -199,11 +200,11 @@ void verif_caractere(char*token,char*mot2,char*current_address,char*delimiteur,L
 	}
 	
 	else{
-		if((mot2!=NULL && strcmp(mot2, ":")==0) || (mot2!=NULL && mot2[0]==':')){
+		if((strcmp(mot2,"€")!=0 && strcmp(mot2, ":")==0) || (strcmp(mot2,"€")!=0 && mot2[0]==':')){
 			*file=enfiler("Etiquette", token, nlines, *file);
 		}
 		else{
-			if(mot2==NULL || (mot2!=NULL && mot2[0]=='#')){
+			if(strcmp(mot2,"€")==0 || (strcmp(mot2,"€")!=0 && mot2[0]=='#')){
 				*file=enfiler("Renvoie vers une étiquette", token, nlines, *file);
 			}
 			else{
@@ -223,72 +224,62 @@ void verif_numero(char*token,file_jeu_instruction*file,unsigned int nlines,file_
 		i=i+1;
 	}
 	a=(unsigned long)atoi(token);
-	if(strlen(token)==i && a<4294967295){
+	if(strlen(token)==i && a<=4294967295){
 		*file=enfiler("Valeur Décimale", token, nlines, *file);
+		return;
 	}
 	else{
-		if(strlen(token)>=11){
-			*file_erreur=enfiler("Erreur Héxadecimale", token, nlines, *file_erreur);
+		if(strlen(token)==i && a>4294967295){
+			*file_erreur=enfiler("Depassement capacite", token, nlines, *file_erreur);
 			return;
 		}
 		
-		else{
-			if((token[i]=='x' || token[i]=='X') && strlen(token)<11){
+		if((token[i]=='x' || token[i]=='X') && strlen(token)<11){
+			i=i+1;
+			while(isxdigit(token[i])){
 				i=i+1;
-				while(isxdigit(token[i])){
-					i=i+1;
-				}
-				if(strlen(token)==i){
-					*file=enfiler("Valeur Hexadécimale", token, nlines, *file);
-				}
-				else
-				{
-				*file_erreur=enfiler("Erreur valeur numérique", token, nlines, *file_erreur);
-				}	
-				
+			}
+			if(strlen(token)==i){
+				*file=enfiler("Valeur Hexadécimale", token, nlines, *file);
+			}
+			else
+			{
+			*file_erreur=enfiler("Erreur valeur numérique", token, nlines, *file_erreur);
+			}
+		}
+		}
+	}
+
+/** Verifie l'orthographe des chaines de caractères **/
+void verif_chaine_de_caractere(char*token,char*current_address,char*delimiteur,file_jeu_instruction*file,unsigned int nlines,file_jeu_instruction*file_erreur,int*compteur){
+
+	while ((token!=NULL)&&(token[strlen(token)-1]!='"' || (strlen(token)==1) || (token[strlen(token)-1]=='"' && token[strlen(token)-2]=='\\'))){
+		*file = enfiler("Chaine de caractère", token, nlines, *file);
+		token=getNextToken(current_address,delimiteur);
+		if(token!=NULL){
+			*compteur=*compteur+strlen(token);
+			if(*compteur>longeur_ligne){
+				*file_erreur=enfiler("Ligne trop longue", "Doit etre inférieure à 200 caractères sans espaces", nlines, *file_erreur);
+				token=NULL;
 			}
 		}
 	}
-}
-
-/** Verifie l'orthographe des chaines de caractères **/
-void verif_chaine_de_caractere(char*token,char*current_address,char*delimiteur,file_jeu_instruction*file,unsigned int nlines,file_jeu_instruction*file_erreur){
-	char mot[longueur_max]="";
-
-	while ((token!=NULL)&&(token[strlen(token)-1]!='"' || (strlen(token)==1) || (token[strlen(token)-1]!='"') || (token[strlen(token)-1]=='"'&& token[strlen(token)-2]=='\\'))){
-			if((strlen(token)+strlen(mot)+strlen(" "))<longueur_max){
-				strcat(mot, token);
-				strcat(mot, " ");
-			}
-			else{
-				fprintf( stderr, "La chaine de caractère est trop longue\n" );
-				exit(EXIT_FAILURE);
-			}
-		   token=getNextToken(current_address,delimiteur);
-		}
-	
 	if(token==NULL){
 		*file_erreur=enfiler("Erreur de fin de chaine", "\" de fin manquant", nlines, *file_erreur);
 		return;
 	}
-	
-	if((strlen(token)+strlen(mot))<longueur_max){
-		strcat(mot, token);
-	}
 	else{
-		fprintf( stderr, "La chaine de caractère est trop longue\n" );
-		exit(EXIT_FAILURE);
+		*file = enfiler("Chaine de caractère", token, nlines, *file);
 	}
-		
-	*file = enfiler("Chaine de caractère", mot, nlines, *file);
+	
 }
 
 /**Sépare les tokens en plusieurs chaine suivant les délimiteurs **/
 int verif_delimitateur(char*token,char*mot1,char*mot2){
 	int i;
 	int j=0;
-	/*printf("%s\n",token);*/
 	for(i=0;i<strlen(token);i++){
+
 		if((token[i]=='/') || (token[i]=='(')|| (token[i]==',')|| (token[i]==')')|| (token[i]==':')|| (token[i]=='-')|| (token[i]=='+') || (token[i] == 9)){
 			if (strlen(token)>1){
 				j=1;
@@ -306,5 +297,6 @@ int verif_delimitateur(char*token,char*mot1,char*mot2){
 		}
 	}
 	strncpy(mot1, token, strlen(token));
+	strncpy(mot2, "€",strlen("€"));
 	return j;
 }

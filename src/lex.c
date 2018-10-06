@@ -12,7 +12,7 @@
 
 /* note that MIPS assembly supports distinctions between lower and upper case*/
 char* getNextToken(char* current_address,char* delimiteur) {
-		return strtok(NULL,delimiteur);
+		return strtok(current_address,delimiteur);
 }
 
 
@@ -28,13 +28,26 @@ void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab
     char* token = NULL;
     char* current_address=line;
 	char* delimiteur = " ";
-
-	token=strtok(current_address, delimiteur);
-	
+	int compteur=0;
+	token=getNextToken(current_address, delimiteur);
+	printf("lignes : %d\n",nlines);
     /* TODO : faire l'analyse lexical de chaque token ici et les ajouter dans une collection*/
     /* ATTENTION: getNextToken est à recoder completement*/
     while( token != NULL ){
-		token=analyse_lexicale(token, current_address,delimiteur,tab_registre,tab_instruction,file,nlines,file_erreur);
+		compteur=compteur+strlen(token);
+		if(compteur<=longeur_ligne){
+			printf("avant%d\n",compteur);
+//			printf("%s\n",token);
+
+			token=analyse_lexicale(token, NULL,delimiteur,tab_registre,tab_instruction,file,nlines,file_erreur,&compteur);
+			printf("apres %d\n",compteur);
+			token=getNextToken(NULL,delimiteur);
+		}
+		else{
+			*file_erreur=enfiler("Ligne trop longue", "Doit etre inférieure à 200 caractères sans espaces", nlines, *file_erreur);
+			token=NULL;
+		}
+		
     }
 	*file=enfiler("Retour à la ligne", " ", nlines, *file);
 	return;

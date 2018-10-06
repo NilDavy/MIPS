@@ -1,10 +1,20 @@
-Ligne : 7	 Erreur chaine de caractère 	 ADI
+Ligne : 9	 Ligne trop longue	 Doit etre inférieure à 200 caractères sans espaces
 
-Ligne : 7	 Erreur nom registre	 $ero
+Ligne : 9	 Ligne trop longue	 Doit etre inférieure à 200 caractères sans espaces
 
-Ligne : 10	 Erreur Héxadecimale	 0X123123123123
+Ligne : 18	 Ligne trop longue	 Doit etre inférieure à 200 caractères sans espaces
 
-Ligne : 11	 Erreur valeur numérique	 0xG
+Ligne : 18	 Erreur de fin de chaine	 " de fin manquant
 
-Ligne : 25	 Erreur de fin de chaine	 " de fin manquant
+Ligne : 24	 Mauvais caractere dans la chaine	 caractère
+
+Ligne : 24	 Mauvais caractere dans la chaine	 important.
+
+Ligne : 24	 Mauvais caractere dans la chaine	 voilà
+
+Ligne : 24	 Erreur chaine de caractère 	 MOTS
+
+Ligne : 24	 Mauvais caractere dans la chaine	 d'avoir
+
+Ligne : 24	 Ligne trop longue	 Doit etre inférieure à 200 caractères sans espaces
 

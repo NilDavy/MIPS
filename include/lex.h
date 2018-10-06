@@ -15,6 +15,7 @@
 #include "analyse_lexicale.h"
 
 
+#define longeur_ligne 200
 void lex_read_line( char *, int, Liste_hach*tab_registre,Liste_hach*tab_instruction,file_jeu_instruction*file,unsigned int nlines,file_jeu_instruction*file_erreur);
 void lex_load_file( char *, unsigned int *,Liste_hach*tab_registre,Liste_hach*tab_instruction,file_jeu_instruction*file,file_jeu_instruction*file_erreur);
 char* getNextToken( char* ,char*);

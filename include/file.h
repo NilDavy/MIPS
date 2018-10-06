@@ -7,8 +7,7 @@
 #include <ctype.h>
 #include <strings.h>
 
-
-#define longueur_max 5096
+#define longueur_max 200
 
 struct cellule1 {
 	char identifiant[longueur_max];
