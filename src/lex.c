@@ -36,11 +36,7 @@ void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab
     while( token != NULL ){
 		compteur=compteur+strlen(token);
 		if(compteur<=longeur_ligne){
-			printf("avant%d\n",compteur);
-//			printf("%s\n",token);
-
 			token=analyse_lexicale(token, NULL,delimiteur,tab_registre,tab_instruction,file,nlines,file_erreur,&compteur);
-			printf("apres %d\n",compteur);
 			token=getNextToken(NULL,delimiteur);
 		}
 		else{

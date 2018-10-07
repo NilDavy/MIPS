@@ -70,7 +70,7 @@ int main ( int argc, char *argv[] ) {
 	/** ouverture ou creation du fichier contenant le code instancié **/
 
 	FILE*fp=NULL;
-	fp=fopen("Analyse_Lexicale.txt", "w+t");
+	fp=fopen("Recapitulatif/Analyse_Lexicale.txt", "w+t");
 	if (fp == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier Analyse_lexicale\n" );
 		exit(EXIT_FAILURE);
@@ -78,7 +78,7 @@ int main ( int argc, char *argv[] ) {
 	
 	/** ouverture ou creation du fichier contenant le rapport des erreurs **/
 	FILE*f_erreur=NULL;
-	f_erreur=fopen("Recaputilatif_Erreur.txt", "wt");
+	f_erreur=fopen("Recapitulatif/Recaputilatif_Erreur.txt", "wt");
 	if (f_erreur == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier Erreur\n" );
 		exit(EXIT_FAILURE);
@@ -108,12 +108,9 @@ int main ( int argc, char *argv[] ) {
 	
 	/** Ecriture du code instancié dans le fichier **/
 
-
+	ecrire_file(file_lexeme, fp);
 	
 	/** Vérification si présence d'erreurs **/
-
-	
-	ecrire_file(file_lexeme, fp);
 	
 	if(!(file_vide(file_erreur))){
 		WARNING_MSG("Il y a des erreurs de lexique dans le code source !");
@@ -130,8 +127,8 @@ int main ( int argc, char *argv[] ) {
 	/* ---------------- Free memory and terminate -------------------*/
 	
 	/** Libération des mémoires **/
-	/*liberer_file(file_lexeme);
-	liberer_file(file_erreur);*/
+	liberer_file(file_lexeme);
+	liberer_file(file_erreur);
 	liberer_tab_hachage(tab_registre, dim_tab_registre);
 	liberer_tab_hachage(tab_instruction, dim_tab_instruction);
 	fclose(fp);

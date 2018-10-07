@@ -1,13 +1,16 @@
 #include "file.h"
 
+/** Creer file **/
 file_jeu_instruction creer_file(void){
 	return NULL;
 }
 
+/** Verif file vide **/
 int file_vide(file_jeu_instruction f){
 	return !f;
 }
 
+/** visaliser une file **/
 void visualiser_file(file_jeu_instruction f){
 	file_jeu_instruction g=NULL;
 	if (file_vide(f)){
@@ -23,6 +26,7 @@ void visualiser_file(file_jeu_instruction f){
 	printf("Ligne : %d\t %s\t %s\n\n" ,g->ligne, g->identifiant,g->caractere);
 }
 
+/** Ecrire une file dans un fichier exterieur **/
 void ecrire_file(file_jeu_instruction f,FILE*a){
 	file_jeu_instruction g=NULL;
 	g=f->suiv;
@@ -33,6 +37,8 @@ void ecrire_file(file_jeu_instruction f,FILE*a){
 	fprintf(a, "Ligne : %d\t %s\t %s\n\n" ,g->ligne, g->identifiant,g->caractere);
 	
 }
+
+/** ajout d'un maillon a la file **/
 file_jeu_instruction enfiler(char*nom,char*carac,int line, file_jeu_instruction f){
 	file_jeu_instruction e=calloc(1,sizeof(*e));
 	if(e==NULL) {
@@ -50,6 +56,7 @@ file_jeu_instruction enfiler(char*nom,char*carac,int line, file_jeu_instruction 
 	return e;
 }
 
+/** retire d'un maillon a la file **/
 int defiler(file_jeu_instruction* pf,char*nom,char*carac){
 	if (*pf==NULL){
 		printf("File vide\n");
@@ -64,6 +71,8 @@ int defiler(file_jeu_instruction* pf,char*nom,char*carac){
 	return c;
 }
 
+/** liberation de la memoire de la file **/
+
 void liberer_file(file_jeu_instruction f){
 	file_jeu_instruction g= f->suiv	;
  	f->suiv = NULL;	
@@ -73,8 +82,9 @@ void liberer_file(file_jeu_instruction f){
 	
 }
 
+/** liberation de la memoire d'un maillon de la file **/
 file_jeu_instruction supprimer_tete(file_jeu_instruction g){
-	file_jeu_instruction c, d;
+	file_jeu_instruction c;
 	if (file_vide(g)) {
 		return NULL;
 	}
@@ -83,11 +93,10 @@ file_jeu_instruction supprimer_tete(file_jeu_instruction g){
 		return NULL;
 	}
 	c = g;
-	d = c->suiv;
-	c->suiv = d->suiv;
-	printf("%p\n", c->suiv);
-	free(g->suiv);
-	return c;
+	g=c->suiv;
+	c->suiv=NULL;
+	free(c);
+	return g;
 }
 
 

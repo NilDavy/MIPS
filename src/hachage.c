@@ -1,23 +1,23 @@
 #include "hachage.h"
 
-/* Creation d'une liste de hachage */
+/** Creation d'une liste de hachage **/
 Liste_hach creer_liste_hachage(void) {return NULL;}
 
-/* Verification si la liste de hachage est vide
- Renvoie 1 si la liste est vide, 0 sinon */
+/** Verification si la liste de hachage est vide
+ Renvoie 1 si la liste est vide, 0 sinon **/
 int est_vide_hachage(Liste_hach L) {return !L;}
 
-/* Ajout d'un element en tete de la liste de hachage */
+/** Ajout d'un element en tete de la liste de hachage **/
 Liste_hach ajout_tete_hachage(instruction e, Liste_hach L){
 	Liste_hach p=(Liste_hach) calloc(1,sizeof(*p));
 	if (p==NULL) return NULL;
 	p->val=malloc(strlen(e));
-	p->val= (p->val? strcpy(p->val,e) : NULL);   /*evite les warning de compilation*/
+	p->val= (p->val? strcpy(p->val,e) : NULL);   /** evite les warning de compilation**/
 	p->suiv=L;
 	return p;
 }
 
-/* Hachage du nom de l'instruction */
+/** Hachage du nom de l'instruction **/
 unsigned int hachage(char* mot, int dim_tab_hach){
 	int i=0;
 	unsigned long h=0,a=1;
@@ -29,7 +29,7 @@ unsigned int hachage(char* mot, int dim_tab_hach){
 	return h;
 }
 
-/* Recherche d'un element dans la table de hachage*/
+/** Recherche d'un element dans la table de hachage **/
 int rech_hachage(instruction e, Liste_hach L){
 	Liste_hach p=L;
 	while(!est_vide_hachage(p)&&(strcasecmp(p->val,e)!=0)){
@@ -41,7 +41,7 @@ int rech_hachage(instruction e, Liste_hach L){
 	return 1;
 }
 
-/* Suppression d'un element en tete de la liste de hachage */
+/** Suppression d'un element en tete de la liste de hachage **/
 Liste_hach supprimer_tete_hachage(Liste_hach l) {
 	Liste_hach c = NULL;
 	if (est_vide_hachage(l)) {
@@ -53,7 +53,7 @@ Liste_hach supprimer_tete_hachage(Liste_hach l) {
 	return c;
 }
 
-
+/** liberation de la memoire d'un tableau de hachage **/
 void liberer_tab_hachage(Liste_hach l[], int len) {
 	int i;
 	for (i=0; i<len;i++) {
@@ -67,6 +67,7 @@ void liberer_tab_hachage(Liste_hach l[], int len) {
 }
 
 
+/** Creation tableau registre **/
 Liste_hach*creation_liste_registre(){
 	FILE* fregistre = NULL;
 	int i;
@@ -79,7 +80,7 @@ Liste_hach*creation_liste_registre(){
 		fprintf( stderr, "Memory error : tab_registre\n" );
 		exit(EXIT_FAILURE);
 	}
-	fregistre=fopen("registre.txt", "rt");
+	fregistre=fopen("Doc_tab_hachage/registres.txt", "rt");
 	if (fregistre == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier registre\n" );
 		exit(EXIT_FAILURE);
@@ -90,12 +91,12 @@ Liste_hach*creation_liste_registre(){
 		n=hachage(mot, dim_tab_registre);
 		tab_registre[n]=ajout_tete_hachage(mot,tab_registre[n]);
 	}
-	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);*/
-
 	
 	fclose(fregistre);
 	return tab_registre;
 }
+
+/** Creation tableau instruction **/
 
 Liste_hach*creation_liste_instruction(){
 	FILE* finstruction = NULL;
@@ -110,7 +111,7 @@ Liste_hach*creation_liste_instruction(){
 		exit(EXIT_FAILURE);
 
 	}
-	finstruction=fopen("instructions.txt", "rt");
+	finstruction=fopen("Doc_tab_hachage/instructions.txt", "rt");
 	if (finstruction == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier instruction\n" );
 		exit(EXIT_FAILURE);
@@ -121,12 +122,11 @@ Liste_hach*creation_liste_instruction(){
 		n=hachage(mot, dim_tab_instruction);
 		tab_instruction[n]=ajout_tete_hachage(mot,tab_instruction[n]);
 	}
-	/*visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
-	
 	fclose(finstruction);
 	return tab_instruction;
 }
 
+/** Visualiser un tableau **/
 void visualiser_tab_hachage(Liste_hach*tab,int n){
 	int i;
 	for(i=0;i<n;i++){
@@ -134,6 +134,7 @@ void visualiser_tab_hachage(Liste_hach*tab,int n){
 	}
 }
 
+/** Visualisation d'une ligne du tableau **/
 void visualiser_liste_hachage(Liste_hach l) {
 	Liste_hach c = NULL;
 	if (est_vide_hachage(l)) {
