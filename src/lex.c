@@ -30,20 +30,20 @@ void lex_read_line( char *line, int nline,Liste_hach*tab_registre,Liste_hach*tab
 	char* delimiteur = " ";
 	int compteur=0;
 	token=getNextToken(current_address, delimiteur);
-	printf("lignes : %d\n",nlines);
     /* TODO : faire l'analyse lexical de chaque token ici et les ajouter dans une collection*/
     /* ATTENTION: getNextToken est à recoder completement*/
     while( token != NULL ){
 		compteur=compteur+strlen(token);
 		if(compteur<=longeur_ligne){
 			token=analyse_lexicale(token, NULL,delimiteur,tab_registre,tab_instruction,file,nlines,file_erreur,&compteur);
-			token=getNextToken(NULL,delimiteur);
 		}
 		else{
-			*file_erreur=enfiler("Ligne trop longue", "Doit etre inférieure à 200 caractères sans espaces", nlines, *file_erreur);
+			*file_erreur=enfiler("Ligne trop longue", "Doit etre inférieure à 200 caractères sans espaces", nlines, 	*file_erreur);
 			token=NULL;
 		}
-		
+	/*printf("token : %s\n",token);
+	token=getNextToken(NULL, delimiteur);*/
+
     }
 	*file=enfiler("Retour à la ligne", " ", nlines, *file);
 	return;

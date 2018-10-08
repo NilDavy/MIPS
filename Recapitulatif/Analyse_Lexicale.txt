@@ -26,11 +26,19 @@ Ligne : 4	 Retour à la ligne
 
 Ligne : 5	 Instruction	 LW
 
+Ligne : 5	 Registre	 $t0
+
 Ligne : 5	 Délimiteur	 ,
+
+Ligne : 5	 Renvoie vers une étiquette	 LUNCHTIME
 
 Ligne : 5	 Retour à la ligne	  
 
 Ligne : 6	 Instruction	 LW
+
+Ligne : 6	 Registre	 $12
+
+Ligne : 6	 Délimiteur	 ,
 
 Ligne : 6	 Délimiteur	 -
 
@@ -46,271 +54,131 @@ Ligne : 6	 Retour à la ligne
 
 Ligne : 7	 Instruction	 ADDI
 
+Ligne : 7	 Registre	 $t1
+
+Ligne : 7	 Délimiteur	 ,
+
+Ligne : 7	 Registre	 $zero
+
+Ligne : 7	 Délimiteur	 ,
+
+Ligne : 7	 Valeur Décimale	 8
+
 Ligne : 7	 Retour à la ligne	  
 
 Ligne : 8	 Renvoie vers une étiquette	 BOUCLE
+
+Ligne : 8	 Délimiteur	 :
 
 Ligne : 8	 Retour à la ligne	  
 
 Ligne : 9	 Instruction	 BEQ
 
-Ligne : 9	 Délimiteur	 ,
+Ligne : 9	 Registre	 $t0
 
 Ligne : 9	 Délimiteur	 ,
+
+Ligne : 9	 Registre	 $t1
+
+Ligne : 9	 Délimiteur	 ,
+
+Ligne : 9	 Renvoie vers une étiquette	 BYEBYE
 
 Ligne : 9	 Commentaire	 #
 
 Ligne : 9	 Commentaire	 test
 
-Ligne : 9	 Commentaire	 d'une
-
-Ligne : 9	 Commentaire	 chaine
-
-Ligne : 9	 Commentaire	 de
-
-Ligne : 9	 Commentaire	 caractère
-
-Ligne : 9	 Commentaire	 bien
-
-Ligne : 9	 Commentaire	 trop
-
-Ligne : 9	 Commentaire	 longue
-
-Ligne : 9	 Commentaire	 pour
-
-Ligne : 9	 Commentaire	 pouvoir
-
-Ligne : 9	 Commentaire	 voir
-
-Ligne : 9	 Commentaire	 comment
-
-Ligne : 9	 Commentaire	 réagit
-
-Ligne : 9	 Commentaire	 le
-
-Ligne : 9	 Commentaire	 programme
-
-Ligne : 9	 Commentaire	 car
-
-Ligne : 9	 Commentaire	 c'est
-
-Ligne : 9	 Commentaire	 important.
-
-Ligne : 9	 Commentaire	 voilà
-
-Ligne : 9	 Commentaire	 donc
-
-Ligne : 9	 Commentaire	 je
-
-Ligne : 9	 Commentaire	 rajoute
-
-Ligne : 9	 Commentaire	 des
-
-Ligne : 9	 Commentaire	 mots,
-
-Ligne : 9	 Commentaire	 parfois
-
-Ligne : 9	 Commentaire	 trop
-
-Ligne : 9	 Commentaire	 de
-
-Ligne : 9	 Commentaire	 mots
-
-Ligne : 9	 Commentaire	 pour
-
-Ligne : 9	 Commentaire	 etre
-
-Ligne : 9	 Commentaire	 sur
-
-Ligne : 9	 Commentaire	 d'avoir
-
-Ligne : 9	 Commentaire	 une
-
-Ligne : 9	 Commentaire	 chaine
-
-Ligne : 9	 Commentaire	 de
-
 Ligne : 9	 Retour à la ligne	  
 
-Ligne : 11	 Instruction	 NOP
+Ligne : 10	 Instruction	 NOP
+
+Ligne : 10	 Retour à la ligne	  
+
+Ligne : 11	 Instruction	 ADDI
+
+Ligne : 11	 Registre	 $t1
+
+Ligne : 11	 Délimiteur	 ,
+
+Ligne : 11	 Registre	 $t1
+
+Ligne : 11	 Délimiteur	 ,
+
+Ligne : 11	 Valeur Décimale	 1
 
 Ligne : 11	 Retour à la ligne	  
 
-Ligne : 12	 Instruction	 ADDI
+Ligne : 12	 Instruction	 J
 
-Ligne : 12	 Délimiteur	 ,
-
-Ligne : 12	 Délimiteur	 ,
+Ligne : 12	 Renvoie vers une étiquette	 BOUCLE
 
 Ligne : 12	 Retour à la ligne	  
 
-Ligne : 13	 Instruction	 J
+Ligne : 13	 Instruction	 NOP
 
 Ligne : 13	 Retour à la ligne	  
 
-Ligne : 14	 Instruction	 NOP
+Ligne : 14	 Etiquette	 BYEBYE
+
+Ligne : 14	 Délimiteur	 :
 
 Ligne : 14	 Retour à la ligne	  
 
-Ligne : 15	 Etiquette	 BYEBYE
+Ligne : 15	 Instruction	 JAL
 
-Ligne : 15	 Délimiteur	 :
+Ligne : 15	 Renvoie vers une étiquette	 VITEVITEAURU
 
 Ligne : 15	 Retour à la ligne	  
 
-Ligne : 16	 Instruction	 JAL
+Ligne : 17	 Directive	 .data
 
-Ligne : 16	 Retour à la ligne	  
+Ligne : 17	 Retour à la ligne	  
 
-Ligne : 18	 Chaine de caractère	 "test
+Ligne : 18	 Etiquette	 LUNCHTIME
 
-Ligne : 18	 Chaine de caractère	 d'une
-
-Ligne : 18	 Chaine de caractère	 chaine
-
-Ligne : 18	 Chaine de caractère	 de
-
-Ligne : 18	 Chaine de caractère	 caractère
-
-Ligne : 18	 Chaine de caractère	 bien
-
-Ligne : 18	 Chaine de caractère	 trop
-
-Ligne : 18	 Chaine de caractère	 longue
-
-Ligne : 18	 Chaine de caractère	 pour
-
-Ligne : 18	 Chaine de caractère	 pouvoir
-
-Ligne : 18	 Chaine de caractère	 voir
-
-Ligne : 18	 Chaine de caractère	 comment
-
-Ligne : 18	 Chaine de caractère	 réagit
-
-Ligne : 18	 Chaine de caractère	 le
-
-Ligne : 18	 Chaine de caractère	 programme
-
-Ligne : 18	 Chaine de caractère	 car
-
-Ligne : 18	 Chaine de caractère	 c'est
-
-Ligne : 18	 Chaine de caractère	 important.
-
-Ligne : 18	 Chaine de caractère	 voilà
-
-Ligne : 18	 Chaine de caractère	 donc
-
-Ligne : 18	 Chaine de caractère	 je
-
-Ligne : 18	 Chaine de caractère	 rajoute
-
-Ligne : 18	 Chaine de caractère	 des
-
-Ligne : 18	 Chaine de caractère	 mots,
-
-Ligne : 18	 Chaine de caractère	 parfois
-
-Ligne : 18	 Chaine de caractère	 trop
-
-Ligne : 18	 Chaine de caractère	 de
-
-Ligne : 18	 Chaine de caractère	 mots
-
-Ligne : 18	 Chaine de caractère	 pour
-
-Ligne : 18	 Chaine de caractère	 etre
-
-Ligne : 18	 Chaine de caractère	 sur
-
-Ligne : 18	 Chaine de caractère	 d'avoir
-
-Ligne : 18	 Chaine de caractère	 une
-
-Ligne : 18	 Chaine de caractère	 chaine
-
-Ligne : 18	 Chaine de caractère	 de
-
-Ligne : 18	 Chaine de caractère	 caractère
-
-Ligne : 18	 Chaine de caractère	 bien
-
-Ligne : 18	 Chaine de caractère	 trop
+Ligne : 18	 Délimiteur	 :
 
 Ligne : 18	 Retour à la ligne	  
 
-Ligne : 20	 Directive	 .data
+Ligne : 19	 Directive	 .word
+
+Ligne : 19	 Valeur Décimale	 12
+
+Ligne : 19	 Retour à la ligne	  
+
+Ligne : 20	 Directive	 .word
+
+Ligne : 20	 Renvoie vers une étiquette	 MENU
 
 Ligne : 20	 Retour à la ligne	  
 
-Ligne : 21	 Etiquette	 LUNCHTIME
+Ligne : 21	 Directive	 .asciiz
 
-Ligne : 21	 Délimiteur	 :
+Ligne : 21	 Chaine de caractère	 "ils
+
+Ligne : 21	 Chaine de caractère	 disent
+
+Ligne : 21	 Chaine de caractère	 :
+
+Ligne : 21	 Chaine de caractère	 \"au
+
+Ligne : 21	 Chaine de caractère	 ru!\""
 
 Ligne : 21	 Retour à la ligne	  
 
-Ligne : 22	 Directive	 .word
+Ligne : 22	 Directive	 .bss
 
 Ligne : 22	 Retour à la ligne	  
 
-Ligne : 23	 Directive	 .word
+Ligne : 24	 Etiquette	 MENU
 
-Ligne : 23	 Retour à la ligne	  
-
-Ligne : 24	 Directive	 .asciiz
-
-Ligne : 24	 Renvoie vers une étiquette	 TEST
-
-Ligne : 24	 Renvoie vers une étiquette	 CHAINE
-
-Ligne : 24	 Renvoie vers une étiquette	 BIEN
-
-Ligne : 24	 Renvoie vers une étiquette	 LONGUE
-
-Ligne : 24	 Renvoie vers une étiquette	 POUVOIR
-
-Ligne : 24	 Renvoie vers une étiquette	 COMMENT
-
-Ligne : 24	 Renvoie vers une étiquette	 LE
-
-Ligne : 24	 Renvoie vers une étiquette	 CAR
-
-Ligne : 24	 Renvoie vers une étiquette	 DONC
-
-Ligne : 24	 Renvoie vers une étiquette	 RAJOUTE
-
-Ligne : 24	 Délimiteur	 ,
-
-Ligne : 24	 Renvoie vers une étiquette	 TROP
-
-Ligne : 24	 Renvoie vers une étiquette	 MOTS
-
-Ligne : 24	 Renvoie vers une étiquette	 ETRE
-
-Ligne : 24	 Renvoie vers une étiquette	 UNE
-
-Ligne : 24	 Renvoie vers une étiquette	 DE
-
-Ligne : 24	 Renvoie vers une étiquette	 BIEN
+Ligne : 24	 Délimiteur	 :
 
 Ligne : 24	 Retour à la ligne	  
 
-Ligne : 25	 Renvoie vers une étiquette	 N
+Ligne : 25	 Directive	 .space
+
+Ligne : 25	 Valeur Décimale	 24
 
 Ligne : 25	 Retour à la ligne	  
-
-Ligne : 26	 Directive	 .bss
-
-Ligne : 26	 Retour à la ligne	  
-
-Ligne : 28	 Etiquette	 MENU
-
-Ligne : 28	 Délimiteur	 :
-
-Ligne : 28	 Retour à la ligne	  
-
-Ligne : 29	 Directive	 .space
-
-Ligne : 29	 Retour à la ligne	  
 

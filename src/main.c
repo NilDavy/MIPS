@@ -86,11 +86,9 @@ int main ( int argc, char *argv[] ) {
 	
 	/** creation des tableaux pour les tables de hachages des instructions et des registres **/
 	Liste_hach* tab_registre=NULL;
-	tab_registre=calloc(dim_tab_registre, sizeof(*tab_registre));
 	tab_registre=creation_liste_registre();
 	
 	Liste_hach* tab_instruction=NULL;
-	tab_instruction=calloc(dim_tab_instruction, sizeof(*tab_instruction));
 	tab_instruction=creation_liste_instruction();
 	
 	

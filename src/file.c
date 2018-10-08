@@ -74,6 +74,9 @@ int defiler(file_jeu_instruction* pf,char*nom,char*carac){
 /** liberation de la memoire de la file **/
 
 void liberer_file(file_jeu_instruction f){
+	if(file_vide(f)){
+		return;
+	}
 	file_jeu_instruction g= f->suiv	;
  	f->suiv = NULL;	
 	while(g!=NULL){
@@ -85,9 +88,6 @@ void liberer_file(file_jeu_instruction f){
 /** liberation de la memoire d'un maillon de la file **/
 file_jeu_instruction supprimer_tete(file_jeu_instruction g){
 	file_jeu_instruction c;
-	if (file_vide(g)) {
-		return NULL;
-	}
 	if(g->suiv == g){
 		free(g);
 		return NULL;

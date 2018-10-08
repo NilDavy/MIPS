@@ -16,7 +16,9 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 	
 	j=verif_delimitateur(token,mot1,mot2);
 	
-
+	/*printf("mot1 : %s\n",mot1);
+	printf("mot2 : %s\n",mot2);
+	printf("j : %d\n",j);*/
 	switch (mot1[0]) {
 			
 /** Commentaire **/
@@ -91,7 +93,7 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 					{
 						
 						*file_erreur=enfiler("Mauvais caractere dans la chaine", mot1, nlines, *file_erreur);
-						return mot1;
+						return getNextToken(current_address,delimiteur);
 					}
 					
 				}
@@ -122,6 +124,7 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 	else{
 		if(token!=NULL){
 			token=getNextToken(current_address,delimiteur);
+
 /** verif longueur de la ligne **/
 
 			if(token!=NULL){
@@ -246,19 +249,20 @@ void verif_numero(char*token,file_jeu_instruction*file,unsigned int nlines,file_
 		
 /** verif hexa **/
 
-		if((token[i]=='x' || token[i]=='X') && strlen(token)<11){
+		if((token[i]=='x' || token[i]=='X') && strlen(token)<11 && strlen (token)>=3){
 			i=i+1;
 			while(isxdigit(token[i])){
 				i=i+1;
 			}
-			if(strlen(token)==i){
-				*file=enfiler("Valeur Hexadécimale", token, nlines, *file);
-			}
-			else
-			{
-			*file_erreur=enfiler("Erreur valeur numérique", token, nlines, *file_erreur);
-			}
 		}
+		if(strlen(token)==i){
+			*file=enfiler("Valeur Hexadécimale", token, nlines, *file);
+		}
+		else
+		{
+		*file_erreur=enfiler("Erreur valeur numérique", token, nlines, *file_erreur);
+		}
+	
 		}
 	}
 
