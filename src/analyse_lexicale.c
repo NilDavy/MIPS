@@ -13,14 +13,14 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 		exit(EXIT_FAILURE);
 	}
 	int j=0;
-	
-	j=verif_delimitateur(token,mot1,mot2);
-	
+
+	j=verif_delimitateur(token, mot1, mot2);
+
 	/*printf("mot1 : %s\n",mot1);
 	printf("mot2 : %s\n",mot2);
 	printf("j : %d\n",j);*/
 	switch (mot1[0]) {
-			
+
 /** Commentaire **/
 		case '#':
 			while(token!=NULL){
@@ -36,7 +36,7 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 				}
 			}
 			break;
-			
+
 /** directive **/
 		case '.':
 			verif_directive(mot1,current_address,delimiteur,file,nlines,file_erreur,compteur);
@@ -46,36 +46,36 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 		case '$':
 			verif_registre(mot1,tab_registre,file,nlines,file_erreur);
 			break;
-			
+
 /** Delimiteur **/
 		case '(':
 			*file=enfiler("Délimiteur", mot1, nlines, *file);
 			break;
-			
+
 		case ')':
 			*file=enfiler("Délimiteur", mot1, nlines, *file);
 			break;
-			
+
 		case '-':
 			*file=enfiler("Délimiteur", mot1, nlines, *file);
 			break;
-			
+
 		case '+':
 			*file=enfiler("Délimiteur", mot1, nlines, *file);
 			break;
-			
+
 		case '/':
 			*file=enfiler("Délimiteur", mot1, nlines, *file);
 			break;
-			
+
 		case ':':
 			*file=enfiler("Délimiteur", mot1, nlines, *file);
 			break;
-			
+
 		case ',':
 			*file=enfiler("Délimiteur", mot1, nlines, *file);
 			break;
-		
+
 /** Chaine de caractere **/
 		case '"':
 			verif_chaine_de_caractere(mot1,current_address,delimiteur,file,nlines,file_erreur,compteur);
@@ -91,13 +91,13 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 				{
 					if( (mot1[c]!= '_')&&!isalpha(mot1[c]) && !isdigit(mot1[c]))
 					{
-						
+
 						*file_erreur=enfiler("Mauvais caractere dans la chaine", mot1, nlines, *file_erreur);
 						return getNextToken(current_address,delimiteur);
 					}
-					
+
 				}
-				
+
 				if(strlen(mot2)==0){
 					mot2=getNextToken(NULL, delimiteur);
 					verif_caractere(mot1,mot2,current_address,delimiteur,tab_instruction,file,nlines,file_erreur);
@@ -106,9 +106,9 @@ char* analyse_lexicale(char*token,char*current_address,char*delimiteur,Liste_hac
 				else{
 					verif_caractere(mot1,mot2,current_address,delimiteur,tab_instruction,file,nlines,file_erreur);
 				}
-				
+
 			}
-			
+
 /** caractere numérique **/
 			else if (isdigit(mot1[0])){
 				verif_numero(mot1,file,nlines,file_erreur);
@@ -175,7 +175,7 @@ void verif_directive(char*token,char*current_address,char*delimiteur,file_jeu_in
 	}
 	if(compteur1==7){
 		*file_erreur=enfiler("Erreur directive : ", token, nlines, *file_erreur);
-	}else{	
+	}else{
 	*file=enfiler("Directive", token, nlines, *file);
 	}
 }
@@ -197,19 +197,19 @@ void verif_caractere(char*token,char*mot2,char*current_address,char*delimiteur,L
 	int i;
 	int n;
 	int a;
-	
+
 	for(i=0;i<strlen(token);i++){
 		token[i]=toupper(token[i]);
 	}
 	n=hachage(token, dim_tab_instruction);
-	
+
 	a=rech_hachage(token, tab_instruction[n]);
-	
-	
+
+
 	if (a==1){
 		*file=enfiler("Instruction", token, nlines, *file);
 	}
-	
+
 	else{
 		if((strcmp(mot2,"€")!=0 && strcmp(mot2, ":")==0) || (strcmp(mot2,"€")!=0 && mot2[0]==':')){
 			*file=enfiler("Etiquette", token, nlines, *file);
@@ -221,7 +221,7 @@ void verif_caractere(char*token,char*mot2,char*current_address,char*delimiteur,L
 			else{
 				*file_erreur=enfiler("Erreur chaine de caractère ", token, nlines, *file_erreur);
 			}
-				
+
 		}
 	}
 }
@@ -229,7 +229,7 @@ void verif_caractere(char*token,char*mot2,char*current_address,char*delimiteur,L
 /** Verifie l'orthographe des numéros **/
 void verif_numero(char*token,file_jeu_instruction*file,unsigned int nlines,file_jeu_instruction*file_erreur){
 	int i=0;
-	
+
 	unsigned long a;
 	while (isdigit(token[i])){
 		i=i+1;
@@ -246,7 +246,7 @@ void verif_numero(char*token,file_jeu_instruction*file,unsigned int nlines,file_
 			*file_erreur=enfiler("Depassement capacite", token, nlines, *file_erreur);
 			return;
 		}
-		
+
 /** verif hexa **/
 
 		if((token[i]=='x' || token[i]=='X') && strlen(token)<11 && strlen (token)>=3 && i==1){
@@ -265,7 +265,7 @@ void verif_numero(char*token,file_jeu_instruction*file,unsigned int nlines,file_
 		{
 		*file_erreur=enfiler("Erreur valeur numérique", token, nlines, *file_erreur);
 		}
-	
+
 		}
 	}
 
@@ -275,7 +275,7 @@ void verif_chaine_de_caractere(char*token,char*current_address,char*delimiteur,f
 	while ((token!=NULL)&&(token[strlen(token)-1]!='"' || (strlen(token)==1) || (token[strlen(token)-1]=='"' && token[strlen(token)-2]=='\\'))){
 		*file = enfiler("Chaine de caractère", token, nlines, *file);
 		token=getNextToken(current_address,delimiteur);
-		
+
 /** verif longueur de la ligne **/
 		if(token!=NULL){
 			*compteur=*compteur+strlen(token);
@@ -292,7 +292,7 @@ void verif_chaine_de_caractere(char*token,char*current_address,char*delimiteur,f
 	else{
 		*file = enfiler("Chaine de caractère", token, nlines, *file);
 	}
-	
+
 }
 
 /**Sépare les tokens en plusieurs chaine suivant les délimiteurs **/
