@@ -70,7 +70,7 @@ int main ( int argc, char *argv[] ) {
 	/** ouverture ou creation du fichier contenant le code instancié **/
 
 	FILE*fp=NULL;
-	fp=fopen("Recapitulatif/Analyse_Lexicale.txt", "w+t");
+	fp=fopen("recapitulatif/Analyse_Lexicale.txt", "w+t");
 	if (fp == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier Analyse_lexicale\n" );
 		exit(EXIT_FAILURE);
@@ -78,7 +78,7 @@ int main ( int argc, char *argv[] ) {
 	
 	/** ouverture ou creation du fichier contenant le rapport des erreurs **/
 	FILE*f_erreur=NULL;
-	f_erreur=fopen("Recapitulatif/Recaputilatif_Erreur.txt", "wt");
+	f_erreur=fopen("recapitulatif/Recaputilatif_Erreur.txt", "wt");
 	if (f_erreur == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier Erreur\n" );
 		exit(EXIT_FAILURE);

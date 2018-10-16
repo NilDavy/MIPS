@@ -80,7 +80,7 @@ Liste_hach*creation_liste_registre(){
 		fprintf( stderr, "Memory error : tab_registre\n" );
 		exit(EXIT_FAILURE);
 	}
-	fregistre=fopen("Doc_tab_hachage/registres.txt", "rt");
+	fregistre=fopen("doc_tab_hachage/registres.txt", "rt");
 	if (fregistre == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier registre\n" );
 		exit(EXIT_FAILURE);
@@ -111,7 +111,7 @@ Liste_hach*creation_liste_instruction(){
 		exit(EXIT_FAILURE);
 
 	}
-	finstruction=fopen("Doc_tab_hachage/instructions.txt", "rt");
+	finstruction=fopen("doc_tab_hachage/instructions.txt", "rt");
 	if (finstruction == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier instruction\n" );
 		exit(EXIT_FAILURE);
