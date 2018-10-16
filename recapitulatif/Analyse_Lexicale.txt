@@ -66,13 +66,13 @@ Ligne : 7	 Valeur Décimale	 8
 
 Ligne : 7	 Retour à la ligne	  
 
-Ligne : 8	 Renvoie vers une étiquette	 BOUCLE
+Ligne : 8	 Etiquette	 BOUCLE
 
 Ligne : 8	 Délimiteur	 :
 
 Ligne : 8	 Retour à la ligne	  
 
-Ligne : 9	 Instruction	 ADD
+Ligne : 9	 Etiquette	 ADD
 
 Ligne : 9	 Délimiteur	 :
 
@@ -162,7 +162,7 @@ Ligne : 22	 Directive	 .asciiz
 
 Ligne : 22	 Chaine de caractère	 "ils
 
-Ligne : 22	 Chaine de caractère	 disent
+Ligne : 22	 Etiquette	 disent
 
 Ligne : 22	 Chaine de caractère	 :
 

@@ -102,7 +102,10 @@ int main ( int argc, char *argv[] ) {
 	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
 	DEBUG_MSG("Le code source contient %d lignes",nlines);
 	
-
+	if(!(file_vide(file_lexeme))){
+		file_lexeme=modifie_instruction(file_lexeme);
+		verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);
+	}
 	
 	/** Ecriture du code instancié dans le fichier **/
 
@@ -119,15 +122,18 @@ int main ( int argc, char *argv[] ) {
 	}
 	else{
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
-	}
+	
 	
 	printf("\n**********************************************************\n");
 	/* ---------------- Free memory and terminate -------------------*/
 
+
 	file_lexeme=supprime_commentaire(file_lexeme);
-	file_lexeme=modifie_instruction(file_lexeme);
-	verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);
-	visualiser_file(file_erreur);
+
+
+	/*analyse synatxique*/
+
+	}
 
 	/** Libération des mémoires **/
 	liberer_file(file_lexeme);

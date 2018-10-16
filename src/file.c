@@ -168,12 +168,31 @@ void verif_renvoie_vers_etiquette(file_jeu_instruction*f,file_jeu_instruction*fi
 	if(!strcmp(g->identifiant,"Etiquette")){
 		file_etiquette=enfiler(g->identifiant, g->caractere,g->ligne, file_etiquette);
 	}
-	visualiser_file(file_etiquette);
-	visualiser_file(file_renvoie);
-/*	g=file_renvoie->suiv;
-	while(g!=file_renvoie){
+	if(file_vide(file_renvoie)){return;}
+	else{
+		if(file_vide(file_etiquette)){
+			*file_erreur=enfiler("Erreur orthographe renvoie sur etiquette", "Pas d'étiquette présente", 1, *file_erreur);
+			return;
+			}
+		g=file_renvoie->suiv;
+		while(g!=file_renvoie){
+			a=0;
+			h=file_etiquette->suiv;
+			while(h!=file_etiquette){
+				if(!strcmp(h->caractere,g->caractere)){
+					a=1;
+				}
+				h=h->suiv;
+			}
+			if(!strcmp(h->caractere,g->caractere)){
+					a=1;
+				}
+			if(a==0){
+				*file_erreur=enfiler("Erreur orthographe renvoie sur etiquette", g->caractere, g->ligne, *file_erreur);
+			}
+			g=g->suiv;
+		}
 		a=0;
-		h=file_etiquette->suiv;
 		while(h!=file_etiquette){
 			if(!strcmp(h->caractere,g->caractere)){
 				a=1;
@@ -181,26 +200,11 @@ void verif_renvoie_vers_etiquette(file_jeu_instruction*f,file_jeu_instruction*fi
 			h=h->suiv;
 		}
 		if(!strcmp(h->caractere,g->caractere)){
-				a=1;
-			}
+			a=1;
+		}
 		if(a==0){
 			*file_erreur=enfiler("Erreur orthographe renvoie sur etiquette", g->caractere, g->ligne, *file_erreur);
 		}
-		g=g->suiv;
 	}
-	a=0;
-	while(h!=file_etiquette){
-		if(!strcmp(h->caractere,g->caractere)){
-			a=1;
-		}
-		h=h->suiv;
-	}
-	if(!strcmp(h->caractere,g->caractere)){
-		a=1;
-	}
-	if(a==0){
-		*file_erreur=enfiler("Erreur orthographe renvoie sur etiquette", g->caractere, g->ligne, *file_erreur);
-	}
-*/
 }
 

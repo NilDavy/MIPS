@@ -256,7 +256,10 @@ void verif_numero(char*token,file_jeu_instruction*file,unsigned int nlines,file_
 			}
 		}
 		if(strlen(token)==i){
-			*file=enfiler("Valeur Hexadécimale", token, nlines, *file);
+			int b= (int)strtol(token,NULL,0);
+			char s[11];
+			sprintf(s,"%d",b);
+			*file=enfiler("Valeur Hexadécimale", s, nlines, *file);
 		}
 		else
 		{
