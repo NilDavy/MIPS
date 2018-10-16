@@ -15,12 +15,14 @@
 typedef char* instruction;
 struct cellule {
 	instruction val;
+	int nombreOperande;
+	char typeInst;
 	struct cellule * suiv;};
 typedef struct cellule * Liste_hach;
 
 Liste_hach creer_liste_hachage(void);
 int est_vide_hachage(Liste_hach);
-Liste_hach ajout_tete_hachage(instruction , Liste_hach );
+Liste_hach ajout_tete_hachage(instruction e,int nbop, char car, Liste_hach L);
 unsigned int hachage(char* , int );
 int rech_hachage(instruction, Liste_hach);
 Liste_hach supprimer_tete_hachage(Liste_hach);

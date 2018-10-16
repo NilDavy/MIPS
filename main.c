@@ -3,8 +3,8 @@
 #include <math.h>
 #include <stdlib.h>
 
-/*unsigned long hex_to_dec(char*hex,int a){
-	unsigned long res=0;
+long int hex_to_dec(char*hex){
+/*	unsigned long res=0;
 	int i;
 	for (i=a;i<strlen(hex);i++){
 //		printf("res=%lu\n",res);
@@ -79,105 +79,15 @@
 				break;
 		}
 	}
-	return res;
-}*/
-
-
-file_jeu_instruction*supprime_commentaire(file_jeu_instruction*f){
-	int i;
-	int a=0;
-	file_jeu_instruction g;
-	for(g=(*f)->suiv;g!=(*f);g=g->suiv){
-		if(strcmp(g->identifiant,"Commentaire"){
-			retire_maillon(&g, i-a);
-			a=a+1;
-		}
-	}
-	return f;
-}
-/*retire un maillon specifique*/
-void retire_maillon(file_jeu_instruction* pf,int a){
-	if (*pf==NULL){
-		exit(0);
-	}
-	int i;
-	file_jeu_instruction g = (*pf)->suiv;
-	file_jeu_instruction h = (*pf);
-	if(a==0){
-		(*pf)->suiv=g->suiv;
-		g->suiv=NULL;
-		free(g);
-		return;
-	}
-	else{
-		for(i=0;i<a;i++){
-			g=g->suiv;
-			h=h->suiv;
-		}
-		h->suiv=g->suiv;
-		g->suiv;
-		free(g);
-		return;
-	}
+	return res;*/
+	long int number = (long int)strtol(hex, NULL, 0);
+	return number;
 }
 
-void analyse_syntaxique(file_jeu_instruction*f){
-	int i;
-	
-	/*Collection des symboles ?????????*/
-	
-	file_jeu_instruction g;
-	for(g=(*f)->suiv;g!=(*f);g=g->suiv){
-		if(strcmp(g->identifiant, "Directive")){
-			switch (g->caractere){
-				case ".text":
-					analyse_text(f);
-					break;
-				case ".bss":
-					analyse_bss(f);
-					break;
-				case ".data":
-					analyse_data(f);
-					break;
-					
-				default:
-					break;
-			}
-		}
-	}
-}
-		   
-file_jeu_instruction*modifie_instruction(file_jeu_instruction*f){
-	int i;
-	int a=0;
-	file_jeu_instruction g;
-	file_jeu_instruction h = (*f)->suiv;
-	for(g=(*f)->suiv->suiv;g!=(*f);g=g->suiv){
-		if(strcmp(h->identifiant,"Instruction") && strcmp(g->caractere,":")){
-			h->identifiant="Etiquette";
-		}
-	}
-	return f;
-}
 
-void verif_renvoie_vers_etiquette(file_jeu_instruction*f,file_jeu_instruction*file_erreur){
-	int i;
-	int a=0;
-	file_jeu_instruction*file=creer_file();
-	file_jeu_instruction g;
-	file_jeu_instruction h;
-	for(g=(*f)->suiv;g!=(*f);g=g->suiv){
-		*file=enfiler(g->identifiant, g->caractere,g->ligne, *file);
-	}
-	for(g=(*f)->suiv;g!=(*f);g=g->suiv){
-		if(strcmp(g->identifiant,"Renvoie vers une etiquette")){
-			for(h=(*file)->suiv;h!=(*file);h=h->suiv){
-				if(!strcmp(file->caractere,g->caractere)){
-					*file_erreur=enfiler("Erreur sur renvoie vers une etiquette", "Aucune correspondance", file->ligne, *file_erreur);
-				}
-			}
-		}
-	}
+main()
+{
+	char *nbHex = "0x80000000";
+	int i = (int)hex_to_dec(nbHex);
+	printf("%s en hexa vaut %d\n", nbHex, i);
 }
-		   
-int 
