@@ -55,6 +55,17 @@ void liberer_collection(collection f){
 void retire_maillon_c(collection* pf,int a){
 
 }
-collection supprimer_tete_c(collection c){
-
+collection supprimer_tete_c(collection g){
+  collection c;
+	if(g->suiv == g){
+    liberer_file(g->op);
+		free(g);
+		return NULL;
+	}
+	c = g;
+	g=c->suiv;
+	c->suiv=NULL;
+  liberer_file(c->op);
+	free(c);
+	return g;
 }
