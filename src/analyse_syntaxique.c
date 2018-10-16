@@ -35,13 +35,13 @@ collection enfiler_c(char*nomInstruction,int nbOperande,int line, file_jeu_instr
   e->op = creer_file();
   while(!file_vide(operande))
   {
-      char* nom;
-      char* carac;
+      char nom[longueur_max];
+      char carac[longueur_max];
       int ligne = defiler(&operande, nom, carac);
       e->op = enfiler(nom, carac, ligne, e->op);
 
   }
-  if(file_vide(f)){
+  if(collection_vide(f)){
     e->suiv=e;
     return e;
   }
