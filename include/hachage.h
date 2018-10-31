@@ -25,6 +25,7 @@ int est_vide_hachage(Liste_hach);
 Liste_hach ajout_tete_hachage(instruction e,int nbop, char car, Liste_hach L);
 unsigned int hachage(char* , int );
 int rech_hachage(instruction, Liste_hach);
+int rech_hachage_nbparam(instruction, Liste_hach);
 Liste_hach supprimer_tete_hachage(Liste_hach);
 void liberer_tab_hachage(Liste_hach*, int );
 Liste_hach*creation_liste_registre(void);

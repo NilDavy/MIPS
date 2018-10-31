@@ -42,7 +42,16 @@ int rech_hachage(instruction e, Liste_hach L){
 	}
 	return 1;
 }
-
+/* Retroune le nombre de paramètre que prend l'instrucution */
+int rec_hachage_nbparam(instruction e, Liste_hach L)
+{
+	Liste_hach p = L;
+	while(!est_vide_hachage(p) && (strcasecmp(p->val, e) != 0))
+	{
+		p = p->suiv;
+	}
+	return p->nombreOperande; 
+}
 /* Suppression d'un element en tete de la liste de hachage */
 Liste_hach supprimer_tete_hachage(Liste_hach l) {
 	Liste_hach c = NULL;

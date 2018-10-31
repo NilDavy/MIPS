@@ -1,24 +1,18 @@
 #ifndef analyse_syntaxique_h
 #define analyse_syntaxique_h
 
-#include "file.h"
-#define longueur_str 30
-struct cellule2 {
-	char nomInst[longueur_str];
-  int nbOp;
-  int ligne;
-  unsigned int decalage;
-  file_jeu_instruction op;
-	struct cellule2 * suiv;};
 
-typedef struct cellule2* collection;
+#include "analyse_lexicale.h"
+#include "collection.h"
 
-collection creer_collection(void);
-int collection_vide(collection f);
-void visualiser_collection(collection f);
 
-collection enfiler_c(char*nomInstruction,int nbOperande,int line, file_jeu_instruction operande, collection f);
+void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, file_jeu_instruction* file_erreur, liste *co_text, liste *co_data, liste *co_bss, liste *co_symb);
 
-void liberer_collection(collection f);
-collection supprimer_tete_c(collection c);
+file_jeu_instruction processText(file_jeu_instruction file, liste *co_text, int *cpt_text, file_jeu_instruction* file_erreur, liste *co_symb);
+
+file_jeu_instruction processData(file_jeu_instruction file, liste *co_data, int* cpt_data, file_jeu_instruction *file_erreur, liste *co_symb);
+
+file_jeu_instruction processBss(file_jeu_instruction file, liste *co_bss, int* cpt_bss, file_jeu_instruction *file_erreur, liste *co_symb);
+
+
 #endif
