@@ -124,67 +124,67 @@ Ligne : 14	 Instruction	 NOP
 
 Ligne : 14	 Retour à la ligne	  
 
-Ligne : 15	 Etiquette	 BYEBYE
+Ligne : 16	 Etiquette	 BYEBYE
 
-Ligne : 15	 Délimiteur	 :
-
-Ligne : 15	 Retour à la ligne	  
-
-Ligne : 16	 Instruction	 JAL
-
-Ligne : 16	 Renvoie vers une étiquette	 VITEVITEAURU
+Ligne : 16	 Délimiteur	 :
 
 Ligne : 16	 Retour à la ligne	  
 
-Ligne : 18	 Directive	 .data
+Ligne : 17	 Instruction	 JAL
 
-Ligne : 18	 Retour à la ligne	  
+Ligne : 17	 Renvoie vers une étiquette	 BOUCLE
 
-Ligne : 19	 Etiquette	 LUNCHTIME
+Ligne : 17	 Retour à la ligne	  
 
-Ligne : 19	 Délimiteur	 :
+Ligne : 19	 Directive	 .data
 
 Ligne : 19	 Retour à la ligne	  
 
-Ligne : 20	 Directive	 .word
+Ligne : 20	 Etiquette	 LUNCHTIME
 
-Ligne : 20	 Valeur Décimale	 12
+Ligne : 20	 Délimiteur	 :
 
 Ligne : 20	 Retour à la ligne	  
 
 Ligne : 21	 Directive	 .word
 
-Ligne : 21	 Renvoie vers une étiquette	 MENU
+Ligne : 21	 Valeur Décimale	 12
 
 Ligne : 21	 Retour à la ligne	  
 
-Ligne : 22	 Directive	 .asciiz
+Ligne : 22	 Directive	 .word
 
-Ligne : 22	 Chaine de caractère	 "ils
-
-Ligne : 22	 Etiquette	 disent
-
-Ligne : 22	 Chaine de caractère	 :
-
-Ligne : 22	 Chaine de caractère	 \"au
-
-Ligne : 22	 Chaine de caractère	 ru!\""
+Ligne : 22	 Renvoie vers une étiquette	 MENU
 
 Ligne : 22	 Retour à la ligne	  
 
-Ligne : 23	 Directive	 .bss
+Ligne : 23	 Directive	 .asciiz
+
+Ligne : 23	 Chaine de caractère	 "ils
+
+Ligne : 23	 Chaine de caractère	 disent
+
+Ligne : 23	 Chaine de caractère	 :
+
+Ligne : 23	 Chaine de caractère	 \"au
+
+Ligne : 23	 Chaine de caractère	 ru!\""
 
 Ligne : 23	 Retour à la ligne	  
 
-Ligne : 25	 Etiquette	 MENU
+Ligne : 24	 Directive	 .bss
 
-Ligne : 25	 Délimiteur	 :
+Ligne : 24	 Retour à la ligne	  
 
-Ligne : 25	 Retour à la ligne	  
+Ligne : 26	 Etiquette	 MENU
 
-Ligne : 26	 Directive	 .space
-
-Ligne : 26	 Valeur Décimale	 24
+Ligne : 26	 Délimiteur	 :
 
 Ligne : 26	 Retour à la ligne	  
+
+Ligne : 27	 Directive	 .space
+
+Ligne : 27	 Valeur Décimale	 24
+
+Ligne : 27	 Retour à la ligne	  
 

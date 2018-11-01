@@ -10,6 +10,12 @@
 #include "analyse_lexicale.h"
 #include "hachage.h"
 #include "file.h"
+#include "file_bss.h"
+#include "file_data.h"
+#include "file_text.h"
+#include "file_symb.h"
+#include "analyse_syntaxique.h"
+
 
 /**
  * @ param exec Name of executable.
@@ -84,6 +90,38 @@ int main ( int argc, char *argv[] ) {
 		exit(EXIT_FAILURE);
 	}
 	
+	/** ouverture ou creation du fichier contenant le rapport de la section BSS**/
+	FILE*f_bss=NULL;
+	f_bss=fopen("recapitulatif/Recaputilatif_BSS.txt", "wt");
+	if (f_bss == NULL) {
+		fprintf( stderr, "Erreur sur l'ouverture du fichier BSS\n" );
+		exit(EXIT_FAILURE);
+	}
+	
+	/** ouverture ou creation du fichier contenant le rapport de la section DATA**/
+	FILE*f_data=NULL;
+	f_data=fopen("recapitulatif/Recaputilatif_DATA.txt", "wt");
+	if (f_data == NULL) {
+		fprintf( stderr, "Erreur sur l'ouverture du fichier DATA\n" );
+		exit(EXIT_FAILURE);
+	}
+	
+	/** ouverture ou creation du fichier contenant le rapport de la section TEXT**/
+	FILE*f_text=NULL;
+	f_text=fopen("recapitulatif/Recaputilatif_TEXT.txt", "wt");
+	if (f_text == NULL) {
+		fprintf( stderr, "Erreur sur l'ouverture du fichier TEXT\n" );
+		exit(EXIT_FAILURE);
+	}
+	
+	/** ouverture ou creation du fichier contenant le rapport de la section SYMB**/
+	FILE*f_symb=NULL;
+	f_symb=fopen("recapitulatif/Recaputilatif_SYMB.txt", "wt");
+	if (f_symb == NULL) {
+		fprintf( stderr, "Erreur sur l'ouverture du fichier SYMB\n" );
+		exit(EXIT_FAILURE);
+	}
+	
 	/** creation des tableaux pour les tables de hachages des instructions et des registres **/
 	Liste_hach* tab_registre=NULL;
 	tab_registre=creation_liste_registre();
@@ -96,8 +134,13 @@ int main ( int argc, char *argv[] ) {
 	file_jeu_instruction file_lexeme=creer_file();
 	file_jeu_instruction file_erreur=creer_file();
 	
-	
-	
+	file_text co_text=creerfile_text();
+	file_bss co_bss=creerfile_bss();
+	file_data co_data=creerfile_data();
+	file_symb co_symb=creerfile_symb();
+	file_symb co_text_attente=creerfile_symb();
+	file_symb co_data_attente=creerfile_symb();
+	file_symb co_bss_attente=creerfile_symb();
 	/* ---------------- do the lexical analysis -------------------*/
 	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
 	DEBUG_MSG("Le code source contient %d lignes",nlines);
@@ -110,7 +153,7 @@ int main ( int argc, char *argv[] ) {
 	/** Ecriture du code instancié dans le fichier **/
 
 	ecrire_file(file_lexeme, fp);
-	
+	fclose(fp);
 	/** Vérification si présence d'erreurs **/
 	
 	if(!(file_vide(file_erreur))){
@@ -119,28 +162,54 @@ int main ( int argc, char *argv[] ) {
 		
 		visualiser_file(file_erreur);
 		ecrire_file(file_erreur, f_erreur);
+	printf("**********************************************************\n");
 	}
 	else{
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
+		
+				/*analyse syntaxique*/
+		analyse_syntaxique(tab_instruction,&file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente);
+		
+		
+		ecrire_file_bss(co_bss,f_bss);
+		ecrire_file_data(co_data,f_data);
+		ecrire_file_text(co_text,f_text);
+		ecrire_file_symb(co_symb,f_symb);
+
+		
+		if(!(file_vide(file_erreur))){
+			WARNING_MSG("Il y a des erreurs de syntaxe dans le code source !");
+			printf("************************  ERREUR  ************************\n \n");
+			
+			visualiser_file(file_erreur);
+			ecrire_file(file_erreur, f_erreur);
+			printf("**********************************************************\n");
+		}
+		else{
+			DEBUG_MSG("Il n'y a pas d'erreur de syntaxe dans le code source !");
+			printf("\n**********************************************************\n");
+		}
 	
-	
-	printf("\n**********************************************************\n");
-	/* ---------------- Free memory and terminate -------------------*/
-
-
-	file_lexeme=supprime_commentaire(file_lexeme);
-
-
-	/*analyse synatxique*/
-
 	}
 
+	/* ---------------- Free memory and terminate -------------------*/
+
 	/** Libération des mémoires **/
+	liberer_symb(co_symb);
+	liberer_symb(co_bss_attente);
+	liberer_symb(co_data_attente);
+	liberer_symb(co_text_attente);
+	liberer_data(co_data);
+	liberer_bss(co_bss);
+	liberer_text(co_text);
 	liberer_file(file_lexeme);
 	liberer_file(file_erreur);
 	liberer_tab_hachage(tab_registre, dim_tab_registre);
 	liberer_tab_hachage(tab_instruction, dim_tab_instruction);
-	fclose(fp);
 	fclose(f_erreur);
+	fclose(f_bss);
+	fclose(f_data);
+	fclose(f_text);
+	fclose(f_symb);
 	exit( EXIT_SUCCESS );
 }

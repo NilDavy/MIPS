@@ -133,13 +133,13 @@ file_jeu_instruction modifie_instruction(file_jeu_instruction f){
 	file_jeu_instruction g=f->suiv->suiv;
 	file_jeu_instruction h=f->suiv;
 	while(g!=f){
-		if(!strcmp(g->caractere,":")){
+		if(!strcmp(g->caractere,":")&&strcmp(h->identifiant,"Chaine de caractère")){
 			strcpy(h->identifiant,"Etiquette");
 		}
 		g=g->suiv;
 		h=h->suiv;
 	}
-	if(!strcmp(g->caractere,":")){
+	if(!strcmp(g->caractere,":")&&strcmp(h->identifiant,"Chaine de caractère")){
 		strcpy(h->identifiant,"Etiquette");
 	}
 	return f;
