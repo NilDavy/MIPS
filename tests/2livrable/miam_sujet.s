@@ -18,9 +18,11 @@ JAL boucle
 
 .data
 lunchtime:
+test:
     .word 12
+.asciiz "ils disent : \"au ruuu!\""
     .word menu
-    .asciiz "ils disent : \"au ru!\""
+
 .bss
 
 menu:

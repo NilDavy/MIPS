@@ -206,5 +206,7 @@ void verif_renvoie_vers_etiquette(file_jeu_instruction*f,file_jeu_instruction*fi
 			*file_erreur=enfiler("Erreur orthographe renvoie sur etiquette", g->caractere, g->ligne, *file_erreur);
 		}
 	}
+	liberer_file(file_renvoie);
+	liberer_file(file_etiquette);
 }
 

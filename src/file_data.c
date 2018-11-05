@@ -131,6 +131,9 @@ file_data supprimer_tete_data(file_data g){
 	c = g;
 	g=c->suiv;
 	c->suiv=NULL;
+	if(c->type==4){
+		free((c->op).s);
+	}
 	free(c);
 	return g;
 }

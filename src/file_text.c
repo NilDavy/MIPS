@@ -88,10 +88,10 @@ void ecrire_file_text(file_text f,FILE*a){
 	file_text g=NULL;
 	g=f->suiv;
 	while (g!=f){
-		fprintf(a, "Nom instruction : %s\t Ligne : %d\t Nombre d'opérations : %d\t Decalage : %d\t" ,g->nomInst,g->ligne,g->nbOp,g->decalage);
+		fprintf(a, "Nom instruction : %s\t Ligne : %d\t Nombre d'opérandes : %d\t Decalage : %d\n" ,g->nomInst,g->ligne,g->nbOp,g->decalage);
 		ecrire_file(g->op,a);
 		g=g->suiv;
 	}
-	fprintf(a, "Nom instruction : %s\t Ligne : %d\t Nombre d'opérations : %d\t Decalage : %d\t" ,g->nomInst,g->ligne,g->nbOp,g->decalage);
+	fprintf(a, "Nom instruction : %s\t Ligne : %d\t Nombre d'opérandes : %d\t Decalage : %d\n" ,g->nomInst,g->ligne,g->nbOp,g->decalage);
 	ecrire_file(g->op,a);
 }

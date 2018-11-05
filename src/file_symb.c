@@ -88,7 +88,9 @@ file_symb supprimer_tete_symb(file_symb g){
 }
 
 char*defiler_symb (file_symb*f){
-	char*mot=(*f)->suiv->nom;
+	char*mot=NULL;
+	mot = calloc(strlen((*f)->suiv->nom), sizeof(char));
+	strcpy(mot,(*f)->suiv->nom);
 	file_symb c=creerfile_symb();
 	if((*f)==(*f)->suiv){
 		(*f)=NULL;

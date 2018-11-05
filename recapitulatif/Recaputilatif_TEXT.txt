@@ -1,34 +1,43 @@
-Nom instruction : LW	 Ligne : 5	 Nombre d'opérations : 2	 Decalage : 0	Ligne : 5	 Registre	 $t0
+Nom instruction : LW	 Ligne : 5	 Nombre d'opérandes : 2	 Decalage : 0
+Ligne : 5	 Registre	 $t0
 
 Ligne : 5	 Renvoie vers une étiquette	 LUNCHTIME
 
-Nom instruction : LW	 Ligne : 6	 Nombre d'opérations : 2	 Decalage : 4	Ligne : 6	 Registre	 $12
+Nom instruction : LW	 Ligne : 6	 Nombre d'opérandes : 2	 Decalage : 4
+Ligne : 6	 Registre	 $12
 
 Ligne : 6	 Base offset	 -200($7)
 
-Nom instruction : ADDI	 Ligne : 7	 Nombre d'opérations : 3	 Decalage : 8	Ligne : 7	 Registre	 $t1
+Nom instruction : ADDI	 Ligne : 7	 Nombre d'opérandes : 3	 Decalage : 8
+Ligne : 7	 Registre	 $t1
 
 Ligne : 7	 Registre	 $zero
 
 Ligne : 7	 Valeur Décimale	 8
 
-Nom instruction : BEQ	 Ligne : 10	 Nombre d'opérations : 3	 Decalage : 12	Ligne : 10	 Registre	 $t0
+Nom instruction : BEQ	 Ligne : 10	 Nombre d'opérandes : 3	 Decalage : 12
+Ligne : 10	 Registre	 $t0
 
 Ligne : 10	 Registre	 $t1
 
 Ligne : 10	 Renvoie vers une étiquette	 BYEBYE
 
-Nom instruction : NOP	 Ligne : 11	 Nombre d'opérations : 1	 Decalage : 16	Ligne : 11	 	 
+Nom instruction : NOP	 Ligne : 11	 Nombre d'opérandes : 1	 Decalage : 16
+Ligne : 11	 	 
 
-Nom instruction : ADDI	 Ligne : 12	 Nombre d'opérations : 3	 Decalage : 20	Ligne : 12	 Registre	 $t1
+Nom instruction : ADDI	 Ligne : 12	 Nombre d'opérandes : 3	 Decalage : 20
+Ligne : 12	 Registre	 $t1
 
 Ligne : 12	 Registre	 $t1
 
 Ligne : 12	 Valeur Décimale	 1
 
-Nom instruction : J	 Ligne : 13	 Nombre d'opérations : 1	 Decalage : 24	Ligne : 13	 Renvoie vers une étiquette	 BOUCLE
+Nom instruction : J	 Ligne : 13	 Nombre d'opérandes : 1	 Decalage : 24
+Ligne : 13	 Renvoie vers une étiquette	 BOUCLE
 
-Nom instruction : NOP	 Ligne : 14	 Nombre d'opérations : 1	 Decalage : 28	Ligne : 14	 	 
+Nom instruction : NOP	 Ligne : 14	 Nombre d'opérandes : 1	 Decalage : 28
+Ligne : 14	 	 
 
-Nom instruction : JAL	 Ligne : 17	 Nombre d'opérations : 1	 Decalage : 32	Ligne : 17	 Renvoie vers une étiquette	 BOUCLE
+Nom instruction : JAL	 Ligne : 17	 Nombre d'opérandes : 1	 Decalage : 32
+Ligne : 17	 Renvoie vers une étiquette	 BOUCLE
 

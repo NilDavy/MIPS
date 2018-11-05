@@ -34,7 +34,7 @@ unsigned int hachage(char* mot, int dim_tab_hach){
 /* Recherche d'un element dans la table de hachage*/
 int rech_hachage(instruction e, Liste_hach L){
 	Liste_hach p=L;
-	while(!est_vide_hachage(p)&&(strcasecmp(p->val,e)!=0)){
+	while(!est_vide_hachage(p)&&(strcmp(p->val,e)!=0)){
 		p=p->suiv;
 	}
 	if(p==NULL){
@@ -46,7 +46,7 @@ int rech_hachage(instruction e, Liste_hach L){
 int rec_hachage_nbparam(instruction e, Liste_hach L)
 {
 	Liste_hach p = L;
-	while(!est_vide_hachage(p) && (strcasecmp(p->val, e) != 0))
+	while(!est_vide_hachage(p) && (strcmp(p->val, e) != 0))
 	{
 		p = p->suiv;
 	}
