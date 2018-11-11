@@ -23,5 +23,12 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 
 file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int* cpt_bss, file_jeu_instruction *file_erreur, file_symb *co_symb, file_symb *co_bss_attente);
 
+file_text pseudo_instruction(int *cpt_text,char*instruction,file_text *co_text,file_jeu_instruction*file_erreur,int nbop,file_jeu_instruction g,int ligne);
+void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hach*tab_instruction);
+void verif_registre_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a);
+void verif_baseoffset_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a);
+void verif_immediate_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a);
+void verif_shiftamount_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a);
+void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a);
 
 #endif

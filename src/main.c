@@ -41,6 +41,7 @@ int main ( int argc, char *argv[] ) {
 	
 	unsigned int 	nlines 	= 0;
 	char         	 *file 	= NULL;
+	int i;
 	
 	/* exemples d'utilisation des macros du fichier notify.h */
 	/* WARNING_MSG : sera toujours affiche */
@@ -121,13 +122,19 @@ int main ( int argc, char *argv[] ) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier SYMB\n" );
 		exit(EXIT_FAILURE);
 	}
-	
 	/** creation des tableaux pour les tables de hachages des instructions et des registres **/
-	Liste_hach* tab_registre=NULL;
-	tab_registre=creation_liste_registre();
+	Liste_hach tab_registre[dim_tab_registre];
+	for(i=0;i<dim_tab_registre;i++){
+		tab_registre[i]=creer_liste_hachage();
+	}
+	creation_liste_registre(tab_registre,dim_tab_registre);
 	
-	Liste_hach* tab_instruction=NULL;
-	tab_instruction=creation_liste_instruction();
+	
+	Liste_hach tab_instruction[dim_tab_instruction];
+	for(i=0;i<dim_tab_instruction;i++){
+		tab_instruction[i]=creer_liste_hachage();
+	}
+	creation_liste_instruction(tab_instruction,dim_tab_instruction);
 	
 	
 	/** variable interne contenant le code instancié **/
@@ -141,6 +148,7 @@ int main ( int argc, char *argv[] ) {
 	file_symb co_text_attente=creerfile_symb();
 	file_symb co_data_attente=creerfile_symb();
 	file_symb co_bss_attente=creerfile_symb();
+	
 	/* ---------------- do the lexical analysis -------------------*/
 	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
 	DEBUG_MSG("Le code source contient %d lignes",nlines);
@@ -148,6 +156,8 @@ int main ( int argc, char *argv[] ) {
 	if(!(file_vide(file_lexeme))){
 		file_lexeme=modifie_instruction(file_lexeme);
 		verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);
+		file_lexeme=verif_delimiteur_suite(file_lexeme,&file_erreur);
+		file_lexeme=verif_remplacement_ecriture_registre(file_lexeme,&file_erreur,tab_registre);
 	}
 	
 	/** Ecriture du code instancié dans le fichier **/
@@ -167,9 +177,15 @@ int main ( int argc, char *argv[] ) {
 	else{
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 		
-				/*analyse syntaxique*/
-		analyse_syntaxique(tab_instruction,&file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente);
+		/*analyse syntaxique*/
 		
+		analyse_syntaxique(tab_instruction,&file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente);
+		if(!file_vide_text(co_text)){
+			verif_operande(co_text,&file_erreur,tab_instruction);
+		}
+		
+		/*visualiser_tab_hachage(tab_registre, dim_tab_registre);
+		visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
 		
 		ecrire_file_bss(co_bss,f_bss);
 		ecrire_file_data(co_data,f_data);

@@ -8,7 +8,7 @@ DOXYGEN=`which doxygen`
 SRCDIR=src
 INCDIR=include
 TESTDIR=testing
-DOCDIR=doc
+DOCDIR=recapitulatif
 
 GARBAGE=*~ $(SRCDIR)/*~ $(INCDIR)/*~ $(TESTDIR)/*~
 

@@ -182,7 +182,11 @@ void verif_directive(char*token,char*current_address,char*delimiteur,file_jeu_in
 
 /** Verifie l'orthographe des registres **/
 void verif_registre(char*token,Liste_hach*tab_registre,file_jeu_instruction*file,unsigned int nlines,file_jeu_instruction*file_erreur){
-	int n=hachage(token, 32);
+	int i;
+	for(i=1;i<strlen(token);i++){
+		token[i]=tolower(token[i]);
+	}
+	int n=hachage(token, dim_tab_registre);
 	n=rech_hachage(token, tab_registre[n]);
 	if (n==-1){
 		*file_erreur=enfiler("Erreur nom registre", token, nlines, *file_erreur);

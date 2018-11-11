@@ -8,13 +8,16 @@ Liste_hach creer_liste_hachage(void) {return NULL;}
 int est_vide_hachage(Liste_hach L) {return !L;}
 
 /* Ajout d'un element en tete de la liste de hachage */
-Liste_hach ajout_tete_hachage(instruction e,int nbop, char car, Liste_hach L){
+Liste_hach ajout_tete_hachage(instruction e,int nbop, char*car,char*typeinstruction1,char*typeinstruction2,char*typeinstruction3, Liste_hach L){
 	Liste_hach p=(Liste_hach) calloc(1,sizeof(*p));
 	if (p==NULL) return NULL;
-	p->val=malloc(strlen(e));
-	p->val= (p->val? strcpy(p->val,e) : NULL);   /*evite les warning de compilation*/
+	strcat(p->val,e);
 	p->nombreOperande = nbop; 
-	p->typeInst = car;
+	strcpy(p->typeInst,car);
+	strcat(p->type1,typeinstruction1);
+	strcat(p->type2,typeinstruction2);
+	strcat(p->type3,typeinstruction3);
+	/*printf("LLLL ==== %s\n",L);*/
 	p->suiv=L;
 	return p;
 }
@@ -52,14 +55,39 @@ int rec_hachage_nbparam(instruction e, Liste_hach L)
 	}
 	return p->nombreOperande; 
 }
+
+/* Retroune le type de l'instruction*/
+char*rec_hachage_type(instruction e, Liste_hach L)
+{
+	Liste_hach p = L;
+	while(!est_vide_hachage(p) && (strcmp(p->val, e) != 0))
+	{
+		p = p->suiv;
+	}
+	return p->typeInst;
+}
+
+/* Retroune le type des opérandes*/
+void rec_hachage_type_instruction(instruction e, Liste_hach L,char*mot1,char*mot2,char*mot3)
+{
+	Liste_hach p = L;
+	while(!est_vide_hachage(p) && (strcmp(p->val, e) != 0))
+	{
+		p = p->suiv;
+	}
+	strcpy(mot1,p->type1);
+	strcpy(mot2,p->type2);
+	strcpy(mot3,p->type3);
+}
+
 /* Suppression d'un element en tete de la liste de hachage */
 Liste_hach supprimer_tete_hachage(Liste_hach l) {
 	Liste_hach c = NULL;
 	if (est_vide_hachage(l)) {
 		return NULL;
 	}
-	free(l->val);
 	c = l->suiv;
+	l->suiv=NULL;
 	free(l);
 	return c;
 }
@@ -74,71 +102,90 @@ void liberer_tab_hachage(Liste_hach l[], int len) {
 			c = supprimer_tete_hachage(c);
 		}
 	}
-	free(l);
 }
 
 
-Liste_hach*creation_liste_registre(){
+void creation_liste_registre(Liste_hach*tab_registre,int dim){
 	FILE* fregistre = NULL;
 	int i;
 	int n;
-	char mot[8];
-	Liste_hach*tab_registre=NULL;
-	tab_registre = calloc(dim_tab_registre, sizeof(*tab_registre));
-
-	if (tab_registre == NULL) {
-		fprintf( stderr, "Memory error : tab_registre\n" );
-		exit(EXIT_FAILURE);
-	}
+	int autorisation;
+	char reg1[8]=" ";
+	char reg2[8]=" ";
 	fregistre=fopen("doc_tab_hachage/registres.txt", "rt");
 	if (fregistre == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier registre\n" );
 		exit(EXIT_FAILURE);
 	}
-
-	for(i=0;i<64;i++){
-		fscanf(fregistre,"%s", mot);
-		n=hachage(mot, dim_tab_registre);
-		tab_registre[n]=ajout_tete_hachage(mot,0,'a',tab_registre[n]);
+	for(i=0;i<nbre_registre;i++){
+		fscanf(fregistre,"%s %s %d", reg1,reg2,&autorisation);
+		/*printf("test %s %s %d\n",reg1,reg2,autorisation);*/
+		n=hachage(reg1, dim);
+		tab_registre[n]=ajout_tete_hachage(reg1,autorisation,reg2,"","","",tab_registre[n]);
 	}
 	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);*/
 
 
 	fclose(fregistre);
-	return tab_registre;
 }
 
-Liste_hach*creation_liste_instruction(){
+void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 	FILE* finstruction = NULL;
 	int i;
 	int n;
 	char mot[8];
-	char car;
+	char type[1];
 	int nbOp;
-	Liste_hach*tab_instruction=NULL;
-	tab_instruction = calloc(dim_tab_instruction, sizeof(*tab_instruction));
-
-	if (tab_instruction == NULL) {
-		fprintf( stderr, "Memory error : tab_instruction\n" );
-		exit(EXIT_FAILURE);
-
-	}
+	
 	finstruction=fopen("doc_tab_hachage/instructions.txt", "rt");
 	if (finstruction == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier instruction\n" );
 		exit(EXIT_FAILURE);
 	}
-
-	for(i=0;i<29;i++){
-
-		fscanf(finstruction,"%s %d %c", mot, &nbOp, &car);
-		n=hachage(mot, dim_tab_instruction);
-		tab_instruction[n]=ajout_tete_hachage(mot, nbOp, car,tab_instruction[n]);
+	
+	for(i=0;i<nbre_instruction;i++){
+		fscanf(finstruction,"%s %d %s", mot, &nbOp, type);
+		/*printf("instruc: %s, nbop: %d, type: %s\n",mot,nbOp,type);
+		getchar();*/
+		
+		n=hachage(mot, dim);
+		if(nbOp==1){
+			char*mot1=calloc(25,sizeof(char));
+			fscanf(finstruction,"%s",mot1);
+			tab_instruction[n]=ajout_tete_hachage(mot, nbOp, type,mot1,"","",tab_instruction[n]);
+			/*printf("mot %s\n",mot1);*/
+			free(mot1);
+		}
+		else{
+			if(nbOp==2){
+				char*mot1=calloc(25,sizeof(char));
+				char*mot2=calloc(25,sizeof(char));
+				fscanf(finstruction,"%s %s",mot1,mot2);
+				tab_instruction[n]=ajout_tete_hachage(mot, nbOp, type,mot1,mot2,"",tab_instruction[n]);
+				/*printf("mot %s %s\n",mot1, mot2);*/
+				free(mot1);
+				free(mot2);
+			}
+			else{
+				if(nbOp==3){
+					char*mot1=calloc(25,sizeof(char));
+					char*mot2=calloc(25,sizeof(char));
+					char*mot3=calloc(25,sizeof(char));
+					fscanf(finstruction,"%s %s %s",mot1,mot2,mot3);
+					tab_instruction[n]=ajout_tete_hachage(mot, nbOp, type,mot1,mot2,mot3,tab_instruction[n]);
+					/*printf("mot %s %s %s\n",mot1, mot2,mot3);*/
+					free(mot1);
+					free(mot2);
+					free(mot3);
+				}
+				else{
+					tab_instruction[n]=ajout_tete_hachage(mot, nbOp, type,"","","",tab_instruction[n]);
+				}
+			}
+		}
 	}
 	/*visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
-
 	fclose(finstruction);
-	return tab_instruction;
 }
 
 void visualiser_tab_hachage(Liste_hach*tab,int n){
@@ -146,16 +193,26 @@ void visualiser_tab_hachage(Liste_hach*tab,int n){
 	for(i=0;i<n;i++){
 		visualiser_liste_hachage(tab[i]);
 	}
+	printf("\n");
+	return;
 }
 
 void visualiser_liste_hachage(Liste_hach l) {
 	Liste_hach c = NULL;
 	if (est_vide_hachage(l)) {
-		puts("liste vide\n");
+		puts("liste vide");
 		return;
 	}
-	for (c = l; !est_vide_hachage(c); c = c->suiv) {
-		printf("%s ",c->val);
+	c=l;
+	while(c!=NULL) {
+		printf("%s\t",c->val);
+		printf("%s\t",c->typeInst);
+		printf("%d\t",c->nombreOperande);
+		printf("%s\t",c->type1);
+		printf("%s\t",c->type2);
+		printf("%s\n",c->type3);
+		c=c->suiv;
 	}
 	printf("\n");
+	return;
 }

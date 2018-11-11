@@ -1,29 +1,29 @@
-ADD 3 R
-ADDI 3 I
-SUB 3 R
-MULT 2 R
-DIV 2 R
-AND 3 R
-OR 3 R
-XOR 3 R
-ROTR 3 R
-SLL 3 R
-SRL 3 R
-SLT 3 R
-LW 2 I
-SW 2 I
-LUI 2 I
-MFHI 1 R
-MFLO 1 R
-BEQ 3 I
-BNE 3 I
-BGTZ 2 I
-BLEZ 2 I
-J 1 J
-JAL 1 J
-JR 1 R
-NOP O R
-MOVE 2 R
-NEG 2 R
-LI 2 I
-BLT 3 R
+ADD 3 R Registre Registre Registre
+ADDI 3 I Registre Registre Immediate
+SUB 3 R Registre Registre Registre
+MULT 2 R Registre Registre
+DIV 2 R Registre Registre
+AND 3 R Registre Registre Registre
+OR 3 R Registre Registre Registre
+XOR 3 R Registre Registre Registre
+ROTR 3 R Registre Registre Shiftamount
+SLL 3 R Registre Registre Shiftamount
+SRL 3 R Registre Registre Shiftamount
+SLT 3 R Registre Registre Registre
+LW 2 I Registre Baseoffset
+SW 2 I Registre Baseoffset
+LUI 2 I Registre Immediate
+MFHI 1 R Registre
+MFLO 1 R Registre
+BEQ 3 I Registre Registre Baseoffset
+BNE 3 I Registre Registre Baseoffset
+BGTZ 2 I Registre Baseoffset
+BLEZ 2 I Registre Baseoffset
+J 1 J Relatif
+JAL 1 J Relatif
+JR 1 R Registre
+NOP 0 R 
+MOVE 2 R Registre Registre
+NEG 2 R Registre Registre
+LI 2 I Registre Immediate
+BLT 3 R Registre Registre Relatif
