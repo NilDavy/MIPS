@@ -128,19 +128,25 @@ file_jeu_instruction supprime_commentaire(file_jeu_instruction f){
 	return f;
 }
 
-/*Modifie instruction en etiquette si apres il y a un :*/
+/*Modifie instruction en etiquette si apres il y a un : ou retour ligne sauf nop*/
 file_jeu_instruction modifie_instruction(file_jeu_instruction f){
 	file_jeu_instruction g=f->suiv->suiv;
 	file_jeu_instruction h=f->suiv;
 	while(g!=f){
-		if(!strcmp(g->caractere,":")&&strcmp(h->identifiant,"Chaine de caractère")){
+		if(strcmp(g->caractere,":")==0&&strcmp(h->identifiant,"Instruction")==0){
 			strcpy(h->identifiant,"Etiquette");
+		}
+		if(strcmp(g->identifiant,"Retour à la ligne")==0&&strcmp(h->identifiant,"Instruction")==0){
+			strcpy(h->identifiant,"Renvoie vers une étiquette");
 		}
 		g=g->suiv;
 		h=h->suiv;
 	}
-	if(!strcmp(g->caractere,":")&&strcmp(h->identifiant,"Chaine de caractère")){
+	if(strcmp(g->caractere,":")==0&&strcmp(h->identifiant,"Instruction")==0){
 		strcpy(h->identifiant,"Etiquette");
+	}
+	if(strcmp(g->identifiant,"Retour à la ligne")==0&&strcmp(h->identifiant,"Instruction")==0){
+		strcpy(h->identifiant,"Renvoie vers une étiquette");
 	}
 	return f;
 }

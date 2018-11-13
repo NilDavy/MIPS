@@ -91,8 +91,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 	int nbop;
 	int verif=0;
 	int concatenation;
-	
-	
+
 	/*les cas ou on ne fait rien .text, : et retour ligne*/
 	
 	if (!strcmp(f->caractere, ".text")||!strcmp(f->caractere, ":")||!strcmp(f->identifiant, "Retour à la ligne")){
@@ -119,36 +118,51 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 				
 				/*recherche nombre d'opération*/
 				nbop=rec_hachage_nbparam(instruction, tab_instruction[hachage(instruction, dim_tab_instruction)]);
-				
 				while(strcmp(f->identifiant,"Retour à la ligne")){
 					f=f->suiv;
 					char*mot1=calloc(200,sizeof(char));
 					char*identifiant=calloc(200,sizeof(char));
 					concatenation=0;
-					
+					file_jeu_instruction verif_file=creer_file();
+
 					/*on concatene si base offset*/
 					while(strcmp(f->identifiant, "Retour à la ligne") && strcmp(f->caractere, ",")){
 						strcat(mot1,f->caractere);
-						concatenation=concatenation+1;
 						strcat(identifiant,f->identifiant);
+						concatenation=concatenation+1;
+						verif_file=enfiler(f->identifiant,f->caractere,f->ligne,verif_file);
 						f=f->suiv;
 					}
+
 					/*ajout a la table .text*/
-					if(concatenation>1){
+					if(concatenation>1){	
+						if((strcmp(verif_file->suiv->identifiant,"Valeur Décimale")==0||strcmp(verif_file->suiv->identifiant,"Valeur Hexadécimale")==0)&&strcmp(verif_file->suiv->suiv->caractere,"(")==0&&strcmp(verif_file->suiv->suiv->suiv->identifiant,"Registre")==0&&strcmp(verif_file->suiv->suiv->suiv->suiv->caractere,")")==0){
 						g=enfiler("Baseoffset",mot1,f->ligne,g);
 						verif=verif+1;
+						}
+						else{
+							if((strcmp(verif_file->suiv->caractere,"+")==0||strcmp(verif_file->suiv->caractere,"-")==0)&&(strcmp(verif_file->suiv->suiv->identifiant,"Valeur Décimale")==0||strcmp(verif_file->suiv->suiv->identifiant,"Valeur Hexadécimale")==0)&&strcmp(verif_file->suiv->suiv->suiv->caractere,"(")==0&&strcmp(verif_file->suiv->suiv->suiv->suiv->identifiant,"Registre")==0&&strcmp(verif_file->suiv->suiv->suiv->suiv->suiv->caractere,")")==0){
+								g=enfiler("Baseoffset",mot1,f->ligne,g);
+								verif=verif+1;
+							}
+							else{
+								*file_erreur = enfiler("Erreur Base Offset", f->caractere, f->ligne, *file_erreur);
+							}
+						}
+
 					}
 					else{
 						g=enfiler(identifiant,mot1,f->ligne,g);
 						verif=verif+1;
 					}
+					liberer_file(verif_file);
 					free(identifiant);
 					free(mot1);
 				}
 				
 				/*verif pseudo-instruction*/
 				if((strcmp(instruction,"NOP")==0&&nbop==0)||(strcmp(instruction,"LW")==0&&nbop==2)||(strcmp(instruction,"SW")==0&&nbop==2)||(strcmp(instruction,"MOVE")==0&&nbop==2)||(strcmp(instruction,"NEG")==0&&nbop==2)||(strcmp(instruction,"LI")==0&&nbop==2)||(strcmp(instruction,"BLT")==0&&nbop==3)){
-					*co_text=pseudo_instruction(cpt_text,instruction,co_text,file_erreur,nbop,g,f->ligne);
+					*co_text=pseudo_instruction(cpt_text,instruction,co_text,file_erreur,g,f->ligne);
 				}
 				else{
 					/*verif si erreur avec le nombre d'operation*/
@@ -162,7 +176,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 				}
 			}
 			else{
-				*file_erreur = enfiler("Mauvaise commande dans la section .text", f->caractere, f->ligne, *file_erreur);
+				*file_erreur = enfiler("Mauvais opérande dans la section .text", f->caractere, f->ligne, *file_erreur);
 				f=f->suiv;
 			}
 	
@@ -411,18 +425,75 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 	return f;
 }
 
-file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,file_jeu_instruction*file_erreur,int nbop,file_jeu_instruction g,int ligne){
+file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,file_jeu_instruction*file_erreur,file_jeu_instruction g,int ligne){
 	if(strcmp(instruction,"NOP")==0){
-		*co_text=ajout_text(instruction,nbop,ligne, *cpt_text, *co_text,g);
+		file_jeu_instruction h=creer_file();
+		h=enfiler("Registre","$0",ligne,h);
+		h=enfiler("Registre","$0",ligne,h);
+		h=enfiler("Valeur Décimale","0",ligne,h);
+		*co_text=ajout_text("SLL",3,ligne, *cpt_text, *co_text,h);
 		*cpt_text=*cpt_text+4;
 	}
 	else{
 		if(strcmp(instruction,"LW")==0){
-			/*a faire*/
+
+			if(strcmp(g->caractere,"Baseoffset")==0){
+				*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,g);
+				*cpt_text=*cpt_text+4;
+			}
+			else{
+				if(strcmp(g->identifiant,"Valeur Décimale")==0||strcmp(g->identifiant,"Valeur Hexadécimale")==0){
+					file_jeu_instruction h=creer_file();
+					file_jeu_instruction i=creer_file();
+					unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
+					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
+					char o_p_fort[30],o_p_faible[30];
+					sprintf(o_p_fort, "%d",octet_pfort);
+					sprintf(o_p_faible, "%d",octet_pfaible);
+					/*printf("poids faible %s\n",o_p_faible);
+					printf("poids fort %s\n",o_p_fort);*/
+					strcat(o_p_faible,"(");
+					strcat(o_p_faible,g->suiv->caractere);
+					strcat(o_p_faible,")");
+					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+					h=enfiler("Valeur Décimale",o_p_fort,ligne,h);
+					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
+					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
+					i=enfiler("Baseoffset",o_p_faible,ligne,i);
+					*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,i);
+					*cpt_text=*cpt_text+8;
+				}
+			}
 		}
 		else{
 			if(strcmp(instruction,"SW")==0){
-				/*a faire*/
+				if(strcmp(g->caractere,"Baseoffset")==0){
+				*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,g);
+				*cpt_text=*cpt_text+4;
+			}
+			else{
+				if(strcmp(g->identifiant,"Valeur Décimale")==0||strcmp(g->identifiant,"Valeur Hexadécimale")==0){
+					file_jeu_instruction h=creer_file();
+					file_jeu_instruction i=creer_file();
+					unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
+					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
+					char o_p_fort[30],o_p_faible[30];
+					sprintf(o_p_fort, "%d",octet_pfort);
+					sprintf(o_p_faible, "%d",octet_pfaible);
+					/*printf("poids faible %s\n",o_p_faible);
+					printf("poids fort %s\n",o_p_fort);*/
+					strcat(o_p_faible,"(");
+					strcat(o_p_faible,g->suiv->caractere);
+					strcat(o_p_faible,")");
+					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+					h=enfiler("Valeur Décimale",o_p_fort,ligne,h);
+					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
+					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
+					i=enfiler("Baseoffset",o_p_faible,ligne,i);
+					*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,i);
+					*cpt_text=*cpt_text+8;
+				}
+				}
 			}
 			else{
 				if(strcmp(instruction,"MOVE")==0){
@@ -433,35 +504,34 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 				else{
 					if(strcmp(instruction,"NEG")==0){
 						file_jeu_instruction h=creer_file();
-						h=enfiler("Registre",g->caractere,ligne,h);
+						h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
 						h=enfiler("Registre","$0",ligne,h);
-						h=enfiler("Registre",g->suiv->caractere,ligne,h);
+						h=enfiler(g->identifiant,g->caractere,ligne,h);
 						*co_text=ajout_text("SUB",3,ligne, *cpt_text, *co_text,h);
 						*cpt_text=*cpt_text+4;
 					}
 					else{
 						if(strcmp(instruction,"LI")==0){
 							file_jeu_instruction h=creer_file();
-							h=enfiler("Registre",g->caractere,ligne,h);
+							h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
 							h=enfiler("Registre","$0",ligne,h);
-							h=enfiler("Immediate",g->suiv->caractere,ligne,h);
+							h=enfiler(g->identifiant,g->caractere,ligne,h);
 							*co_text=ajout_text("ADDI",3,ligne, *cpt_text, *co_text,h);
 							*cpt_text=*cpt_text+4;
 						}
 						else{
-							/*instruction BLT*/
-							file_jeu_instruction h=creer_file();
-							file_jeu_instruction i=creer_file();
-							h=enfiler("Registre","$1",ligne,h);
-							h=enfiler("Registre",g->caractere,ligne,h);
-							h=enfiler("Registre",g->suiv->caractere,ligne,h);
-							i=enfiler("Registre","$1",ligne,i);
-							i=enfiler("Registre","$0",ligne,i);
-							i=enfiler("Offset",g->suiv->suiv->caractere,ligne,i);
-							*co_text=ajout_text("SLT",3,ligne, *cpt_text, *co_text,h);
-							*co_text=ajout_text("BNE",3,ligne, *cpt_text, *co_text,i);
-							*cpt_text=*cpt_text+8;
-							
+								/*instruction BLT*/
+								file_jeu_instruction h=creer_file();
+								file_jeu_instruction i=creer_file();
+								h=enfiler("Registre","$1",ligne,h);
+								h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+								h=enfiler("Registre",g->suiv->suiv->caractere,ligne,h);
+								i=enfiler("Registre","$1",ligne,i);
+								i=enfiler("Registre","$0",ligne,i);
+								i=enfiler(g->suiv->suiv->suiv->identifiant,g->suiv->suiv->suiv->caractere,ligne,i);
+								*co_text=ajout_text("SLT",3,ligne, *cpt_text, *co_text,h);
+								*co_text=ajout_text("BNE",3,ligne, *cpt_text, *co_text,i);
+								*cpt_text=*cpt_text+8;
 						}
 					}
 				}
@@ -498,8 +568,8 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 				verif_registre_ope(file_erreur,f,a);
 			}
 			else{
-				if(strcmp(tab[i],"Immediate")==0){
-					verif_immediate_ope(file_erreur,f,a);
+				if(strcmp(tab[i],"Immediat")==0){
+					verif_immediat_ope(file_erreur,f,a);
 				}
 				else{
 					if(strcmp(tab[i],"Shiftamount")==0){
@@ -510,7 +580,12 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 							verif_relatif_ope(file_erreur,f,a);
 						}
 						else{
+							if(strcmp(tab[i],"Absolu")==0){
+							verif_absolu_ope(file_erreur,f,a);
+							}
+							else{
 							verif_baseoffset_ope(file_erreur,f,a);
+							}
 						}
 					}
 				}
@@ -518,6 +593,46 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 			f=f->suiv;
 		}
 		a=a->suiv;
+	}
+	char mot1[25];
+	char mot2[25];
+	char mot3[25];
+	n=hachage(a->nomInst, dim_tab_instruction);
+	rec_hachage_type_instruction(a->nomInst,tab_instruction[n],mot1,mot2,mot3);
+	strcpy(tab[0],mot1);
+	strcpy(tab[1],mot2);
+	strcpy(tab[2],mot3);
+	n=rec_hachage_nbparam(a->nomInst,tab_instruction[n]);
+	/*printf("%d %s %s %s\n",n,tab[0],tab[1],tab[2]);*/
+	f=a->op->suiv;
+	for(i=0;i<n;i++){
+		if(strcmp(tab[i],"Registre")==0){
+			verif_registre_ope(file_erreur,f,a);
+		}
+		else{
+			if(strcmp(tab[i],"Immediat")==0){
+				verif_immediat_ope(file_erreur,f,a);
+			}
+			else{
+				if(strcmp(tab[i],"Shiftamount")==0){
+					verif_shiftamount_ope(file_erreur,f,a);
+				}
+				else{
+					if(strcmp(tab[i],"Relatif")==0){
+						verif_relatif_ope(file_erreur,f,a);
+					}
+					else{
+						if(strcmp(tab[i],"Absolu")==0){
+						verif_absolu_ope(file_erreur,f,a);
+						}
+						else{
+						verif_baseoffset_ope(file_erreur,f,a);
+						}
+					}
+				}
+			}
+		}
+		f=f->suiv;
 	}
 	free(tab[0]);
 	free(tab[1]);
@@ -536,24 +651,24 @@ void verif_baseoffset_ope(file_jeu_instruction*file_erreur,file_jeu_instruction 
 	}
 }
 
-void verif_immediate_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
+void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
-		if(atoi(f->caractere)<0&&atoi(f->caractere)>31){
-			*file_erreur = enfiler("Erreur nombre entre 0 et 31 attendu", f->caractere, a->ligne, *file_erreur);
+		if(atoi(f->caractere)<-32768&&atoi(f->caractere)>32767){
+			*file_erreur = enfiler("Erreur nombre sur 16 bit signé attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;
 		}
 	}
 	else{
-		*file_erreur = enfiler("Erreur type Immediate attendu", f->identifiant, a->ligne, *file_erreur);
+		*file_erreur = enfiler("Erreur type Immediat attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }
 
 void verif_shiftamount_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
-		if(atoi(f->caractere)<0&&atoi(f->caractere)>65535){
-			*file_erreur = enfiler("Erreur nombre sur 16 bit attendu", f->caractere, a->ligne, *file_erreur);
+		if(atoi(f->caractere)<0&&atoi(f->caractere)>31){
+			*file_erreur = enfiler("Erreur nombre entre 0 et 31 attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;
@@ -566,8 +681,8 @@ void verif_shiftamount_ope(file_jeu_instruction*file_erreur,file_jeu_instruction
 
 void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
-		if(atoi(f->caractere)<-32768&&atoi(f->caractere)>32767){
-			*file_erreur = enfiler("Erreur nombre sur 16 bit signé attendu", f->caractere, a->ligne, *file_erreur);
+		if(atoi(f->caractere)<-131072&&atoi(f->caractere)>131071&&atoi(f->caractere)%4!=0){
+			*file_erreur = enfiler("Erreur nombre sur 18 bit signé attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;
@@ -575,5 +690,19 @@ void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,f
 	}
 	else{
 		*file_erreur = enfiler("Erreur type Relatif attendu", f->identifiant, a->ligne, *file_erreur);
+	}
+}
+
+void verif_absolu_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
+	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
+		if((atoi(f->caractere)<-134217728&&atoi(f->caractere)>134217727)||atoi(f->caractere)%4!=0){
+			*file_erreur = enfiler("Erreur nombre sur 18 bit signé attendu", f->caractere, a->ligne, *file_erreur);
+		}
+		else{
+			return;
+		}
+	}
+	else{
+		*file_erreur = enfiler("Erreur type Absolu attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }

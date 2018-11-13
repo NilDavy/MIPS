@@ -123,6 +123,7 @@ int main ( int argc, char *argv[] ) {
 		exit(EXIT_FAILURE);
 	}
 	/** creation des tableaux pour les tables de hachages des instructions et des registres **/
+
 	Liste_hach tab_registre[dim_tab_registre];
 	for(i=0;i<dim_tab_registre;i++){
 		tab_registre[i]=creer_liste_hachage();
@@ -135,7 +136,6 @@ int main ( int argc, char *argv[] ) {
 		tab_instruction[i]=creer_liste_hachage();
 	}
 	creation_liste_instruction(tab_instruction,dim_tab_instruction);
-	
 	
 	/** variable interne contenant le code instancié **/
 	file_jeu_instruction file_lexeme=creer_file();
@@ -155,15 +155,17 @@ int main ( int argc, char *argv[] ) {
 	
 	if(!(file_vide(file_lexeme))){
 		file_lexeme=modifie_instruction(file_lexeme);
-		verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);
+		/*verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);*/
 		file_lexeme=verif_delimiteur_suite(file_lexeme,&file_erreur);
 		file_lexeme=verif_remplacement_ecriture_registre(file_lexeme,&file_erreur,tab_registre);
 	}
 	
+	/*visualiser_file(file_lexeme);*/
 	/** Ecriture du code instancié dans le fichier **/
 
 	ecrire_file(file_lexeme, fp);
 	fclose(fp);
+
 	/** Vérification si présence d'erreurs **/
 	
 	if(!(file_vide(file_erreur))){
@@ -179,6 +181,7 @@ int main ( int argc, char *argv[] ) {
 		
 		/*analyse syntaxique*/
 		
+
 		analyse_syntaxique(tab_instruction,&file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente);
 		if(!file_vide_text(co_text)){
 			verif_operande(co_text,&file_erreur,tab_instruction);
