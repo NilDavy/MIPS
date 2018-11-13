@@ -14,7 +14,7 @@ J boucle
     NOP
 
 byebye:
-JAL boucle
+JAL boucl
 
 .data
 lunchtime:

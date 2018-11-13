@@ -12,7 +12,7 @@ Liste_hach ajout_tete_hachage(instruction e,int nbop, char*car,char*typeinstruct
 	Liste_hach p=(Liste_hach) calloc(1,sizeof(*p));
 	if (p==NULL) return NULL;
 	strcat(p->val,e);
-	p->nombreOperande = nbop; 
+	p->nombreOperande = nbop;
 	strcpy(p->typeInst,car);
 	strcat(p->type1,typeinstruction1);
 	strcat(p->type2,typeinstruction2);
@@ -53,7 +53,7 @@ int rec_hachage_nbparam(instruction e, Liste_hach L)
 	{
 		p = p->suiv;
 	}
-	return p->nombreOperande; 
+	return p->nombreOperande;
 }
 
 /* Retroune le type de l'instruction*/
@@ -134,22 +134,32 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 	FILE* finstruction = NULL;
 	int i;
 	int n;
+<<<<<<< HEAD
 	char*mot=calloc(8,sizeof(char));
+=======
+	char* mot= calloc(5, sizeof(char));
+>>>>>>> 496bb7d920b30c88de63130ff489b92f07918045
 	char type[1];
 	int nbOp;
-	
-	finstruction=fopen("doc_tab_hachage/instructions.txt", "rt");
+
+	finstruction=fopen("doc_tab_hachage/instructions2.txt", "rt");
 	if (finstruction == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier instruction\n" );
 		exit(EXIT_FAILURE);
 	}
-	
+
 	for(i=0;i<nbre_instruction;i++){
 		fscanf(finstruction,"%s %d %s", mot, &nbOp, type);
+<<<<<<< HEAD
 		/*printf("instruc: %s, nbop: %d, type: %s\n",mot,nbOp,type);*/
 		/*printf("%c\n",mot[0]);*/
 		/*getchar();*/
 		
+=======
+		/*printf("instruc: %s, nbop: %d, type: %s\n",mot,nbOp,type);
+		getchar();*/
+
+>>>>>>> 496bb7d920b30c88de63130ff489b92f07918045
 		n=hachage(mot, dim);
 		if(nbOp==1){
 			char*mot1=calloc(25,sizeof(char));
