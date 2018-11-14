@@ -136,7 +136,7 @@ file_jeu_instruction modifie_instruction(file_jeu_instruction f){
 		if(strcmp(g->caractere,":")==0&&strcmp(h->identifiant,"Instruction")==0){
 			strcpy(h->identifiant,"Etiquette");
 		}
-		if(strcmp(g->identifiant,"Retour à la ligne")==0&&strcmp(h->identifiant,"Instruction")==0){
+		if(strcmp(g->identifiant,"Retour à la ligne")==0&&strcmp(h->identifiant,"Instruction")==0&&strcmp(h->caractere,"NOP")!=0){
 			strcpy(h->identifiant,"Renvoie vers une étiquette");
 		}
 		g=g->suiv;
@@ -145,7 +145,7 @@ file_jeu_instruction modifie_instruction(file_jeu_instruction f){
 	if(strcmp(g->caractere,":")==0&&strcmp(h->identifiant,"Instruction")==0){
 		strcpy(h->identifiant,"Etiquette");
 	}
-	if(strcmp(g->identifiant,"Retour à la ligne")==0&&strcmp(h->identifiant,"Instruction")==0){
+	if(strcmp(g->identifiant,"Retour à la ligne")==0&&strcmp(h->identifiant,"Instruction")==0&&strcmp(h->caractere,"NOP")!=0){
 		strcpy(h->identifiant,"Renvoie vers une étiquette");
 	}
 	return f;

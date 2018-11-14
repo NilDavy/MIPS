@@ -146,7 +146,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 								verif=verif+1;
 							}
 							else{
-								*file_erreur = enfiler("Erreur Base Offset", f->caractere, f->ligne, *file_erreur);
+								*file_erreur = enfiler("Erreur Base Offset", mot1, f->ligne, *file_erreur);
 							}
 						}
 
@@ -176,7 +176,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 				}
 			}
 			else{
-				*file_erreur = enfiler("Mauvais opérande dans la section .text", f->caractere, f->ligne, *file_erreur);
+				*file_erreur = enfiler("Mauvaise opérande dans la section .text", f->caractere, f->ligne, *file_erreur);
 				f=f->suiv;
 			}
 	
@@ -352,7 +352,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 								}
 							}
 							else{
-								*file_erreur = enfiler("Mauvaise directive", " ", f->ligne, *file_erreur);
+								*file_erreur = enfiler("Mauvaise directive dans la section .data", " ", f->ligne, *file_erreur);
 								f=f->suiv;
 							}
 						}
@@ -654,55 +654,55 @@ void verif_baseoffset_ope(file_jeu_instruction*file_erreur,file_jeu_instruction 
 void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
 		if(atoi(f->caractere)<-32768&&atoi(f->caractere)>32767){
-			*file_erreur = enfiler("Erreur nombre sur 16 bit signé attendu", f->caractere, a->ligne, *file_erreur);
+			*file_erreur = enfiler("Nombre sur 16 bit signé attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;
 		}
 	}
 	else{
-		*file_erreur = enfiler("Erreur type Immediat attendu", f->identifiant, a->ligne, *file_erreur);
+		*file_erreur = enfiler("Type Immediat attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }
 
 void verif_shiftamount_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
 		if(atoi(f->caractere)<0&&atoi(f->caractere)>31){
-			*file_erreur = enfiler("Erreur nombre entre 0 et 31 attendu", f->caractere, a->ligne, *file_erreur);
+			*file_erreur = enfiler("Nombre entre 0 et 31 attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;
 		}
 	}
 	else{
-		*file_erreur = enfiler("Erreur type Shift Amount attendu", f->identifiant, a->ligne, *file_erreur);
+		*file_erreur = enfiler("Type Shift Amount attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }
 
 void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
 		if(atoi(f->caractere)<-131072&&atoi(f->caractere)>131071&&atoi(f->caractere)%4!=0){
-			*file_erreur = enfiler("Erreur nombre sur 18 bit signé attendu", f->caractere, a->ligne, *file_erreur);
+			*file_erreur = enfiler("Nombre sur 18 bit signé attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;
 		}
 	}
 	else{
-		*file_erreur = enfiler("Erreur type Relatif attendu", f->identifiant, a->ligne, *file_erreur);
+		*file_erreur = enfiler("Type Relatif attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }
 
 void verif_absolu_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
 		if((atoi(f->caractere)<-134217728&&atoi(f->caractere)>134217727)||atoi(f->caractere)%4!=0){
-			*file_erreur = enfiler("Erreur nombre sur 18 bit signé attendu", f->caractere, a->ligne, *file_erreur);
+			*file_erreur = enfiler("Nombre sur 18 bit signé attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;
 		}
 	}
 	else{
-		*file_erreur = enfiler("Erreur type Absolu attendu", f->identifiant, a->ligne, *file_erreur);
+		*file_erreur = enfiler("Type Absolu attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }

@@ -15,7 +15,6 @@
 #include "file_text.h"
 #include "file_symb.h"
 #include "analyse_syntaxique.h"
-#include "table_relocation.h"
 
 /**
  * @ param exec Name of executable.
@@ -136,12 +135,7 @@ int main ( int argc, char *argv[] ) {
 		tab_instruction[i]=creer_liste_hachage();
 	}
 	creation_liste_instruction(tab_instruction,dim_tab_instruction);
-<<<<<<< HEAD
 	
-=======
-
-
->>>>>>> 496bb7d920b30c88de63130ff489b92f07918045
 	/** variable interne contenant le code instancié **/
 	file_jeu_instruction file_lexeme=creer_file();
 	file_jeu_instruction file_erreur=creer_file();
@@ -164,12 +158,10 @@ int main ( int argc, char *argv[] ) {
 		file_lexeme=verif_delimiteur_suite(file_lexeme,&file_erreur);
 		file_lexeme=verif_remplacement_ecriture_registre(file_lexeme,&file_erreur,tab_registre);
 	}
-<<<<<<< HEAD
-	
-	/*visualiser_file(file_lexeme);*/
-=======
 
->>>>>>> 496bb7d920b30c88de63130ff489b92f07918045
+	
+	visualiser_file(file_lexeme);
+
 	/** Ecriture du code instancié dans le fichier **/
 
 	ecrire_file(file_lexeme, fp);
@@ -189,10 +181,6 @@ int main ( int argc, char *argv[] ) {
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 
 		/*analyse syntaxique*/
-<<<<<<< HEAD
-		
-=======
->>>>>>> 496bb7d920b30c88de63130ff489b92f07918045
 
 		analyse_syntaxique(tab_instruction,&file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente);
 		if(!file_vide_text(co_text)){
@@ -206,7 +194,6 @@ int main ( int argc, char *argv[] ) {
 		ecrire_file_data(co_data,f_data);
 		ecrire_file_text(co_text,f_text);
 		ecrire_file_symb(co_symb,f_symb);
-
 
 		if(!(file_vide(file_erreur))){
 			WARNING_MSG("Il y a des erreurs de syntaxe dans le code source !");
@@ -223,10 +210,10 @@ int main ( int argc, char *argv[] ) {
 
 	}
 
-	table_reloc a = NULL;
+	/*table_reloc a = NULL;
 	a = ajoutElement(a, 4, R_MIPS_26, ".text");
 	visualiser_table(a);
-	liberer_table(a);
+	liberer_table(a);*/
 
 
 

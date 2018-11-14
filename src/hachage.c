@@ -134,15 +134,11 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 	FILE* finstruction = NULL;
 	int i;
 	int n;
-<<<<<<< HEAD
-	char*mot=calloc(8,sizeof(char));
-=======
-	char* mot= calloc(5, sizeof(char));
->>>>>>> 496bb7d920b30c88de63130ff489b92f07918045
+	char*mot=calloc(5,sizeof(char));
 	char type[1];
 	int nbOp;
 
-	finstruction=fopen("doc_tab_hachage/instructions2.txt", "rt");
+	finstruction=fopen("doc_tab_hachage/instructions.txt", "rt");
 	if (finstruction == NULL) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier instruction\n" );
 		exit(EXIT_FAILURE);
@@ -150,16 +146,8 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 
 	for(i=0;i<nbre_instruction;i++){
 		fscanf(finstruction,"%s %d %s", mot, &nbOp, type);
-<<<<<<< HEAD
 		/*printf("instruc: %s, nbop: %d, type: %s\n",mot,nbOp,type);*/
-		/*printf("%c\n",mot[0]);*/
 		/*getchar();*/
-		
-=======
-		/*printf("instruc: %s, nbop: %d, type: %s\n",mot,nbOp,type);
-		getchar();*/
-
->>>>>>> 496bb7d920b30c88de63130ff489b92f07918045
 		n=hachage(mot, dim);
 		if(nbOp==1){
 			char*mot1=calloc(25,sizeof(char));
@@ -196,7 +184,7 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 			}
 		}
 	}
-	free(mot);
+	/*free(mot);*/
 	/*visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
 	fclose(finstruction);
 }

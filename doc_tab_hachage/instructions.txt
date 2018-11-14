@@ -1,5 +1,5 @@
 ADD 3 R Registre Registre Registre
-ADDI 3 I Registre Registre Immediate
+ADDI 3 I Registre Registre Immediat
 SUB 3 R Registre Registre Registre
 MULT 2 R Registre Registre
 DIV 2 R Registre Registre
@@ -12,18 +12,18 @@ SRL 3 R Registre Registre Shiftamount
 SLT 3 R Registre Registre Registre
 LW 2 I Registre Baseoffset
 SW 2 I Registre Baseoffset
-LUI 2 I Registre Immediate
+LUI 2 I Registre Immediat
 MFHI 1 R Registre
 MFLO 1 R Registre
-BEQ 3 I Registre Registre Baseoffset
-BNE 3 I Registre Registre Baseoffset
-BGTZ 2 I Registre Baseoffset
-BLEZ 2 I Registre Baseoffset
-J 1 J Relatif
-JAL 1 J Relatif
+BEQ 3 I Registre Registre Relatif
+BNE 3 I Registre Registre Relatif
+BGTZ 2 I Registre Relatif
+BLEZ 2 I Registre Relatif
+J 1 J Absolu
+JAL 1 J Absolu
 JR 1 R Registre
 NOP 0 R 
 MOVE 2 R Registre Registre
 NEG 2 R Registre Registre
-LI 2 I Registre Immediate
-BLT 3 R Registre Registre Relatif
+LI 2 I Registre Immediat
+BLT 3 R Registre Registre Absolu
