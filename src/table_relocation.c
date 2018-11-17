@@ -125,30 +125,36 @@ void liberer_table(table_reloc r){
       }
     }
 }
+/* Cette fonction construit la table de relocation à partir des différentes collections */
 table_reloc remplirTableRelocation(file_text co_text, file_data co_data, file_bss co_bss, file_symb co_symb)
 {
  	table_reloc table = NULL;
- 	//Parcours de la collection des elements de .text
+ 	/*Parcours de la collection des elements de .text*/
  	file_text ft = co_text;
  	ft = ft->suiv;
  	if(!file_vide_text(ft)){
     		do{
-      		//On parcours la liste des opérandes de chaque instruction à la recherche d'un renvoie vers une étiquette
+      		/*On parcours la liste des opérandes de chaque instruction à la recherche d'un renvoie vers une étiquette*/
       			file_jeu_instruction f = ft->op;
-      				do{
-        				//Si un des opérandes est un renvoie vers une étiquette
-          				if (f->identifiant == "Renvoie vers une étiquette")
-          				{
-            					file_symb symb = co_symb;
-       						if(!est_dans_file(f->identifiant, co_symb))
-						{
-							table = ajoutElement							
-						}	
-          				}
-          				f = f->suiv;
-      				}while(f != ft->op);
-      				ft = ft->suiv;
-    			}while(ft!= *co_text->suiv);
-  		}	
+      			do{
+        			/*Si un des opérandes est un renvoie vers une étiquette*/
+          			if (!strcmp(f->identifiant, "Renvoie vers une étiquette"))
+          			{
+            				if(!strcasecmp(ft->nomInst, "J")){
+						/*2 cas : symbole déclaré dans ce fichier ou non déclaré dans ce fichier */
+						if(!est_dans_file(f->caractere, co_symb)){
+							table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, NULL); 
+						}else{
+							
+						}
+					}else if(!strcasecmp(ft->nomInst, "JAL")){
+						
+					}
+          			}
+          			f = f->suiv;
+      			}while(f != ft->op);
+      			ft = ft->suiv;
+    		}while(ft!= co_text->suiv);
+  	}	
        	return table;
 }
