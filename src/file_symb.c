@@ -116,3 +116,15 @@ void ecrire_file_symb(file_symb f,FILE*a){
 	}
 	fprintf(a, "Nom instruction : %s\t Ligne : %d\t Section : %s\t Decalage : %d\n" ,g->nom,g->ligne,g->section,g->decalage);
 }
+
+int est_dans_file(char* symb, file_symb f)
+{
+	file_symb s = f;
+	if(file_vide_symb(f))
+		return 0;
+	do{
+		if(!strcmp(symb, f->nom)
+			return 1;	
+	}while(s->suiv != f);
+	return 0;
+}

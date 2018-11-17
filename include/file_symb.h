@@ -31,4 +31,5 @@ void liberer_symb(file_symb l);
 file_symb supprimer_tete_symb(file_symb g);
 char* defiler_symb(file_symb*f);
 void ecrire_file_symb(file_symb f,FILE*a);
+int est_dans_file(char* symb, file_symb f);
 #endif
