@@ -20,6 +20,6 @@ void visualiser_table(table_reloc r);
 void ecrire_table(table_reloc r, FILE* a);
 void liberer_table(table_reloc r);
 
-table_reloc remplirTableRelocation(file_text co_text, file_data co_data, file_bss co_bss, file_symb co_symb);
+table_reloc remplirTableRelocationText(file_text co_text, file_data co_data, file_bss co_bss, file_symb co_symb, Liste_hach hach_inst);
 
 #endif

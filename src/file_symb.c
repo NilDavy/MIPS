@@ -18,7 +18,7 @@ void visualiser_file_symb(file_symb f){
 		printf("\n");
 		return;
 	}
-	
+
 	g=f->suiv;
 	while (g!=f){
 		printf("Nom symbole : %s\t",g->nom);
@@ -70,7 +70,7 @@ void liberer_symb(file_symb f){
 	while(g!=NULL){
 		g=supprimer_tete_symb(g);
 	}
-	
+
 }
 
 /** liberation de la memoire d'un maillon de la file **/
@@ -124,7 +124,14 @@ int est_dans_file(char* symb, file_symb f)
 		return 0;
 	do{
 		if(!strcmp(symb, f->nom))
-			return 1;	
+			return 1;
 	}while(s->suiv != f);
 	return 0;
+}
+struct cellulesymb* recuperer_cellule_symb(char* symb, file_symb s){
+	while(strcmp(symb, s->nom))
+	{
+		s = s->suiv;
+	}
+	return s;
 }

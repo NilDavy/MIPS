@@ -126,35 +126,84 @@ void liberer_table(table_reloc r){
     }
 }
 /* Cette fonction construit la table de relocation à partir des différentes collections */
-table_reloc remplirTableRelocation(file_text co_text, file_data co_data, file_bss co_bss, file_symb co_symb)
+table_reloc remplirTableRelocationText(file_text co_text, file_data co_data, file_bss co_bss, file_symb co_symb, Liste_hach hach_inst)
 {
  	table_reloc table = NULL;
  	/*Parcours de la collection des elements de .text*/
  	file_text ft = co_text;
  	ft = ft->suiv;
  	if(!file_vide_text(ft)){
-    		do{
-      		/*On parcours la liste des opérandes de chaque instruction à la recherche d'un renvoie vers une étiquette*/
-      			file_jeu_instruction f = ft->op;
-      			do{
-        			/*Si un des opérandes est un renvoie vers une étiquette*/
-          			if (!strcmp(f->identifiant, "Renvoie vers une étiquette"))
-          			{
-            				if(!strcasecmp(ft->nomInst, "J")){
-						/*2 cas : symbole déclaré dans ce fichier ou non déclaré dans ce fichier */
-						if(!est_dans_file(f->caractere, co_symb)){
-							table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, NULL); 
-						}else{
-							
-						}
-					}else if(!strcasecmp(ft->nomInst, "JAL")){
-						
-					}
-          			}
-          			f = f->suiv;
-      			}while(f != ft->op);
-      			ft = ft->suiv;
-    		}while(ft!= co_text->suiv);
-  	}	
-       	return table;
+    	do{
+      	    /*On parcours la liste des opérandes de chaque instruction à la recherche d'un renvoie vers une étiquette*/
+      	    file_jeu_instruction f = ft->op;
+      		do{
+        	    /*Si un des opérandes est un renvoie vers une étiquette*/
+          		if (!strcmp(f->identifiant, "Renvoie vers une étiquette"))
+          		{
+                    /* Si c'est une instruction de type J */
+                    if(!strcasecmp(rec_hachage_type(ft->nomInst, hach_inst), "J"))
+            		{
+					    /*2 cas : symbole déclaré dans ce fichier ou non déclaré dans ce fichier */
+					    if(!est_dans_file(f->caractere, co_symb)){
+                            /* Si non déclaré dans le même fichier */
+						    table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, NULL);
+					    }else{
+                            /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
+                            struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+                            table = ajoutElement(table, ft->decalage, R_MIPS_26, ptr_symb->section, ptr_symb);
+					    }
+                    }else{
+                        /* On rentre dans cette section si c'est une instruction de type I */
+                        file_jeu_instruction f2 = ft->op->suiv;
+                        int i = 0;
+                        f2 = f2->suiv;
+                        /* On identifie si il s'agit du 2eme ou 3eme operande */
+                        if(!strcmp(f2->caractere, f->caractere)){
+                            i = 2;
+                        }
+                        else{
+                            i = 3;
+                        }
+                        char mot1[25];
+                        char mot2[25];
+                        char mot3[25];
+                        rec_hachage_type_instruction(ft->nomInst, hach_inst, mot1, mot2, mot3);
+                        /* On identifie si le symbole correspond à un immediat ou à un relatif */
+                        int isRel = 1;
+                        if(i == 2){
+                            if(!strcmp(mot2, "Immediat"))
+                                isRel = 0;
+                        }else{
+                            if(!strcmp(mot3, "Immediat"))
+                                isRel = 0;
+                        }
+                        /* On traite chaque cas independamment */
+                        /* Si c'est un immédiat */
+                        if(!isRel){
+                            /*if(!est_dans_file(f->caractere, co_symb)){
+                                /* Si non déclaré dans le même fichier
+    						    table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
+    					    }else{
+                                /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient
+                                struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+                                table = ajoutElement(table, ft->decalage, R_MIPS_LO16, ptr_symb->section, ptr_symb);
+    					    }*/
+                        }else{
+                            if(!est_dans_file(f->caractere, co_symb)){
+                                /* Si non déclaré dans le même fichier */
+    						    table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, NULL);
+    					    }else{
+                                /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
+                                struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+                                table = ajoutElement(table, ft->decalage, R_MIPS_26, ptr_symb->section, ptr_symb);
+    					    }
+                        }
+                    }
+				}
+      			f = f->suiv;
+  			}while(f != ft->op);
+  			ft = ft->suiv;
+		}while(ft != co_text->suiv);
+  	}
+    return table;
 }

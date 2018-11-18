@@ -17,7 +17,7 @@ void visualiser_file(file_jeu_instruction f){
 		printf("File vide\n");
 		return;
 	}
-	
+
 	g=f->suiv;
 	while (g!=f){
 		printf("Ligne : %d\t %s\t %s\n\n" ,g->ligne, g->identifiant,g->caractere);
@@ -35,7 +35,7 @@ void ecrire_file(file_jeu_instruction f,FILE*a){
 		g=g->suiv;
 	}
 	fprintf(a, "Ligne : %d\t %s\t %s\n\n" ,g->ligne, g->identifiant,g->caractere);
-	
+
 }
 
 /** ajout d'un maillon a la file **/
@@ -78,11 +78,11 @@ void liberer_file(file_jeu_instruction f){
 		return;
 	}
 	file_jeu_instruction g= f->suiv	;
- 	f->suiv = NULL;	
+ 	f->suiv = NULL;
 	while(g!=NULL){
 		g=supprimer_tete(g);
 	}
-	
+
 }
 
 /** liberation de la memoire d'un maillon de la file **/
@@ -154,7 +154,7 @@ file_jeu_instruction modifie_instruction(file_jeu_instruction f){
 
 /*Verif si le nom des etiquettes colle avec celui des renvoies vers etiquette*/
 void verif_renvoie_vers_etiquette(file_jeu_instruction*f,file_jeu_instruction*file_erreur){
-	int a;
+	/*int a;
 	file_jeu_instruction file_renvoie=creer_file();
 	file_jeu_instruction file_etiquette=creer_file();
 	file_jeu_instruction g=(*f)->suiv;
@@ -214,6 +214,7 @@ void verif_renvoie_vers_etiquette(file_jeu_instruction*f,file_jeu_instruction*fi
 	}
 	liberer_file(file_renvoie);
 	liberer_file(file_etiquette);
+	*/
 }
 
 
