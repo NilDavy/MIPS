@@ -24,6 +24,7 @@ void visualiser_file_data(file_data f){
 		printf("Nom instruction : %s\t",g->nomInst);
 		printf("Ligne : %d\t",g->ligne);
 		printf("Decalage : %d\t",g->decalage);
+		printf("Etiquette : %d\t",g->etiquette);
 		switch(g->type)
 		{
 			case 0:
@@ -47,6 +48,7 @@ void visualiser_file_data(file_data f){
 	printf("Nom instruction : %s\t",g->nomInst);
 	printf("Ligne : %d\t",g->ligne);
 	printf("Decalage : %d\t",g->decalage);
+	printf("Etiquette : %d\t",g->etiquette);
 	switch(g->type)
 	{
 		case 0:
@@ -70,7 +72,7 @@ void visualiser_file_data(file_data f){
 
 
 /** ajout d'un maillon a la file **/
-file_data ajout_data(char *nom, int line, unsigned int dec, char* op, int type, file_data f){
+file_data ajout_data(char *nom, int line, unsigned int dec, char* op, int type, file_data f,int etiq){
 	file_data e=calloc(1,sizeof(*e));
 	if(e==NULL) {
 		return NULL;
@@ -79,6 +81,7 @@ file_data ajout_data(char *nom, int line, unsigned int dec, char* op, int type, 
 	e->ligne=line;
 	e->decalage=dec;
 	e->type=type;
+	e->etiquette=etiq;
 	switch(type)
 	{
 		case 0:
@@ -145,7 +148,7 @@ void ecrire_file_data(file_data f ,FILE*a){
 	file_data g=NULL;
 	g=f->suiv;
 	while (g!=f){
-		fprintf(a, "Nom instruction : %s\t Ligne : %d\t Decalage : %d\t" ,g->nomInst,g->ligne,g->decalage);
+		fprintf(a, "Nom instruction : %s\t Ligne : %d\t Decalage : %d\t Etiquette : %d\t" ,g->nomInst,g->ligne,g->decalage,g->etiquette);
 		switch(g->type)
 		{
 			case 0:
@@ -166,7 +169,7 @@ void ecrire_file_data(file_data f ,FILE*a){
 		}
 		g=g->suiv;
 	}
-	fprintf(a, "Nom instruction : %s\t Ligne : %d\t Decalage : %d\t" ,g->nomInst,g->ligne,g->decalage);
+	fprintf(a, "Nom instruction : %s\t Ligne : %d\t Decalage : %d\t Etiquette : %d\t" ,g->nomInst,g->ligne,g->decalage,g->etiquette);
 	switch(g->type)
 	{
 		case 0:
