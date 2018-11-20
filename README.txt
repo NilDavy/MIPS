@@ -28,6 +28,7 @@ Le répertoire est organisé ainsi :
 │   ├── file_text.c
 │   ├── file_symb.c
 │   ├── file.c
+│   ├── table_relocation.c
 │   └── hachage.c
 ├── include
 │   ├── notify.h
@@ -40,13 +41,16 @@ Le répertoire est organisé ainsi :
 │   ├── file_text.h
 │   ├── file_symb.h
 │   ├── file.h
+│   ├── table_relocation.h
 │   └── hachage.h
 ├── documentation
 │   ├── Sujet.pdf
 │   ├── Présentation1.pdf
 │   ├── Présentation2.pdf
+│   ├── Présentation3.pdf
 │   ├──	Livrable1.pdf
-│   └── Livrable2.pdf
+│   ├── Livrable2.pdf
+│   └── Livrable3.pdf
 ├── doc_tab_hachage
 │   ├── instructions.txt
 │   └── registres.txt

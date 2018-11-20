@@ -87,11 +87,13 @@ file_symb supprimer_tete_symb(file_symb g){
 	return g;
 }
 
-void defiler_symb (file_symb*f,char *mot){
+char*defiler_symb (file_symb*f){
+	char*mot=NULL;
+	mot = calloc(strlen((*f)->suiv->nom), sizeof(char));
 	strcpy(mot,(*f)->suiv->nom);
 	file_symb c=creerfile_symb();
 	if((*f)==(*f)->suiv){
-		supprimer_tete_symb(*f);
+		(*f)=NULL;
 	}
 	else{
 		c=(*f)->suiv;
@@ -99,7 +101,7 @@ void defiler_symb (file_symb*f,char *mot){
 		c->suiv=NULL;
 		supprimer_tete_symb(c);
 	}
-	return;
+	return mot;
 }
 
 void ecrire_file_symb(file_symb f,FILE*a){

@@ -184,7 +184,7 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 			}
 		}
 	}
-	/*free(mot);*/
+	free(mot);
 	/*visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
 	fclose(finstruction);
 }

@@ -153,7 +153,7 @@ int main ( int argc, char *argv[] ) {
 	DEBUG_MSG("Le code source contient %d lignes",nlines);
 
 	if(!(file_vide(file_lexeme))){
-		file_lexeme=modifie_instruction(file_lexeme);
+		file_lexeme=modifie_instruction(file_lexeme);	
 		/*verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);*/
 		file_lexeme=verif_delimiteur_suite(file_lexeme,&file_erreur);
 		file_lexeme=verif_remplacement_ecriture_registre(file_lexeme,&file_erreur,tab_registre);
@@ -165,7 +165,6 @@ int main ( int argc, char *argv[] ) {
 	/** Ecriture du code instancié dans le fichier **/
 
 	ecrire_file(file_lexeme, fp);
-	fclose(fp);
 
 	/** Vérification si présence d'erreurs **/
 
@@ -178,7 +177,7 @@ int main ( int argc, char *argv[] ) {
 	printf("**********************************************************\n");
 	}
 	else{
-		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
+		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");	
 
 		/*analyse syntaxique*/
 
@@ -217,7 +216,6 @@ int main ( int argc, char *argv[] ) {
 
 
 
-
 	/* ---------------- Free memory and terminate -------------------*/
 
 	/** Libération des mémoires **/
@@ -229,9 +227,10 @@ int main ( int argc, char *argv[] ) {
 	liberer_bss(co_bss);
 	liberer_text(co_text);
 	liberer_file(file_lexeme);
-	liberer_file(file_erreur);
+	liberer_file(file_erreur);	
 	liberer_tab_hachage(tab_registre, dim_tab_registre);
 	liberer_tab_hachage(tab_instruction, dim_tab_instruction);
+	fclose(fp);
 	fclose(f_erreur);
 	fclose(f_bss);
 	fclose(f_data);

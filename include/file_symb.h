@@ -29,7 +29,7 @@ file_symb ajout_symb(char *name, int line, unsigned int dec,char*sec, file_symb 
 void liberer_symb(file_symb l);
 
 file_symb supprimer_tete_symb(file_symb g);
-char* defiler_symb(file_symb*f);
+char*defiler_symb(file_symb*f);
 void ecrire_file_symb(file_symb f,FILE*a);
 int est_dans_file(char* symb, file_symb f);
 /* Ne pas utiliser avant d'avoir vérifier que le symbole est bien dans la collection

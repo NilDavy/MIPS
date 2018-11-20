@@ -110,7 +110,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 			if(!strcmp(f->identifiant, "Instruction")){
 				while(!file_vide_symb(*co_text_attente)){
 					/*ajout dans la table des symboles*/
-					defiler_symb(co_text_attente,mot);
+					mot=defiler_symb(co_text_attente);
 					strcpy(copie,mot);
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_text,"TEXT", *co_symb);
 				}
@@ -213,7 +213,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 			if(!strcmp(f->caractere, ".space")){
 				while(!file_vide_symb(*co_data_attente)){
 					/*ajout dans la table des symboles*/
-					defiler_symb(co_data_attente,mot);
+					mot=defiler_symb(co_data_attente);
 					strcpy(copie,mot);
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 				}
@@ -238,7 +238,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 					if(!strcmp(f->caractere, ".byte")){
 						while(!file_vide_symb(*co_data_attente)){
 							/*ajout dans la table des symboles*/
-							defiler_symb(co_data_attente,mot);
+							mot=defiler_symb(co_data_attente);
 							strcpy(copie,mot);
 							*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 						}
@@ -285,7 +285,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 							}
 							while(!file_vide_symb(*co_data_attente)){
 								/*ajout dans la table des symboles*/
-								defiler_symb(co_data_attente,mot);
+								mot=defiler_symb(co_data_attente);
 								strcpy(copie,mot);
 								*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 							}
@@ -325,7 +325,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 							if(!strcmp(f->caractere, ".asciiz")){
 								while(!file_vide_symb(*co_data_attente)){
 									/*ajout dans la table des symboles*/
-									defiler_symb(co_data_attente,mot);
+									mot=defiler_symb(co_data_attente);
 									strcpy(copie,mot);
 									*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 								}
@@ -393,7 +393,7 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 			if(!strcmp(f->caractere, ".space")){
 				while(!file_vide_symb(*co_bss_attente)){
 					/*ajout dans la table des symboles*/
-					defiler_symb(co_bss_attente,mot);
+					mot=defiler_symb(co_bss_attente);
 					strcpy(copie,mot);
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_bss,"BSS", *co_symb);
 
