@@ -14,6 +14,7 @@ struct celluledata{
 	int ligne;
 	unsigned int decalage;
 	int type;
+	int etiquette;
 	union
 	{
 		char c;
@@ -33,7 +34,7 @@ int file_vide_data(file_data l);
 
 void visualiser_file_data(file_data l);
 
-file_data ajout_data(char *nom, int line, unsigned int dec, char* op, int type, file_data l);
+file_data ajout_data(char *nom, int line, unsigned int dec, char* op, int type, file_data l,int etiq);
 
 void liberer_data(file_data l);
 
