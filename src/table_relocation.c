@@ -126,7 +126,7 @@ void liberer_table(table_reloc r){
     }
 }
 /* Cette fonction construit la table de relocation à partir des différentes collections */
-table_reloc remplirTableRelocationText(file_text co_text, file_data co_data, file_bss co_bss, file_symb co_symb, Liste_hach hach_inst)
+table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Liste_hach* hach_inst, file_jeu_instruction* file_erreur)
 {
  	table_reloc table = NULL;
  	/*Parcours de la collection des elements de .text*/
@@ -141,7 +141,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_data co_data, fil
           		if (!strcmp(f->identifiant, "Renvoie vers une étiquette"))
           		{
                     /* Si c'est une instruction de type J */
-                    if(!strcasecmp(rec_hachage_type(ft->nomInst, hach_inst), "J"))
+                    if(!strcasecmp(rec_hachage_type(ft->nomInst, hach_inst[hachage(ft->nomInst, dim_tab_instruction)]), "J"))
             		{
 					    /*2 cas : symbole déclaré dans ce fichier ou non déclaré dans ce fichier */
 					    if(!est_dans_file(f->caractere, co_symb)){
@@ -167,7 +167,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_data co_data, fil
                         char mot1[25];
                         char mot2[25];
                         char mot3[25];
-                        rec_hachage_type_instruction(ft->nomInst, hach_inst, mot1, mot2, mot3);
+                        rec_hachage_type_instruction(ft->nomInst, hach_inst[hachage(ft->nomInst, dim_tab_instruction)], mot1, mot2, mot3);
                         /* On identifie si le symbole correspond à un immediat ou à un relatif */
                         int isRel = 1;
                         if(i == 2){
@@ -180,30 +180,80 @@ table_reloc remplirTableRelocationText(file_text co_text, file_data co_data, fil
                         /* On traite chaque cas independamment */
                         /* Si c'est un immédiat */
                         if(!isRel){
-                            /*if(!est_dans_file(f->caractere, co_symb)){
-                                /* Si non déclaré dans le même fichier
-    						    table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
-    					    }else{
-                                /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient
-                                struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
-                                table = ajoutElement(table, ft->decalage, R_MIPS_LO16, ptr_symb->section, ptr_symb);
-    					    }*/
-                        }else{
                             if(!est_dans_file(f->caractere, co_symb)){
                                 /* Si non déclaré dans le même fichier */
-    						    table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, NULL);
+    						    table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
+    					    }else{
+                                /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
+                                struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+                                table = ajoutElement(table, ft->decalage, R_MIPS_LO16, ptr_symb->section, ptr_symb);
+    					    }
+                        }else{
+                            /*Si on a un relatif */
+                            if(!est_dans_file(f->caractere, co_symb)){
+                                /* Si non déclaré dans le même fichier */
+                                *file_erreur = enfiler("Saut relatif à une étiquette qui n'est pas dans ce fichier", f->caractere, ft->ligne, *file_erreur);
     					    }else{
                                 /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
                                 struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
-                                table = ajoutElement(table, ft->decalage, R_MIPS_26, ptr_symb->section, ptr_symb);
+                                int offset = ptr_symb->decalage - ft->decalage;
+                                if(offset < -32768 || offset > 32767){
+                                    *file_erreur = enfiler("Saut relatif trop grand", f->caractere, ft->ligne, *file_erreur);
+                                }else{
+                                    strcpy(f->identifiant, "ValeuDSC02738r Décimale");
+                                    sprintf(f->caractere, "%d", offset);
+                                }
     					    }
                         }
                     }
-				}
+				}else if (!strcmp(f->identifiant, "EtiquettePFort")){
+                    if(!est_dans_file(f->caractere, co_symb)){
+                        /* Si non déclaré dans le même fichier */
+                        table = ajoutElement(table, ft->decalage, R_MIPS_HI16, f->caractere, NULL);
+                    }else{
+                        /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
+                        struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+                        table = ajoutElement(table, ft->decalage, R_MIPS_HI16, ptr_symb->section, ptr_symb);
+                    }
+                }else if (!strcmp(f->identifiant, "EtiquettePFaible")){
+                    if(!est_dans_file(f->caractere, co_symb)){
+                        /* Si non déclaré dans le même fichier */
+                        table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
+                    }else{
+                        /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
+                        struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+                        table = ajoutElement(table, ft->decalage, R_MIPS_LO16, ptr_symb->section, ptr_symb);
+                    }
+                }
       			f = f->suiv;
+                printf("Pointeur d'arret : %p    pointeur de la liste parcourue : %p\n",ft->op, f);
   			}while(f != ft->op);
   			ft = ft->suiv;
+            printf("Instruction suivante");
 		}while(ft != co_text->suiv);
   	}
+    return table;
+}
+table_reloc remplirTableRelocationData(file_data co_data, file_symb co_symb, Liste_hach hach_inst, file_jeu_instruction* file_erreur)
+{
+    table_reloc table = NULL;
+ 	/*Parcours de la collection des elements de .text*/
+ 	file_data fd = co_data;
+ 	fd = fd->suiv;
+    if(!file_vide_data(co_data)){
+        do{
+            if(fd->etiquette){
+                if(!est_dans_file(fd->op.s, co_symb)){
+                    /* Si non déclaré dans le même fichier */
+                    table = ajoutElement(table, fd->decalage, R_MIPS_32, fd->op.s, NULL);
+                }else{
+                    /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
+                    struct cellulesymb* ptr_symb = recuperer_cellule_symb(fd->op.s, co_symb);
+                    table = ajoutElement(table, fd->decalage, R_MIPS_32, ptr_symb->section, ptr_symb);
+                }
+            }
+            fd = fd->suiv;
+        }while(fd != co_data->suiv);
+    }
     return table;
 }

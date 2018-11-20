@@ -15,7 +15,7 @@
 #include "file_text.h"
 #include "file_symb.h"
 #include "analyse_syntaxique.h"
-
+#include "table_relocation.h"
 /**
  * @ param exec Name of executable.
  * @ return Nothing.
@@ -135,7 +135,7 @@ int main ( int argc, char *argv[] ) {
 		tab_instruction[i]=creer_liste_hachage();
 	}
 	creation_liste_instruction(tab_instruction,dim_tab_instruction);
-	
+
 	/** variable interne contenant le code instancié **/
 	file_jeu_instruction file_lexeme=creer_file();
 	file_jeu_instruction file_erreur=creer_file();
@@ -153,13 +153,13 @@ int main ( int argc, char *argv[] ) {
 	DEBUG_MSG("Le code source contient %d lignes",nlines);
 
 	if(!(file_vide(file_lexeme))){
-		file_lexeme=modifie_instruction(file_lexeme);	
+		file_lexeme=modifie_instruction(file_lexeme);
 		/*verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);*/
 		file_lexeme=verif_delimiteur_suite(file_lexeme,&file_erreur);
 		file_lexeme=verif_remplacement_ecriture_registre(file_lexeme,&file_erreur,tab_registre);
 	}
 
-	
+
 	/*visualiser_file(file_lexeme);*/
 
 	/** Ecriture du code instancié dans le fichier **/
@@ -177,7 +177,7 @@ int main ( int argc, char *argv[] ) {
 	printf("**********************************************************\n");
 	}
 	else{
-		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");	
+		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 
 		/*analyse syntaxique*/
 
@@ -209,10 +209,9 @@ int main ( int argc, char *argv[] ) {
 
 	}
 
-	/*table_reloc a = NULL;
-	a = ajoutElement(a, 4, R_MIPS_26, ".text");
-	visualiser_table(a);
-	liberer_table(a);*/
+	table_reloc a = NULL;
+	a = remplirTableRelocationText(co_text, co_symb, tab_instruction, file_erreur);
+	liberer_table(a);
 
 
 
@@ -227,7 +226,7 @@ int main ( int argc, char *argv[] ) {
 	liberer_bss(co_bss);
 	liberer_text(co_text);
 	liberer_file(file_lexeme);
-	liberer_file(file_erreur);	
+	liberer_file(file_erreur);
 	liberer_tab_hachage(tab_registre, dim_tab_registre);
 	liberer_tab_hachage(tab_instruction, dim_tab_instruction);
 	fclose(fp);
