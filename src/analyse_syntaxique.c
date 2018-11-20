@@ -85,7 +85,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 {
 	file_jeu_instruction f = file;
 	file_jeu_instruction g=creer_file();
-	char*mot;
+	char*mot=NULL;
 	char copie[200];
 	char*instruction=NULL;
 	int nbop;
@@ -110,7 +110,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 			if(!strcmp(f->identifiant, "Instruction")){
 				while(!file_vide_symb(*co_text_attente)){
 					/*ajout dans la table des symboles*/
-					mot=defiler_symb(co_text_attente);
+					defiler_symb(co_text_attente,mot);
 					strcpy(copie,mot);
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_text,"TEXT", *co_symb);
 				}
@@ -192,7 +192,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, int* cpt_data, file_jeu_instruction *file_erreur, file_symb *co_symb,file_symb *co_data_attente)
 {
 	file_jeu_instruction f = file;
-	char*mot;
+	char*mot=NULL;
 	int vide =0;
 	char copie[200];
 	
@@ -213,7 +213,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 			if(!strcmp(f->caractere, ".space")){
 				while(!file_vide_symb(*co_data_attente)){
 					/*ajout dans la table des symboles*/
-					mot=defiler_symb(co_data_attente);
+					defiler_symb(co_data_attente,mot);
 					strcpy(copie,mot);
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 				}
@@ -222,7 +222,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 					if(!strcmp(f->identifiant, "Valeur Décimale") || !strcmp(f->identifiant, "Valeur Hexadécimale")){
 						/*Creer maillon data, ici il peut y avoir apres space soit un hex qui est deja transformee en dec ou un dec*/
 						/* au final c'est un dec quoi qu'il arrive et positif car on veut une taille*/
-						*co_data=ajout_data(".space", f->ligne, *cpt_data,f->caractere, 2, *co_data);
+						*co_data=ajout_data(".space", f->ligne, *cpt_data,f->caractere, 2, *co_data,0);
 						*cpt_data=(*cpt_data)+1;
 					}
 					else{
@@ -238,7 +238,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 					if(!strcmp(f->caractere, ".byte")){
 						while(!file_vide_symb(*co_data_attente)){
 							/*ajout dans la table des symboles*/
-							mot=defiler_symb(co_data_attente);
+							defiler_symb(co_data_attente,mot);
 							strcpy(copie,mot);
 							*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 						}
@@ -246,7 +246,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 						while(strcmp(f->identifiant, "Retour à la ligne")){
 							/*si inf a 127*/
 							if(!strcmp(f->identifiant, "Valeur Décimale")&& atoi(f->caractere)<127){
-								*co_data=ajout_data(".byte", f->ligne, *cpt_data, f->caractere, 2, *co_data);
+								*co_data=ajout_data(".byte", f->ligne, *cpt_data, f->caractere, 2, *co_data,0);
 								*cpt_data=(*cpt_data)+1;
 							}
 							/*si sup à -128*/
@@ -255,14 +255,14 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 									char*mot2=calloc(200,sizeof(char));
 									strcat(mot2,f->caractere);
 									strcat(mot2,f->suiv->caractere);
-									*co_data=ajout_data(".byte", f->ligne, *cpt_data,mot2, 2, *co_data);
+									*co_data=ajout_data(".byte", f->ligne, *cpt_data,mot2, 2, *co_data,0);
 									*cpt_data=(*cpt_data)+1;
 									free(mot2);
 								}
 								else{
 									/*hexa compris entre 0x0 et 0xff*/
 									if(!strcmp(f->identifiant, "Valeur Hexadécimale")&& atoi(f->caractere)<256){
-										*co_data=ajout_data(".byte", f->ligne, *cpt_data,f->caractere, 2, *co_data);
+										*co_data=ajout_data(".byte", f->ligne, *cpt_data,f->caractere, 2, *co_data,0);
 										*cpt_data=(*cpt_data)+1;
 									}
 									else{
@@ -285,14 +285,14 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 							}
 							while(!file_vide_symb(*co_data_attente)){
 								/*ajout dans la table des symboles*/
-								mot=defiler_symb(co_data_attente);
+								defiler_symb(co_data_attente,mot);
 								strcpy(copie,mot);
 								*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 							}
 							f=f->suiv;
 							while(strcmp(f->identifiant, "Retour à la ligne")){
 								if(!strcmp(f->identifiant, "Valeur Décimale")|| !strcmp(f->identifiant, "Valeur Hexadécimale")){
-									*co_data=ajout_data(".word", f->ligne, *cpt_data, f->caractere, 2, *co_data);
+									*co_data=ajout_data(".word", f->ligne, *cpt_data, f->caractere, 2, *co_data,0);
 									*cpt_data=(*cpt_data)+4;
 								}
 								else{
@@ -301,13 +301,13 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 										char*mot2=calloc(200,sizeof(char));
 										strcat(mot2,f->caractere);
 										strcat(mot2,f->suiv->caractere);
-										*co_data=ajout_data(".word", f->ligne, *cpt_data,mot2, 2, *co_data);
+										*co_data=ajout_data(".word", f->ligne, *cpt_data,mot2, 2, *co_data,0);
 										*cpt_data=(*cpt_data)+4;
 										free(mot2);
 									}
 									else{
 										if(!strcmp(f->identifiant, "Renvoie vers une étiquette")){
-											*co_data=ajout_data(".word", f->ligne, *cpt_data,f->caractere, 4, *co_data);
+											*co_data=ajout_data(".word", f->ligne, *cpt_data,f->caractere, 4, *co_data,1);
 											*cpt_data=(*cpt_data)+4;
 										}
 										else{
@@ -325,7 +325,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 							if(!strcmp(f->caractere, ".asciiz")){
 								while(!file_vide_symb(*co_data_attente)){
 									/*ajout dans la table des symboles*/
-									mot=defiler_symb(co_data_attente);
+									defiler_symb(co_data_attente,mot);
 									strcpy(copie,mot);
 									*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 								}
@@ -347,7 +347,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 								}
 								free(mot1);
 								if(vide==1){
-									*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data);
+									*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
 									*cpt_data=(*cpt_data)+strlen(mot1);
 								}
 							}
@@ -373,7 +373,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int* cpt_bss, file_jeu_instruction *file_erreur, file_symb *co_symb, file_symb *co_bss_attente)
 {
 	file_jeu_instruction f = file;
-	char*mot;
+	char*mot=NULL;
 	char copie[200];
 	
 	/*les cas ou on ne fait rien .bss, : et retour ligne*/
@@ -393,7 +393,7 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 			if(!strcmp(f->caractere, ".space")){
 				while(!file_vide_symb(*co_bss_attente)){
 					/*ajout dans la table des symboles*/
-					mot=defiler_symb(co_bss_attente);
+					defiler_symb(co_bss_attente,mot);
 					strcpy(copie,mot);
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_bss,"BSS", *co_symb);
 
@@ -458,10 +458,11 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
 					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
 					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
+					*cpt_text=*cpt_text+4;
 					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
 					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
 					*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,i);
-					*cpt_text=*cpt_text+8;
+					*cpt_text=*cpt_text+4;
 				}
 			}
 		}
@@ -488,10 +489,11 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
 					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
 					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
+					*cpt_text=*cpt_text+4;
 					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
 					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
 					*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,i);
-					*cpt_text=*cpt_text+8;
+					*cpt_text=*cpt_text+4;
 				}
 				}
 			}
