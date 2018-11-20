@@ -442,24 +442,24 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 				*cpt_text=*cpt_text+4;
 			}
 			else{
-				if(strcmp(g->identifiant,"Valeur Décimale")==0||strcmp(g->identifiant,"Valeur Hexadécimale")==0){
+				if(strcmp(g->identifiant,"Etiquette")==0){
 					file_jeu_instruction h=creer_file();
 					file_jeu_instruction i=creer_file();
-					unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
+					/*unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
 					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
 					char o_p_fort[30],o_p_faible[30];
 					sprintf(o_p_fort, "%d",octet_pfort);
 					sprintf(o_p_faible, "%d",octet_pfaible);
-					/*printf("poids faible %s\n",o_p_faible);
-					printf("poids fort %s\n",o_p_fort);*/
+					printf("poids faible %s\n",o_p_faible);
+					printf("poids fort %s\n",o_p_fort);
 					strcat(o_p_faible,"(");
 					strcat(o_p_faible,g->suiv->caractere);
-					strcat(o_p_faible,")");
+					strcat(o_p_faible,")");*/
 					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
-					h=enfiler("Valeur Décimale",o_p_fort,ligne,h);
+					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
 					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
 					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
-					i=enfiler("Baseoffset",o_p_faible,ligne,i);
+					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
 					*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,i);
 					*cpt_text=*cpt_text+8;
 				}
@@ -472,24 +472,24 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 				*cpt_text=*cpt_text+4;
 			}
 			else{
-				if(strcmp(g->identifiant,"Valeur Décimale")==0||strcmp(g->identifiant,"Valeur Hexadécimale")==0){
+				if(strcmp(g->identifiant,"Etiquette")==0){
 					file_jeu_instruction h=creer_file();
 					file_jeu_instruction i=creer_file();
-					unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
+					/*unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
 					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
 					char o_p_fort[30],o_p_faible[30];
 					sprintf(o_p_fort, "%d",octet_pfort);
 					sprintf(o_p_faible, "%d",octet_pfaible);
-					/*printf("poids faible %s\n",o_p_faible);
-					printf("poids fort %s\n",o_p_fort);*/
+					printf("poids faible %s\n",o_p_faible);
+					printf("poids fort %s\n",o_p_fort);
 					strcat(o_p_faible,"(");
 					strcat(o_p_faible,g->suiv->caractere);
-					strcat(o_p_faible,")");
+					strcat(o_p_faible,")");*/
 					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
-					h=enfiler("Valeur Décimale",o_p_fort,ligne,h);
+					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
 					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
 					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
-					i=enfiler("Baseoffset",o_p_faible,ligne,i);
+					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
 					*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,i);
 					*cpt_text=*cpt_text+8;
 				}
@@ -661,7 +661,12 @@ void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,
 		}
 	}
 	else{
-		*file_erreur = enfiler("Type Immediat attendu", f->identifiant, a->ligne, *file_erreur);
+		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0){
+			return;
+		}
+		else{
+			*file_erreur = enfiler("Type Immediat attendu", f->identifiant, a->ligne, *file_erreur);
+		}
 	}
 }
 
@@ -689,7 +694,12 @@ void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,f
 		}
 	}
 	else{
-		*file_erreur = enfiler("Type Relatif attendu", f->identifiant, a->ligne, *file_erreur);
+		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0){
+			return;
+		}
+		else{
+			*file_erreur = enfiler("Type Relatif attendu", f->identifiant, a->ligne, *file_erreur);
+		}
 	}
 }
 
@@ -703,6 +713,11 @@ void verif_absolu_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,fi
 		}
 	}
 	else{
-		*file_erreur = enfiler("Type Absolu attendu", f->identifiant, a->ligne, *file_erreur);
+		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0){
+			return;
+		}
+		else{
+			*file_erreur = enfiler("Type Absolu attendu", f->identifiant, a->ligne, *file_erreur);
+		}
 	}
 }

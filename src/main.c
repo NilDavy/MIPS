@@ -160,7 +160,7 @@ int main ( int argc, char *argv[] ) {
 	}
 
 	
-	visualiser_file(file_lexeme);
+	/*visualiser_file(file_lexeme);*/
 
 	/** Ecriture du code instancié dans le fichier **/
 
@@ -173,7 +173,7 @@ int main ( int argc, char *argv[] ) {
 		WARNING_MSG("Il y a des erreurs de lexique dans le code source !");
 		printf("************************  ERREUR  ************************\n \n");
 
-		visualiser_file(file_erreur);
+		/*visualiser_file(file_erreur);*/
 		ecrire_file(file_erreur, f_erreur);
 	printf("**********************************************************\n");
 	}

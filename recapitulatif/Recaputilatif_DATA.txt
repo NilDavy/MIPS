@@ -1,0 +1,3 @@
+Nom instruction : .word	 Ligne : 22	 Decalage : 0	Opérande : 12
+Nom instruction : .asciiz	 Ligne : 23	 Decalage : 4	Opérande : "ils disent : \"au ruuu!\""
+Nom instruction : .word	 Ligne : 24	 Decalage : 32	Opérande : MENU
