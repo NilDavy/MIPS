@@ -121,6 +121,15 @@ int main ( int argc, char *argv[] ) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier SYMB\n" );
 		exit(EXIT_FAILURE);
 	}
+
+	/** ouverture ou creation du fichier contenant la table de relocation**/
+	FILE*f_reloc=NULL;
+	f_reloc=fopen("recapitulatif/Reloacation.txt", "wt");
+	if (f_reloc == NULL) {
+		fprintf( stderr, "Erreur sur l'ouverture du fichier table de relocation\n" );
+		exit(EXIT_FAILURE);
+	}
+
 	/** creation des tableaux pour les tables de hachages des instructions et des registres **/
 
 	Liste_hach tab_registre[dim_tab_registre];
@@ -209,11 +218,18 @@ int main ( int argc, char *argv[] ) {
 
 	}
 
-	table_reloc a = NULL;
-	a = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
-	visualiser_table(a);
-	liberer_table(a);
-
+	table_reloc reloc_text = NULL;
+	table_reloc reloc_data = NULL;
+	reloc_text = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
+	reloc_data = remplirTableRelocationData(co_data, co_symb, tab_instruction, &file_erreur);
+	visualiser_table(reloc_text);
+	visualiser_table(reloc_data);
+	fprintf(f_reloc, "[.rel.text]\n Offset\t Type\t Value\n");
+	ecrire_table(reloc_text, f_reloc);
+	fprintf(f_reloc, "[.rel.data]\n Offset\t Type\t Value\n");
+	ecrire_table(reloc_data, f_reloc);
+	liberer_table(reloc_text);
+	liberer_table(reloc_data);
 
 
 	/* ---------------- Free memory and terminate -------------------*/
@@ -236,5 +252,6 @@ int main ( int argc, char *argv[] ) {
 	fclose(f_data);
 	fclose(f_text);
 	fclose(f_symb);
+	fclose(f_reloc);
 	exit( EXIT_SUCCESS );
 }

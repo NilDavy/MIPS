@@ -1,0 +1,41 @@
+Nom instruction : ADDI	 Ligne : 7	 Nombre d'opérandes : 3	 Decalage : 0
+Ligne : 7	 Registre	 $9
+
+Ligne : 7	 Registre	 $10
+
+Ligne : 7	 Valeur Décimale	 8
+
+Nom instruction : BEQ	 Ligne : 10	 Nombre d'opérandes : 3	 Decalage : 4
+Ligne : 10	 Registre	 $8
+
+Ligne : 10	 Registre	 $9
+
+Ligne : 10	 Renvoie vers une étiquette	 BYEBYE
+
+Nom instruction : SLL	 Ligne : 11	 Nombre d'opérandes : 3	 Decalage : 8
+Ligne : 11	 Registre	 $0
+
+Ligne : 11	 Registre	 $0
+
+Ligne : 11	 Valeur Décimale	 0
+
+Nom instruction : ADDI	 Ligne : 12	 Nombre d'opérandes : 3	 Decalage : 12
+Ligne : 12	 Registre	 $9
+
+Ligne : 12	 Registre	 $9
+
+Ligne : 12	 Valeur Décimale	 1
+
+Nom instruction : J	 Ligne : 13	 Nombre d'opérandes : 1	 Decalage : 16
+Ligne : 13	 Renvoie vers une étiquette	 BOUCLE
+
+Nom instruction : SLL	 Ligne : 14	 Nombre d'opérandes : 3	 Decalage : 20
+Ligne : 14	 Registre	 $0
+
+Ligne : 14	 Registre	 $0
+
+Ligne : 14	 Valeur Décimale	 0
+
+Nom instruction : JAL	 Ligne : 17	 Nombre d'opérandes : 1	 Decalage : 24
+Ligne : 17	 Renvoie vers une étiquette	 BOUCL
+
