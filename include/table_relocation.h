@@ -21,6 +21,6 @@ void ecrire_table(table_reloc r, FILE* a);
 void liberer_table(table_reloc r);
 
 table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Liste_hach* hach_inst, file_jeu_instruction* file_erreur);
-table_reloc remplirTableRelocationData(file_data co_data, file_symb co_symb, Liste_hach hach_inst, file_jeu_instruction* file_erreur);
+table_reloc remplirTableRelocationData(file_data co_data, file_symb co_symb, Liste_hach* hach_inst, file_jeu_instruction* file_erreur);
 
 #endif

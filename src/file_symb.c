@@ -125,7 +125,8 @@ int est_dans_file(char* symb, file_symb f)
 	do{
 		if(!strcmp(symb, f->nom))
 			return 1;
-	}while(s->suiv != f);
+		s = s->suiv;
+	}while(s!= f);
 	return 0;
 }
 struct cellulesymb* recuperer_cellule_symb(char* symb, file_symb s){

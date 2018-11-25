@@ -140,6 +140,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
         	    /*Si un des opérandes est un renvoie vers une étiquette*/
           		if (!strcmp(f->identifiant, "Renvoie vers une étiquette"))
           		{
+                    printf("Renvoie vers l'étiquette : \" %s\" trouvée \n", f->caractere);
                     /* Si c'est une instruction de type J */
                     if(!strcasecmp(rec_hachage_type(ft->nomInst, hach_inst[hachage(ft->nomInst, dim_tab_instruction)]), "J"))
             		{
@@ -184,7 +185,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                                 /* Si non déclaré dans le même fichier */
     						    table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
     					    }else{
-                                /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
+                                /*Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
                                 struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
                                 table = ajoutElement(table, ft->decalage, R_MIPS_LO16, ptr_symb->section, ptr_symb);
     					    }
@@ -192,21 +193,24 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                             /*Si on a un relatif */
                             if(!est_dans_file(f->caractere, co_symb)){
                                 /* Si non déclaré dans le même fichier */
+                                printf("");
                                 *file_erreur = enfiler("Saut relatif à une étiquette qui n'est pas dans ce fichier", f->caractere, ft->ligne, *file_erreur);
     					    }else{
                                 /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
+
                                 struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
                                 int offset = ptr_symb->decalage - ft->decalage;
                                 if(offset < -32768 || offset > 32767){
                                     *file_erreur = enfiler("Saut relatif trop grand", f->caractere, ft->ligne, *file_erreur);
                                 }else{
-                                    strcpy(f->identifiant, "ValeuDSC02738r Décimale");
+                                    strcpy(f->identifiant, "Valeur Décimale");
                                     sprintf(f->caractere, "%d", offset);
                                 }
     					    }
                         }
                     }
 				}else if (!strcmp(f->identifiant, "EtiquettePFort")){
+                    printf("Renvoie vers l'étiquette (relocation poid fort) : \" %s\" trouvée \n", f->caractere);
                     if(!est_dans_file(f->caractere, co_symb)){
                         /* Si non déclaré dans le même fichier */
                         table = ajoutElement(table, ft->decalage, R_MIPS_HI16, f->caractere, NULL);
@@ -216,6 +220,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                         table = ajoutElement(table, ft->decalage, R_MIPS_HI16, ptr_symb->section, ptr_symb);
                     }
                 }else if (!strcmp(f->identifiant, "EtiquettePFaible")){
+                    printf("Renvoie vers l'étiquette (relocation poid faible) : \" %s\" trouvée \n", f->caractere);
                     if(!est_dans_file(f->caractere, co_symb)){
                         /* Si non déclaré dans le même fichier */
                         table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
@@ -226,15 +231,11 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                     }
                 }
       			f = f->suiv;
-                printf("Pointeur d'arret : %p    pointeur de la liste parcourue : %p\n",ft->op, f);
-                if(f != ft->op){
-                    goto suite;
-                }
   			}while(f != ft->op);
-            suite :
   			ft = ft->suiv;
-            printf("Instruction suivante");
+
 		}while(ft != co_text->suiv);
+        printf("Fin du parcours des instruction\n");
   	}
     return table;
 }

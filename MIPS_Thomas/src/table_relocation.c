@@ -228,7 +228,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
       			f = f->suiv;
                 printf("Pointeur d'arret : %p    pointeur de la liste parcourue : %p\n",ft->op, f);
   			}while(f != ft->op);
-  			ft = ft->suiv;
+  			/*ft = ft->suiv;*/
             printf("Instruction suivante");
 		}while(ft != co_text->suiv);
   	}

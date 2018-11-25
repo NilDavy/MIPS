@@ -1,0 +1,196 @@
+Ligne : 1	 Commentaire	 #
+
+Ligne : 1	 Commentaire	 TEST_RETURN_CODE
+
+Ligne : 1	 Commentaire	 =
+
+Ligne : 1	 Commentaire	 PASS
+
+Ligne : 1	 Retour à la ligne	  
+
+Ligne : 2	 Commentaire	 #allons
+
+Ligne : 2	 Commentaire	 au
+
+Ligne : 2	 Commentaire	 ru
+
+Ligne : 2	 Retour à la ligne	  
+
+Ligne : 3	 Directive	 .set
+
+Ligne : 3	 Retour à la ligne	  
+
+Ligne : 4	 Directive	 .text
+
+Ligne : 4	 Retour à la ligne	  
+
+Ligne : 5	 Instruction	 LW
+
+Ligne : 5	 Registre	 $8
+
+Ligne : 5	 Délimiteur	 ,
+
+Ligne : 5	 Renvoie vers une étiquette	 LUNCHTIME
+
+Ligne : 5	 Retour à la ligne	  
+
+Ligne : 6	 Instruction	 LW
+
+Ligne : 6	 Registre	 &12
+
+Ligne : 6	 Délimiteur	 ,
+
+Ligne : 6	 Délimiteur	 -
+
+Ligne : 6	 Valeur Décimale	 200
+
+Ligne : 6	 Délimiteur	 (
+
+Ligne : 6	 Registre	 $7
+
+Ligne : 6	 Délimiteur	 )
+
+Ligne : 6	 Retour à la ligne	  
+
+Ligne : 7	 Instruction	 ADDI
+
+Ligne : 7	 Registre	 $9
+
+Ligne : 7	 Délimiteur	 ,
+
+Ligne : 7	 Registre	 $10
+
+Ligne : 7	 Délimiteur	 ,
+
+Ligne : 7	 Valeur Décimale	 8
+
+Ligne : 7	 Retour à la ligne	  
+
+Ligne : 8	 Etiquette	 BOUCLE
+
+Ligne : 8	 Délimiteur	 :
+
+Ligne : 8	 Retour à la ligne	  
+
+Ligne : 9	 Etiquette	 ADD
+
+Ligne : 9	 Délimiteur	 :
+
+Ligne : 9	 Retour à la ligne	  
+
+Ligne : 10	 Instruction	 BEQ
+
+Ligne : 10	 Registre	 $8
+
+Ligne : 10	 Délimiteur	 ,
+
+Ligne : 10	 Registre	 $9
+
+Ligne : 10	 Délimiteur	 ,
+
+Ligne : 10	 Renvoie vers une étiquette	 BYEBYE
+
+Ligne : 10	 Commentaire	 #
+
+Ligne : 10	 Commentaire	 test
+
+Ligne : 10	 Retour à la ligne	  
+
+Ligne : 11	 Instruction	 NOP
+
+Ligne : 11	 Retour à la ligne	  
+
+Ligne : 12	 Instruction	 ADDI
+
+Ligne : 12	 Registre	 $9
+
+Ligne : 12	 Délimiteur	 ,
+
+Ligne : 12	 Registre	 $9
+
+Ligne : 12	 Délimiteur	 ,
+
+Ligne : 12	 Valeur Décimale	 1
+
+Ligne : 12	 Retour à la ligne	  
+
+Ligne : 13	 Instruction	 J
+
+Ligne : 13	 Renvoie vers une étiquette	 BOUCLE
+
+Ligne : 13	 Retour à la ligne	  
+
+Ligne : 14	 Instruction	 NOP
+
+Ligne : 14	 Retour à la ligne	  
+
+Ligne : 16	 Etiquette	 BYEBYE
+
+Ligne : 16	 Délimiteur	 :
+
+Ligne : 16	 Retour à la ligne	  
+
+Ligne : 17	 Instruction	 JAL
+
+Ligne : 17	 Renvoie vers une étiquette	 BOUCL
+
+Ligne : 17	 Retour à la ligne	  
+
+Ligne : 19	 Directive	 .data
+
+Ligne : 19	 Retour à la ligne	  
+
+Ligne : 20	 Etiquette	 LUNCHTIME
+
+Ligne : 20	 Délimiteur	 :
+
+Ligne : 20	 Retour à la ligne	  
+
+Ligne : 21	 Etiquette	 TEST
+
+Ligne : 21	 Délimiteur	 :
+
+Ligne : 21	 Retour à la ligne	  
+
+Ligne : 22	 Directive	 .word
+
+Ligne : 22	 Valeur Décimale	 12
+
+Ligne : 22	 Retour à la ligne	  
+
+Ligne : 23	 Directive	 .asciiz
+
+Ligne : 23	 Chaine de caractère	 "ils
+
+Ligne : 23	 Chaine de caractère	 disent
+
+Ligne : 23	 Chaine de caractère	 :
+
+Ligne : 23	 Chaine de caractère	 \"au
+
+Ligne : 23	 Chaine de caractère	 ruuu!\""
+
+Ligne : 23	 Retour à la ligne	  
+
+Ligne : 24	 Directive	 .word
+
+Ligne : 24	 Renvoie vers une étiquette	 MENU
+
+Ligne : 24	 Retour à la ligne	  
+
+Ligne : 26	 Directive	 .bss
+
+Ligne : 26	 Retour à la ligne	  
+
+Ligne : 28	 Etiquette	 MENU
+
+Ligne : 28	 Délimiteur	 :
+
+Ligne : 28	 Retour à la ligne	  
+
+Ligne : 29	 Directive	 .space
+
+Ligne : 29	 Valeur Décimale	 24
+
+Ligne : 29	 Retour à la ligne	  
+

@@ -211,6 +211,7 @@ int main ( int argc, char *argv[] ) {
 
 	table_reloc a = NULL;
 	a = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
+	visualiser_table(a);
 	liberer_table(a);
 
 
