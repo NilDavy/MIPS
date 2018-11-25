@@ -210,7 +210,7 @@ int main ( int argc, char *argv[] ) {
 	}
 
 	table_reloc a = NULL;
-	a = remplirTableRelocationText(co_text, co_symb, tab_instruction, file_erreur);
+	a = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
 	liberer_table(a);
 
 

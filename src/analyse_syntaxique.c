@@ -222,7 +222,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 					if(!strcmp(f->identifiant, "Valeur Décimale") || !strcmp(f->identifiant, "Valeur Hexadécimale")){
 						/*Creer maillon data, ici il peut y avoir apres space soit un hex qui est deja transformee en dec ou un dec*/
 						/* au final c'est un dec quoi qu'il arrive et positif car on veut une taille*/
-						*co_data=ajout_data(".space", f->ligne, *cpt_data,f->caractere, 2, *co_data);
+						*co_data=ajout_data(".space", f->ligne, *cpt_data,f->caractere, 2, *co_data,0);
 						*cpt_data=(*cpt_data)+1;
 					}
 					else{
@@ -246,7 +246,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 						while(strcmp(f->identifiant, "Retour à la ligne")){
 							/*si inf a 127*/
 							if(!strcmp(f->identifiant, "Valeur Décimale")&& atoi(f->caractere)<127){
-								*co_data=ajout_data(".byte", f->ligne, *cpt_data, f->caractere, 2, *co_data);
+								*co_data=ajout_data(".byte", f->ligne, *cpt_data, f->caractere, 2, *co_data,0);
 								*cpt_data=(*cpt_data)+1;
 							}
 							/*si sup à -128*/
@@ -255,14 +255,14 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 									char*mot2=calloc(200,sizeof(char));
 									strcat(mot2,f->caractere);
 									strcat(mot2,f->suiv->caractere);
-									*co_data=ajout_data(".byte", f->ligne, *cpt_data,mot2, 2, *co_data);
+									*co_data=ajout_data(".byte", f->ligne, *cpt_data,mot2, 2, *co_data,0);
 									*cpt_data=(*cpt_data)+1;
 									free(mot2);
 								}
 								else{
 									/*hexa compris entre 0x0 et 0xff*/
 									if(!strcmp(f->identifiant, "Valeur Hexadécimale")&& atoi(f->caractere)<256){
-										*co_data=ajout_data(".byte", f->ligne, *cpt_data,f->caractere, 2, *co_data);
+										*co_data=ajout_data(".byte", f->ligne, *cpt_data,f->caractere, 2, *co_data,0);
 										*cpt_data=(*cpt_data)+1;
 									}
 									else{
@@ -292,7 +292,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 							f=f->suiv;
 							while(strcmp(f->identifiant, "Retour à la ligne")){
 								if(!strcmp(f->identifiant, "Valeur Décimale")|| !strcmp(f->identifiant, "Valeur Hexadécimale")){
-									*co_data=ajout_data(".word", f->ligne, *cpt_data, f->caractere, 2, *co_data);
+									*co_data=ajout_data(".word", f->ligne, *cpt_data, f->caractere, 2, *co_data,0);
 									*cpt_data=(*cpt_data)+4;
 								}
 								else{
@@ -301,13 +301,13 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 										char*mot2=calloc(200,sizeof(char));
 										strcat(mot2,f->caractere);
 										strcat(mot2,f->suiv->caractere);
-										*co_data=ajout_data(".word", f->ligne, *cpt_data,mot2, 2, *co_data);
+										*co_data=ajout_data(".word", f->ligne, *cpt_data,mot2, 2, *co_data,0);
 										*cpt_data=(*cpt_data)+4;
 										free(mot2);
 									}
 									else{
 										if(!strcmp(f->identifiant, "Renvoie vers une étiquette")){
-											*co_data=ajout_data(".word", f->ligne, *cpt_data,f->caractere, 4, *co_data);
+											*co_data=ajout_data(".word", f->ligne, *cpt_data,f->caractere, 4, *co_data,1);
 											*cpt_data=(*cpt_data)+4;
 										}
 										else{
@@ -347,7 +347,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 								}
 								free(mot1);
 								if(vide==1){
-									*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data);
+									*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
 									*cpt_data=(*cpt_data)+strlen(mot1);
 								}
 							}
@@ -374,7 +374,7 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 {
 	file_jeu_instruction f = file;
 	char*mot;
-	char copie[200];Absolu at
+	char copie[200];
 
 	/*les cas ou on ne fait rien .bss, : et retour ligne*/
 	if (!(strcmp(f->caractere, ".bss"))||!(strcmp(f->caractere, ":"))||!(strcmp(f->identifiant, "Retour à la ligne"))){
@@ -401,7 +401,7 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 
 				f=f->suiv;
 				while(strcmp(f->identifiant, "Retour à la ligne")){
-					if(!strcmp(Absolu atf->identifiant, "Valeur Décimale") || !strcmp(f->identifiant, "Valeur Hexadécimale")){
+					if(!strcmp(f->identifiant, "Valeur Décimale") || !strcmp(f->identifiant, "Valeur Hexadécimale")){
 						/*Creer maillon bss, ici il peut y avoir apres space soit un hex qui est deja transformee en dec ou un dec*/
 						/* au final c'est un dec quoi qu'il arrive et positif car on veut une taille*/
 						*co_bss=ajout_bss(".space", f->ligne, *cpt_bss,f->caractere, 2, *co_bss);
@@ -661,6 +661,9 @@ void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,
 		}
 	}
 	else{
+		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0){
+			return;
+		}
 		*file_erreur = enfiler("Type Immediat attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }
@@ -689,6 +692,9 @@ void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,f
 		}
 	}
 	else{
+		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0){
+			return;
+		}
 		*file_erreur = enfiler("Type Relatif attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }
@@ -703,6 +709,9 @@ void verif_absolu_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,fi
 		}
 	}
 	else{
+		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0){
+			return;
+		}
 		*file_erreur = enfiler("Type Absolu attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }
