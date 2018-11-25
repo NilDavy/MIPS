@@ -123,8 +123,9 @@ int est_dans_file(char* symb, file_symb f)
 	if(file_vide_symb(f))
 		return 0;
 	do{
-		if(!strcmp(symb, f->nom))
+		if(!strcasecmp(symb, s->nom)){
 			return 1;
+		}
 		s = s->suiv;
 	}while(s!= f);
 	return 0;

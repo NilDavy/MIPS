@@ -10,7 +10,12 @@ table_reloc ajoutElement(table_reloc r, int offset, enum type_reloc tr, char* va
       }
       r->offset = offset;
       r->type = tr;
-      strcpy(r->value, value);
+      if(symbole == NULL){
+        strcpy(r->value, value);
+      }
+      else{
+          strcpy(r->value, symbole->section);
+      }
       r->suiv = r;
       r->symb = symbole;
       return r;
@@ -24,7 +29,12 @@ table_reloc ajoutElement(table_reloc r, int offset, enum type_reloc tr, char* va
       }
       a->offset = offset;
       a->type = tr;
-      strcpy(a->value, value);
+      if(symbole == NULL){
+          strcpy(a->value, value);
+      }
+      else{
+          strcpy(a->value, symbole->section);
+      }
       a->symb = symbole;
       a->suiv = r->suiv;
       r->suiv = a;
@@ -147,6 +157,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
 					    /*2 cas : symbole déclaré dans ce fichier ou non déclaré dans ce fichier */
 					    if(!est_dans_file(f->caractere, co_symb)){
                             /* Si non déclaré dans le même fichier */
+                            printf("L'étiquette : \" %s \" n'est pas déclarée dans ce fichier  \n", f->caractere);
 						    table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, NULL);
 					    }else{
                             /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
@@ -181,7 +192,9 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                         /* On traite chaque cas independamment */
                         /* Si c'est un immédiat */
                         if(!isRel){
+                            printf("L'étiquette : \" %s \" est un immédiat  \n", f->caractere);
                             if(!est_dans_file(f->caractere, co_symb)){
+                                printf("L'étiquette : \" %s \" n'est pas déclarée dans ce fichier  \n", f->caractere);
                                 /* Si non déclaré dans le même fichier */
     						    table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
     					    }else{
@@ -191,13 +204,14 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
     					    }
                         }else{
                             /*Si on a un relatif */
+                            printf("L'étiquette : \" %s \" est un relatif  \n", f->caractere);
                             if(!est_dans_file(f->caractere, co_symb)){
                                 /* Si non déclaré dans le même fichier */
-                                printf("");
+                                printf("L'étiquette : \" %s \" est un relatif non déclaré \n", f->caractere);
                                 *file_erreur = enfiler("Saut relatif à une étiquette qui n'est pas dans ce fichier", f->caractere, ft->ligne, *file_erreur);
     					    }else{
                                 /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
-
+                                printf("L'étiquette : \" %s \" est déclarée dans ce fichier  \n", f->caractere);
                                 struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
                                 int offset = ptr_symb->decalage - ft->decalage;
                                 if(offset < -32768 || offset > 32767){
@@ -239,7 +253,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
   	}
     return table;
 }
-table_reloc remplirTableRelocationData(file_data co_data, file_symb co_symb, Liste_hach hach_inst, file_jeu_instruction* file_erreur)
+table_reloc remplirTableRelocationData(file_data co_data, file_symb co_symb, Liste_hach* hach_inst, file_jeu_instruction* file_erreur)
 {
     table_reloc table = NULL;
  	/*Parcours de la collection des elements de .text*/
