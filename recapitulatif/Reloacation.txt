@@ -1,7 +1,0 @@
-[.rel.text]
- Offset	 Type	 Value
-16 R_MIPS_26 TEXT
-24 R_MIPS_26 BOUCL
-[.rel.data]
- Offset	 Type	 Value
-32 R_MIPS_32 BSS
