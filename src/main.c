@@ -139,11 +139,11 @@ int main ( int argc, char *argv[] ) {
 
 
 	Liste_hach tab_instruction[dim_tab_instruction];
+
 	for(i=0;i<dim_tab_instruction;i++){
 		tab_instruction[i]=creer_liste_hachage();
 	}
 	creation_liste_instruction(tab_instruction,dim_tab_instruction);
-
 
 	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);
 	visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
@@ -151,7 +151,7 @@ int main ( int argc, char *argv[] ) {
 	/** variable interne contenant le code instancié **/
 	file_jeu_instruction file_lexeme=creer_file();
 	file_jeu_instruction file_erreur=creer_file();
-
+	
 	file_text co_text=creerfile_text();
 	file_bss co_bss=creerfile_bss();
 	file_data co_data=creerfile_data();
@@ -161,6 +161,7 @@ int main ( int argc, char *argv[] ) {
 	file_symb co_bss_attente=creerfile_symb();
 	table_reloc reloc_text = NULL;
 	table_reloc reloc_data = NULL;
+
 	/* ---------------- do the lexical analysis -------------------*/
 	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
 	DEBUG_MSG("Le code source contient %d lignes",nlines);
@@ -194,14 +195,16 @@ int main ( int argc, char *argv[] ) {
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 
 		/*analyse syntaxique*/
-
 		analyse_syntaxique(tab_instruction,&file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente);
-
+		
 		/* Remplissage table de relocation */
-		reloc_text = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
+		
+		if(!file_vide_data(co_data)){
 		reloc_data = remplirTableRelocationData(co_data,co_symb, tab_instruction, &file_erreur);
+		}
 
 		if(!file_vide_text(co_text)){
+			reloc_text = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
 			verif_operande(co_text,&file_erreur,tab_instruction,tab_registre);
 		}
 

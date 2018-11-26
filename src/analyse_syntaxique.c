@@ -16,7 +16,7 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction*file, fi
 
 
 
-		/*ici on regarde dans quelle section on se trouve avec une priorité mise en place si on change de section (.qqch avant l'etat courant*/
+		/*ici on regarde dans quelle section on se trouve avec une priorité mise en place si on change de section (.qqch avant l'etat courant)*/
 
 		if(!strcmp(g->caractere, ".text")){
 			/*printf("text\n");
@@ -119,6 +119,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 
 				/*recherche nombre d'opération*/
 				nbop=rec_hachage_nbparam(instruction, tab_instruction[hachage(instruction, dim_tab_instruction)]);
+				verif = 0;
 				while(strcmp(f->identifiant,"Retour à la ligne")){
 					f=f->suiv;
 					char*mot1=calloc(200,sizeof(char));
@@ -127,7 +128,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 					file_jeu_instruction verif_file=creer_file();
 
 					/*on concatene si base offset*/
-					while(strcmp(f->identifiant, "Retour à la ligne") && strcmp(f->caractere, ",")){
+					while(strcmp(f->identifiant, "Retour à la ligne")!=0 && strcmp(f->caractere, ",")!=0){
 						strcat(mot1,f->caractere);
 						strcat(identifiant,f->identifiant);
 						concatenation=concatenation+1;
@@ -147,7 +148,13 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 								verif=verif+1;
 							}
 							else{
-								*file_erreur = enfiler("Erreur Base Offset", mot1, f->ligne, *file_erreur);
+								if((strcmp(verif_file->suiv->caractere,"+")==0||strcmp(verif_file->suiv->caractere,"-")==0)&&(strcmp(verif_file->suiv->suiv->identifiant,"Valeur Décimale")==0||strcmp(verif_file->suiv->suiv->identifiant,"Valeur Hexadécimale")==0)){
+									g=enfiler("Valeur Décimale",mot1,f->ligne,g);
+									verif=verif+1;
+								}
+								else{
+									*file_erreur = enfiler("Erreur Base Offset", mot1, f->ligne, *file_erreur);
+								}
 							}
 						}
 
@@ -161,7 +168,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 					free(mot1);
 				}
 				/*verif pseudo-instruction*/
-				if((strcmp(instruction,"NOP")==0&&nbop==0)||(strcmp(instruction,"LW")==0&&nbop==2)||(strcmp(instruction,"SW")==0&&nbop==2)||(strcmp(instruction,"MOVE")==0&&nbop==2)||(strcmp(instruction,"NEG")==0&&nbop==2)||(strcmp(instruction,"LI")==0&&nbop==2)||(strcmp(instruction,"BLT")==0&&nbop==3)){
+				if((strcmp(instruction,"NOP")==0&&strlen(g->caractere)==0)||(strcmp(instruction,"LW")==0&&verif==2)||(strcmp(instruction,"SW")==0&&verif==2)||(strcmp(instruction,"MOVE")==0&&verif==2)||(strcmp(instruction,"NEG")==0&&verif==2)||(strcmp(instruction,"LI")==0&&verif==2)||(strcmp(instruction,"BLT")==0&&verif==3)){
 					*co_text=pseudo_instruction(cpt_text,instruction,co_text,file_erreur,g,f->ligne);
 				}
 				else{
@@ -587,7 +594,7 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 		strcpy(tab[1],mot2);
 		strcpy(tab[2],mot3);
 		n=rec_hachage_nbparam(a->nomInst,tab_instruction[n]);
-		/*printf("%d %s %s %s\n",n,tab[0],tab[1],tab[2]);*/
+		/*printf("%s %d %s %s %s\n",a->nomInst,n,tab[0],tab[1],tab[2]);*/
 		f=a->op->suiv;
 		for(i=0;i<n;i++){
 			if(strcmp(tab[i],"Registre")==0){
@@ -629,7 +636,7 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 	strcpy(tab[1],mot2);
 	strcpy(tab[2],mot3);
 	n=rec_hachage_nbparam(a->nomInst,tab_instruction[n]);
-	/*printf("%d %s %s %s\n",n,tab[0],tab[1],tab[2]);*/
+	/*printf("%s %d %s %s %s\n",a->nomInst,n,tab[0],tab[1],tab[2]);*/
 	f=a->op->suiv;
 	for(i=0;i<n;i++){
 		if(strcmp(tab[i],"Registre")==0){
@@ -666,7 +673,7 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 }
 
 void verif_registre_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a,Liste_hach*tab_registre){
-	if(strcmp(f->identifiant,"Registre")!=0&&rech_hachage(f->caractere, tab_registre[hachage(f->caractere, dim_tab_registre)])!=-1){
+	if(strcmp(f->identifiant,"Registre")!=0){
 		*file_erreur = enfiler("Type Registre attendu ", f->identifiant, a->ligne, *file_erreur);
 	}
 }
@@ -679,7 +686,7 @@ void verif_baseoffset_ope(file_jeu_instruction*file_erreur,file_jeu_instruction 
 
 void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
-		if(atoi(f->caractere)<-32768&&atoi(f->caractere)>32767){
+		if(atoi(f->caractere)<-32768||atoi(f->caractere)>32767){
 			*file_erreur = enfiler("Nombre sur 16 bit signé attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
@@ -696,7 +703,7 @@ void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,
 
 void verif_shiftamount_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
-		if(atoi(f->caractere)<0&&atoi(f->caractere)>31){
+		if(atoi(f->caractere)<0||atoi(f->caractere)>31){
 			*file_erreur = enfiler("Nombre entre 0 et 31 attendu", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
@@ -710,8 +717,8 @@ void verif_shiftamount_ope(file_jeu_instruction*file_erreur,file_jeu_instruction
 
 void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
-		if(atoi(f->caractere)<-131072&&atoi(f->caractere)>131071&&atoi(f->caractere)%4!=0){
-			*file_erreur = enfiler("Nombre sur 18 bit signé attendu", f->caractere, a->ligne, *file_erreur);
+		if(atoi(f->caractere)<-131072||atoi(f->caractere)>131071||atoi(f->caractere)%4!=0){
+			*file_erreur = enfiler("Nombre sur 18 bit signé attendu et divisible par 4", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;
@@ -727,8 +734,8 @@ void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,f
 
 void verif_absolu_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
 	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
-		if((atoi(f->caractere)<-134217728&&atoi(f->caractere)>134217727)||atoi(f->caractere)%4!=0){
-			*file_erreur = enfiler("Nombre sur 18 bit signé attendu", f->caractere, a->ligne, *file_erreur);
+		if((atoi(f->caractere)<-134217728||atoi(f->caractere)>134217727)||atoi(f->caractere)%4!=0){
+			*file_erreur = enfiler("Nombre sur 18 bit signé attendu et divisible par 4", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
 			return;

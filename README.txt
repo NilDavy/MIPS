@@ -1,8 +1,8 @@
 Le répertoire est organisé ainsi : 
 .
 ├── tests
+│   ├── miam_sujet.s
 │   ├── 1livrable
-│   │   ├── miam_sujet.s
 │   │   ├── miam_sujet_avec_erreurs.s
 │   │   ├── test_chaine_de_caractere.s
 │   │   ├── test_commentaire.s
@@ -10,14 +10,20 @@ Le répertoire est organisé ainsi :
 │   │   ├── test_nombre.s
 │   │   └── test_registre.s
 │   ├── 2livrable
-│   │   ├── miam_sujet.s
 │   │   ├── test_bss.s
 │   │   ├── test_bss_erreur.s
 │   │   ├── test_data.s
 │   │   ├── test_data_erreur.s
 │   │   ├── test_global.s
 │   │   ├── test_text.s
-│   └   └── test_text_erreur.s
+│   │   └── test_text_erreur.s
+│   ├── 3livrable
+│   │   ├── test_base_offset.s
+│   │   ├── test_nombre_operande.s
+│   │   ├── test_pseudo_instruction.s
+│   │   ├── test_verif_type_operande.s
+│   └   └── test_verif_type_operande_erreur.s
+
 ├── src
 │   ├── main.c
 │   ├── lex.c
@@ -61,6 +67,7 @@ Le répertoire est organisé ainsi :
 │   ├── Recapitulatif_SYMB.txt
 │   ├── Recapitulatif_TEXT.txt
 │   └── Recapitulatif_Erreur.txt
+│   ├── Recapitulatif_Relocation.txt
 ├── README.txt
 └── Makefile
 

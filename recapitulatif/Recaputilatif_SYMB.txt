@@ -1,6 +1,0 @@
-Nom instruction : BOUCLE	 Ligne : 11	 Section : TEXT	 Decalage : 20
-Nom instruction : ADD	 Ligne : 11	 Section : TEXT	 Decalage : 20
-Nom instruction : BYEBYE	 Ligne : 18	 Section : TEXT	 Decalage : 40
-Nom instruction : LUNCHTIME	 Ligne : 23	 Section : DATA	 Decalage : 0
-Nom instruction : TEST	 Ligne : 23	 Section : DATA	 Decalage : 0
-Nom instruction : MENU	 Ligne : 30	 Section : BSS	 Decalage : 0
