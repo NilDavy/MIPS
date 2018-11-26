@@ -209,10 +209,11 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                                 *file_erreur = enfiler("Saut relatif à une étiquette qui n'est pas dans ce fichier", f->caractere, ft->ligne, *file_erreur);
     					    }else{
                                 /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
-
                                 struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+                                if(strcmp(ptr_symb->section,  "TEXT"))
+                                    *file_erreur = enfiler("Saut relatif à une étiquette qui n'est pas dans la section .text", f->caractere, ft->ligne, *file_erreur);
                                 int offset = ptr_symb->decalage - ft->decalage;
-                                if(offset < -32768 || offset > 32767){
+                                if(offset < -32768 || offset > 32767 || offset%4 != 0){
                                     *file_erreur = enfiler("Saut relatif trop grand", f->caractere, ft->ligne, *file_erreur);
                                 }else{
                                     strcpy(f->identifiant, "Valeur Décimale");
