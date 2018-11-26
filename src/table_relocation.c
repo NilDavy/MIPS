@@ -10,8 +10,12 @@ table_reloc ajoutElement(table_reloc r, int offset, enum type_reloc tr, char* va
       }
       r->offset = offset;
       r->type = tr;
-      strcpy(r->value, value);
-      r->suiv = r;
+	if(symbole == NULL){
+		strcpy(r->value, value);		
+      	}else{
+		strcpy(r->value, symbole->section);
+	}      
+	r->suiv = r;
       r->symb = symbole;
       return r;
     }
@@ -24,7 +28,11 @@ table_reloc ajoutElement(table_reloc r, int offset, enum type_reloc tr, char* va
       }
       a->offset = offset;
       a->type = tr;
-      strcpy(a->value, value);
+	if(symbole == NULL){
+		strcpy(a->value, value);		
+      	}else{
+		strcpy(a->value, symbole->section);
+	}
       a->symb = symbole;
       a->suiv = r->suiv;
       r->suiv = a;
@@ -34,29 +42,22 @@ table_reloc ajoutElement(table_reloc r, int offset, enum type_reloc tr, char* va
 int table_vide(table_reloc r){
     return !r;
 }
-void visualiser_ecrire_table(FILE*f_reloc,table_reloc r){
+void visualiser_table(table_reloc r){
   if(table_vide(r))
     return;
   if(r->suiv == r)
   {
     if(r->type == R_MIPS_32){
       printf("%d R_MIPS_32 %s\n", r->offset, r->value);
-	fprintf(f_reloc,"%d R_MIPS_32 %s\n", r->offset, r->value);
 
     }else if (r->type == R_MIPS_26){
       printf("%d R_MIPS_26 %s\n", r->offset, r->value);
-	fprintf(f_reloc,"%d R_MIPS_26 %s\n", r->offset, r->value);
-
     }
     else if (r->type == R_MIPS_HI16){
       printf("%d R_MIPS_HI16 %s\n", r->offset, r->value);
-	fprintf(f_reloc,"%d R_MIPS_HI16 %s\n", r->offset, r->value);
-
     }
     else if (r->type == R_MIPS_LO16){
       printf("%d R_MIPS_LO16 %s\n", r->offset, r->value);
-		fprintf(f_reloc,"%d R_MIPS_LO16 %s\n", r->offset, r->value);
-
     }
     return;
   }
@@ -65,25 +66,21 @@ void visualiser_ecrire_table(FILE*f_reloc,table_reloc r){
   {
     if(f->type == R_MIPS_32){
       printf("%d R_MIPS_32 %s\n", f->offset, f->value);
-		fprintf(f_reloc,"%d R_MIPS_32 %s\n", f->offset, f->value);
 
     }else if (f->type == R_MIPS_26){
       printf("%d R_MIPS_26 %s\n", f->offset, f->value);
-		fprintf(f_reloc,"%d R_MIPS_26 %s\n", f->offset, f->value);
-
     }
     else if (f->type == R_MIPS_HI16){
       printf("%d R_MIPS_HI16 %s\n", f->offset, f->value);
-		fprintf(f_reloc,"%d R_MIPS_HI16 %s\n", f->offset, f->value);
     }
     else if (f->type == R_MIPS_LO16){
       printf("%d R_MIPS_LO16 %s\n", f->offset, f->value);
-		fprintf(f_reloc,"%d R_MIPS_HI16 %s\n", f->offset, f->value);
     }
     f = f->suiv;
   }while(f != r->suiv);
 
 }
+
 void ecrire_table(table_reloc r, FILE* a){
   if(table_vide(r))
     return;
@@ -161,6 +158,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
 					    /*2 cas : symbole déclaré dans ce fichier ou non déclaré dans ce fichier */
 					    if(!est_dans_file(f->caractere, co_symb)){
                             /* Si non déclaré dans le même fichier */
+					printf("L'étiquette : \" %s\" n'est pas dans la collection de symbole \n", f->caractere);
 						    table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, NULL);
 					    }else{
                             /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
@@ -196,6 +194,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                         /* Si c'est un immédiat */
                         if(!isRel){
                             if(!est_dans_file(f->caractere, co_symb)){
+				printf("L'étiquette : \" %s\" n'est pas dans la collection de symbole \n", f->caractere);
                                 /* Si non déclaré dans le même fichier */
     						    table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
     					    }else{
@@ -206,6 +205,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                         }else{
                             /*Si on a un relatif */
                             if(!est_dans_file(f->caractere, co_symb)){
+				printf("L'étiquette : \" %s\" n'est pas dans la collection de symbole \n", f->caractere);
                                 /* Si non déclaré dans le même fichier */
                                 *file_erreur = enfiler("Saut relatif à une étiquette qui n'est pas dans ce fichier", f->caractere, ft->ligne, *file_erreur);
     					    }else{

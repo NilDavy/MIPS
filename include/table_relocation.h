@@ -16,7 +16,7 @@ typedef struct cel_reloc* table_reloc;
 elle pointera vers le dernier élément et le suivant sera le premier*/
 table_reloc ajoutElement(table_reloc r, int offset, enum type_reloc tr, char* value, struct cellulesymb* symbole);
 int table_vide(table_reloc r);
-void visualiser_ecrire_table(FILE*f_reloc,table_reloc r);
+void visualiser_table(table_reloc r);
 void ecrire_table(table_reloc r, FILE* a);
 void liberer_table(table_reloc r);
 

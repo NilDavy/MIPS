@@ -225,8 +225,13 @@ int main ( int argc, char *argv[] ) {
 	}
 
 	table_reloc a = NULL;
+	table_reloc b=NULL;
 	a = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
-	visualiser_ecrire_table(f_reloc,a);
+	b=remplirTableRelocationData(co_data,co_symb, tab_instruction, &file_erreur);
+	visualiser_table(a);
+	ecrire_table(a,f_reloc);
+	visualiser_table(b);
+	ecrire_table(b,f_reloc);
 
 
 	/* ---------------- Free memory and terminate -------------------*/
