@@ -103,7 +103,7 @@ int main ( int argc, char *argv[] ) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier DATA\n" );
 		exit(EXIT_FAILURE);
 	}
-	
+
 
 	/** ouverture ou creation du fichier contenant le rapport de la section TEXT**/
 	FILE*f_text=NULL;
@@ -120,7 +120,7 @@ int main ( int argc, char *argv[] ) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier SYMB\n" );
 		exit(EXIT_FAILURE);
 	}
-	
+
 	/** ouverture ou creation du fichier contenant le rapport de la table de relocation**/
 	FILE*f_reloc=NULL;
 	f_reloc=fopen("recapitulatif/Recaputilatif_Relocation.txt", "wt");
@@ -128,7 +128,7 @@ int main ( int argc, char *argv[] ) {
 		fprintf( stderr, "Erreur sur l'ouverture du fichier Relocation\n" );
 		exit(EXIT_FAILURE);
 	}
-	
+
 	/** creation des tableaux pour les tables de hachages des instructions et des registres **/
 
 	Liste_hach tab_registre[dim_tab_registre];
@@ -144,10 +144,10 @@ int main ( int argc, char *argv[] ) {
 	}
 	creation_liste_instruction(tab_instruction,dim_tab_instruction);
 
-	
+
 	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);
 	visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
-	
+
 	/** variable interne contenant le code instancié **/
 	file_jeu_instruction file_lexeme=creer_file();
 	file_jeu_instruction file_erreur=creer_file();
@@ -159,12 +159,13 @@ int main ( int argc, char *argv[] ) {
 	file_symb co_text_attente=creerfile_symb();
 	file_symb co_data_attente=creerfile_symb();
 	file_symb co_bss_attente=creerfile_symb();
-
+	table_reloc reloc_text = NULL;
+	table_reloc reloc_data = NULL;
 	/* ---------------- do the lexical analysis -------------------*/
 	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
 	DEBUG_MSG("Le code source contient %d lignes",nlines);
 	/*visualiser_file(file_lexeme);*/
-	
+
 	if(!(file_vide(file_lexeme))){
 		file_lexeme=modifie_instruction(file_lexeme);
 		/*verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);*/
@@ -195,19 +196,27 @@ int main ( int argc, char *argv[] ) {
 		/*analyse syntaxique*/
 
 		analyse_syntaxique(tab_instruction,&file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente);
-		
+
+		/* Remplissage table de relocation */
+		reloc_text = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
+		reloc_data = remplirTableRelocationData(co_data,co_symb, tab_instruction, &file_erreur);
+
 		if(!file_vide_text(co_text)){
 			verif_operande(co_text,&file_erreur,tab_instruction,tab_registre);
 		}
 
 		/*visualiser_tab_hachage(tab_registre, dim_tab_registre);
 		visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
-		
-		
+
+
 		ecrire_file_bss(co_bss,f_bss);
 		ecrire_file_data(co_data,f_data);
 		ecrire_file_text(co_text,f_text);
 		ecrire_file_symb(co_symb,f_symb);
+		fprintf(f_reloc, "[.rel.text]\nOffset\t Type\t Value\n");
+		ecrire_table(reloc_text, f_reloc);
+		fprintf(f_reloc, "\n[.rel.data]\nOffset\t Type\t Value\n");
+		ecrire_table(reloc_data, f_reloc);
 
 		if(!(file_vide(file_erreur))){
 			WARNING_MSG("Il y a des erreurs de syntaxe dans le code source !");
@@ -224,14 +233,9 @@ int main ( int argc, char *argv[] ) {
 
 	}
 
-	table_reloc a = NULL;
-	table_reloc b=NULL;
-	a = remplirTableRelocationText(co_text, co_symb, tab_instruction, &file_erreur);
-	b=remplirTableRelocationData(co_data,co_symb, tab_instruction, &file_erreur);
-	visualiser_table(a);
-	ecrire_table(a,f_reloc);
-	visualiser_table(b);
-	ecrire_table(b,f_reloc);
+
+
+
 
 
 	/* ---------------- Free memory and terminate -------------------*/
@@ -246,7 +250,8 @@ int main ( int argc, char *argv[] ) {
 	liberer_text(co_text);
 	liberer_file(file_lexeme);
 	liberer_file(file_erreur);
-	liberer_table(a);
+	liberer_table(reloc_data);
+	liberer_table(reloc_text);
 	liberer_tab_hachage(tab_registre, dim_tab_registre);
 	liberer_tab_hachage(tab_instruction, dim_tab_instruction);
 	fclose(fp);
