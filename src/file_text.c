@@ -95,3 +95,18 @@ void ecrire_file_text(file_text f,FILE*a){
 	fprintf(a, "Nom instruction : %s\t Ligne : %d\t Nombre d'opérandes : %d\t Decalage : %d\n" ,g->nomInst,g->ligne,g->nbOp,g->decalage);
 	ecrire_file(g->op,a);
 }
+
+file_text modif_etiquette(file_text co_text){
+	file_text a=co_text->suiv;
+	do {
+		file_jeu_instruction f=a->op->suiv;
+		do {
+			if(strcasecmp(f->identifiant,"Renvoie vers une étiquette")==0||strcasecmp(f->identifiant,"EtiquettePFort")==0||strcasecmp(f->identifiant,"EtiquettePFaible")==0){
+				strcpy(f->caractere,"0");
+			}
+			f=f->suiv;
+		} while (f!=a->op->suiv);
+		a=a->suiv;
+	} while (a!=co_text->suiv);
+	return co_text;
+}

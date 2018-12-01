@@ -38,4 +38,5 @@ file_jeu_instruction modifie_instruction(file_jeu_instruction f);
 void verif_renvoie_vers_etiquette(file_jeu_instruction*f,file_jeu_instruction*file_erreur);
 file_jeu_instruction verif_delimiteur_suite(file_jeu_instruction f,file_jeu_instruction*file_erreur);
 file_jeu_instruction verif_remplacement_ecriture_registre(file_jeu_instruction f,file_jeu_instruction*file_erreur,Liste_hach*tab_registre);
+file_jeu_instruction modif_chaine_caractere(file_jeu_instruction f);
 #endif /* file_h */

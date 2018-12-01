@@ -1,2 +1,0 @@
-Ligne : 15	 Saut relatif à une étiquette qui n'est pas dans la section .text	 MENU
-

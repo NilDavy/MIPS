@@ -1,24 +1,21 @@
 #include "analyse_syntaxique.h"
 
-void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction*file, file_jeu_instruction* file_erreur, file_text *co_text, file_data *co_data, file_bss *co_bss, file_symb *co_symb,file_symb *co_text_attente, file_symb *co_data_attente, file_symb *co_bss_attente)
+void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, file_jeu_instruction* file_erreur, file_text *co_text, file_data *co_data, file_bss *co_bss, file_symb *co_symb,file_symb *co_text_attente, file_symb *co_data_attente, file_symb *co_bss_attente,int*nbtext, int*nbdata,int*cptbss)
 {
 	int cpt_text, cpt_data, cpt_bss;
 	cpt_text = cpt_data = cpt_bss = 0;
 	enum section etat = INIT;
-	file_jeu_instruction g = supprime_commentaire(*file);
+	file_jeu_instruction g=supprime_commentaire(file);
 	file_jeu_instruction h=g;
 	g = g->suiv;
-	h->suiv=NULL;
-	while(g!= NULL)
+	do
 	{
-		/*printf("Nouvelle ligne : %s\n",g->caractere);
-		getchar();*/
-
-
+		/*printf("Nouvelle ligne : %s\n",g->caractere);*/
+		/*getchar();*/
 
 		/*ici on regarde dans quelle section on se trouve avec une priorité mise en place si on change de section (.qqch avant l'etat courant)*/
 
-		if(!strcmp(g->caractere, ".text")){
+		if(!strcasecmp(g->caractere, ".text")){
 			/*printf("text\n");
 			printf("%s\n",g->caractere);
 			printf("%d\n\n\n",g->ligne);*/
@@ -26,14 +23,14 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction*file, fi
 			g = processText(g, co_text, &cpt_text, file_erreur, co_symb,co_text_attente,tab_instruction);
 		}
 		else{
-			if (!strcmp(g->caractere, ".data")){
+			if (!strcasecmp(g->caractere, ".data")){
 				/*printf("data\n");
 				printf("%s\n",g->caractere);*/
 				etat = DATA;
 				g = processData(g, co_data, &cpt_data, file_erreur, co_symb,co_data_attente);
 			}
 			else{
-				if(!strcmp(g->caractere, ".bss")){
+				if(!strcasecmp(g->caractere, ".bss")){
 					/*printf("bss\n");
 					printf("%s\n",g->caractere);*/
 					etat = BSS;
@@ -64,7 +61,7 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction*file, fi
 							else{
 								/*les cas ou il ne faut pas mettre d'erreur*/
 
-								if(strcmp(g->caractere, ".set") && strcmp(g->identifiant, "Retour à la ligne")&&strcmp(g->caractere,"noreorder")){
+								if(strcasecmp(g->caractere, ".set") && strcasecmp(g->identifiant, "Retour à la ligne")&&strcasecmp(g->caractere,"noreorder")){
 									*file_erreur = enfiler("Directive attendu à la place de :", g->caractere, g->ligne, *file_erreur);
 								}
 							}
@@ -75,6 +72,10 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction*file, fi
 		}
 		g=g->suiv;
 	}
+	while(g!=h->suiv);
+	*cptbss=cpt_bss;
+	*nbdata=cpt_data;
+	*nbtext=cpt_text;
 }
 
 
@@ -95,12 +96,12 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 	int concatenation;
 	/*les cas ou on ne fait rien .text, : et retour ligne*/
 
-	if (!strcmp(f->caractere, ".text")||!strcmp(f->caractere, ":")||!strcmp(f->identifiant, "Retour à la ligne")){
+	if (!strcasecmp(f->caractere, ".text")||!strcasecmp(f->caractere, ":")||!strcasecmp(f->identifiant, "Retour à la ligne")){
 		return f;
 	}
 	else{
 		/*cas d'un etiquette, on la stocke dans une file d'attente pour eviter les cas ou etiquette puis changement de section*/
-		if (!strcmp(f->identifiant, "Etiquette")){
+		if (!strcasecmp(f->identifiant, "Etiquette")){
 			/*ajout dans la table des symboles d'attente*/
 			*co_text_attente=ajout_symb(f->caractere, f->ligne, *cpt_text,"TEXT", *co_text_attente);
 			return f;
@@ -108,7 +109,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 		else{
 			/* dans la section .text il y a que les instructions*/
 
-			if(!strcmp(f->identifiant, "Instruction")){
+			if(!strcasecmp(f->identifiant, "Instruction")){
 				while(!file_vide_symb(*co_text_attente)){
 					/*ajout dans la table des symboles*/
 					mot=defiler_symb(co_text_attente);
@@ -120,7 +121,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 				/*recherche nombre d'opération*/
 				nbop=rec_hachage_nbparam(instruction, tab_instruction[hachage(instruction, dim_tab_instruction)]);
 				verif = 0;
-				while(strcmp(f->identifiant,"Retour à la ligne")){
+				while(strcasecmp(f->identifiant,"Retour à la ligne")){
 					f=f->suiv;
 					char*mot1=calloc(200,sizeof(char));
 					char*identifiant=calloc(200,sizeof(char));
@@ -128,7 +129,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 					file_jeu_instruction verif_file=creer_file();
 
 					/*on concatene si base offset*/
-					while(strcmp(f->identifiant, "Retour à la ligne")!=0 && strcmp(f->caractere, ",")!=0){
+					while(strcasecmp(f->identifiant, "Retour à la ligne")!=0 && strcasecmp(f->caractere, ",")!=0){
 						strcat(mot1,f->caractere);
 						strcat(identifiant,f->identifiant);
 						concatenation=concatenation+1;
@@ -138,17 +139,17 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 
 					/*ajout a la table .text*/
 					if(concatenation>1){
-						if((strcmp(verif_file->suiv->identifiant,"Valeur Décimale")==0||strcmp(verif_file->suiv->identifiant,"Valeur Hexadécimale")==0)&&strcmp(verif_file->suiv->suiv->caractere,"(")==0&&strcmp(verif_file->suiv->suiv->suiv->identifiant,"Registre")==0&&strcmp(verif_file->suiv->suiv->suiv->suiv->caractere,")")==0){
+						if((strcasecmp(verif_file->suiv->identifiant,"Valeur Décimale")==0||strcasecmp(verif_file->suiv->identifiant,"Valeur Hexadécimale")==0)&&strcasecmp(verif_file->suiv->suiv->caractere,"(")==0&&strcasecmp(verif_file->suiv->suiv->suiv->identifiant,"Registre")==0&&strcasecmp(verif_file->suiv->suiv->suiv->suiv->caractere,")")==0){
 						g=enfiler("Baseoffset",mot1,f->ligne,g);
 						verif=verif+1;
 						}
 						else{
-							if((strcmp(verif_file->suiv->caractere,"+")==0||strcmp(verif_file->suiv->caractere,"-")==0)&&(strcmp(verif_file->suiv->suiv->identifiant,"Valeur Décimale")==0||strcmp(verif_file->suiv->suiv->identifiant,"Valeur Hexadécimale")==0)&&strcmp(verif_file->suiv->suiv->suiv->caractere,"(")==0&&strcmp(verif_file->suiv->suiv->suiv->suiv->identifiant,"Registre")==0&&strcmp(verif_file->suiv->suiv->suiv->suiv->suiv->caractere,")")==0){
+							if((strcasecmp(verif_file->suiv->caractere,"+")==0||strcasecmp(verif_file->suiv->caractere,"-")==0)&&(strcasecmp(verif_file->suiv->suiv->identifiant,"Valeur Décimale")==0||strcasecmp(verif_file->suiv->suiv->identifiant,"Valeur Hexadécimale")==0)&&strcasecmp(verif_file->suiv->suiv->suiv->caractere,"(")==0&&strcasecmp(verif_file->suiv->suiv->suiv->suiv->identifiant,"Registre")==0&&strcasecmp(verif_file->suiv->suiv->suiv->suiv->suiv->caractere,")")==0){
 								g=enfiler("Baseoffset",mot1,f->ligne,g);
 								verif=verif+1;
 							}
 							else{
-								if((strcmp(verif_file->suiv->caractere,"+")==0||strcmp(verif_file->suiv->caractere,"-")==0)&&(strcmp(verif_file->suiv->suiv->identifiant,"Valeur Décimale")==0||strcmp(verif_file->suiv->suiv->identifiant,"Valeur Hexadécimale")==0)){
+								if((strcasecmp(verif_file->suiv->caractere,"+")==0||strcasecmp(verif_file->suiv->caractere,"-")==0)&&(strcasecmp(verif_file->suiv->suiv->identifiant,"Valeur Décimale")==0||strcasecmp(verif_file->suiv->suiv->identifiant,"Valeur Hexadécimale")==0)){
 									g=enfiler("Valeur Décimale",mot1,f->ligne,g);
 									verif=verif+1;
 								}
@@ -168,7 +169,7 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 					free(mot1);
 				}
 				/*verif pseudo-instruction*/
-				if((strcmp(instruction,"NOP")==0&&strlen(g->caractere)==0)||(strcmp(instruction,"LW")==0&&verif==2)||(strcmp(instruction,"SW")==0&&verif==2)||(strcmp(instruction,"MOVE")==0&&verif==2)||(strcmp(instruction,"NEG")==0&&verif==2)||(strcmp(instruction,"LI")==0&&verif==2)||(strcmp(instruction,"BLT")==0&&verif==3)){
+				if((strcasecmp(instruction,"NOP")==0&&strlen(g->caractere)==0)||(strcasecmp(instruction,"LW")==0&&verif==2)||(strcasecmp(instruction,"SW")==0&&verif==2)||(strcasecmp(instruction,"MOVE")==0&&verif==2)||(strcasecmp(instruction,"NEG")==0&&verif==2)||(strcasecmp(instruction,"LI")==0&&verif==2)||(strcasecmp(instruction,"BLT")==0&&verif==3)){
 					*co_text=pseudo_instruction(cpt_text,instruction,co_text,file_erreur,g,f->ligne);
 				}
 				else{
@@ -202,13 +203,12 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 	char*mot;
 	int vide =0;
 	char copie[200];
-
 	/*les cas ou on ne fait rien .data, : et retour ligne*/
-	if (!strcmp(f->caractere, ".data")||!strcmp(f->caractere, ":")||!strcmp(f->identifiant, "Retour à la ligne")){
+	if (!strcasecmp(f->caractere, ".data")||!strcasecmp(f->caractere, ":")||!strcasecmp(f->identifiant, "Retour à la ligne")){
 		return f;
 	}
 	else{
-		if (!strcmp(f->identifiant, "Etiquette")){
+		if (!strcasecmp(f->identifiant, "Etiquette")){
 			/*ajout dans la table des symboles d'attente*/
 			*co_data_attente=ajout_symb(f->caractere, f->ligne, *cpt_data,"DATA", *co_data_attente);
 			return f;
@@ -217,7 +217,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 
 			/*dans la section .data il peut y avoir .space, .word, .byte ou .asciiz*/
 
-			if(!strcmp(f->caractere, ".space")){
+			if(!strcasecmp(f->caractere, ".space")){
 				while(!file_vide_symb(*co_data_attente)){
 					/*ajout dans la table des symboles*/
 					mot=defiler_symb(co_data_attente);
@@ -225,15 +225,15 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 				}
 				f=f->suiv;
-				while(strcmp(f->identifiant, "Retour à la ligne")){
-					if(!strcmp(f->identifiant, "Valeur Décimale") || !strcmp(f->identifiant, "Valeur Hexadécimale")){
+				while(strcasecmp(f->identifiant, "Retour à la ligne")){
+					if(!strcasecmp(f->identifiant, "Valeur Décimale") || !strcasecmp(f->identifiant, "Valeur Hexadécimale")){
 						/*Creer maillon data, ici il peut y avoir apres space soit un hex qui est deja transformee en dec ou un dec*/
 						/* au final c'est un dec quoi qu'il arrive et positif car on veut une taille*/
 						*co_data=ajout_data(".space", f->ligne, *cpt_data,f->caractere, 2, *co_data,0);
-						*cpt_data=(*cpt_data)+1;
+						*cpt_data=(*cpt_data)+atoi(f->caractere);
 					}
 					else{
-						if(strcmp(f->caractere, ",")){
+						if(strcasecmp(f->caractere, ",")){
 							*file_erreur = enfiler("Mauvaise commande après la directive .space", f->identifiant, f->ligne, *file_erreur);
 						}
 					}
@@ -242,7 +242,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 			}
 
 			else{
-					if(!strcmp(f->caractere, ".byte")){
+					if(!strcasecmp(f->caractere, ".byte")){
 						while(!file_vide_symb(*co_data_attente)){
 							/*ajout dans la table des symboles*/
 							mot=defiler_symb(co_data_attente);
@@ -250,15 +250,15 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 							*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 						}
 						f=f->suiv;
-						while(strcmp(f->identifiant, "Retour à la ligne")){
+						while(strcasecmp(f->identifiant, "Retour à la ligne")){
 							/*si inf a 127*/
-							if(!strcmp(f->identifiant, "Valeur Décimale")&& atoi(f->caractere)<127){
+							if(!strcasecmp(f->identifiant, "Valeur Décimale")&& atoi(f->caractere)<127){
 								*co_data=ajout_data(".byte", f->ligne, *cpt_data, f->caractere, 2, *co_data,0);
 								*cpt_data=(*cpt_data)+1;
 							}
 							/*si sup à -128*/
 							else{
-								if(!strcmp(f->identifiant, "Délimiteur") && (!strcmp(f->caractere, "-")) && atoi(f->suiv->caractere)<128){
+								if(!strcasecmp(f->identifiant, "Délimiteur") && (!strcasecmp(f->caractere, "-")) && atoi(f->suiv->caractere)<128){
 									char*mot2=calloc(200,sizeof(char));
 									strcat(mot2,f->caractere);
 									strcat(mot2,f->suiv->caractere);
@@ -268,12 +268,12 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 								}
 								else{
 									/*hexa compris entre 0x0 et 0xff*/
-									if(!strcmp(f->identifiant, "Valeur Hexadécimale")&& atoi(f->caractere)<256){
+									if(!strcasecmp(f->identifiant, "Valeur Hexadécimale")&& atoi(f->caractere)<256){
 										*co_data=ajout_data(".byte", f->ligne, *cpt_data,f->caractere, 2, *co_data,0);
 										*cpt_data=(*cpt_data)+1;
 									}
 									else{
-										if(strcmp(f->caractere, ",")){
+										if(strcasecmp(f->caractere, ",")){
 											*file_erreur = enfiler("Mauvaise commande après la directive .byte", f->caractere, f->ligne, *file_erreur);
 										}
 									}
@@ -286,8 +286,8 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 					}
 
 					else{
-						if(!strcmp(f->caractere, ".word")){
-							if(*cpt_data){
+						if(!strcasecmp(f->caractere, ".word")){
+							if(*cpt_data&&(*cpt_data)%4!=0){
 								*cpt_data+=4-((*cpt_data)%4);
 							}
 							while(!file_vide_symb(*co_data_attente)){
@@ -297,14 +297,17 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 								*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 							}
 							f=f->suiv;
-							while(strcmp(f->identifiant, "Retour à la ligne")){
-								if(!strcmp(f->identifiant, "Valeur Décimale")|| !strcmp(f->identifiant, "Valeur Hexadécimale")){
+							
+							
+	/*faire les verifs des 32 bits*/
+							while(strcasecmp(f->identifiant, "Retour à la ligne")){
+								if(!strcasecmp(f->identifiant, "Valeur Décimale")|| !strcasecmp(f->identifiant, "Valeur Hexadécimale")){
 									*co_data=ajout_data(".word", f->ligne, *cpt_data, f->caractere, 2, *co_data,0);
 									*cpt_data=(*cpt_data)+4;
 								}
 								else{
 									/*si nombre negatif*/
-									if(!strcmp(f->identifiant, "Délimiteur") && (!strcmp(f->caractere, "-")) && !strcmp(f->suiv->identifiant, "Valeur Décimale")){
+									if(!strcasecmp(f->identifiant, "Délimiteur") && (!strcasecmp(f->caractere, "-")) && !strcasecmp(f->suiv->identifiant, "Valeur Décimale")){
 										char*mot2=calloc(200,sizeof(char));
 										strcat(mot2,f->caractere);
 										strcat(mot2,f->suiv->caractere);
@@ -313,12 +316,12 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 										free(mot2);
 									}
 									else{
-										if(!strcmp(f->identifiant, "Renvoie vers une étiquette")){
+										if(!strcasecmp(f->identifiant, "Renvoie vers une étiquette")){
 											*co_data=ajout_data(".word", f->ligne, *cpt_data,f->caractere, 4, *co_data,1);
 											*cpt_data=(*cpt_data)+4;
 										}
 										else{
-											if(strcmp(f->caractere, ",")){
+											if(strcasecmp(f->caractere, ",")){
 												*file_erreur = enfiler("Mauvaise commande après la directive .word", f->identifiant, f->ligne, *file_erreur);
 											}
 										}
@@ -329,7 +332,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 						}
 
 						else{
-							if(!strcmp(f->caractere, ".asciiz")){
+							if(!strcasecmp(f->caractere, ".asciiz")){
 								while(!file_vide_symb(*co_data_attente)){
 									/*ajout dans la table des symboles*/
 									mot=defiler_symb(co_data_attente);
@@ -339,8 +342,8 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 								f=f->suiv;
 								char*mot1=calloc(200,sizeof(char));
 								/*concat chaine de caractère*/
-								while(strcmp(f->identifiant, "Retour à la ligne")){
-									if(!strcmp(f->identifiant, "Chaine de caractère")){
+								while(strcasecmp(f->identifiant, "Retour à la ligne")){
+									if(!strcasecmp(f->identifiant, "Chaine de caractère")){
 										strcat(mot1,f->caractere);
 										vide=1;
 									}
@@ -348,7 +351,7 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 											*file_erreur = enfiler("Mauvaise commande après la directive .asciiz", f->identifiant, f->ligne, *file_erreur);
 									}
 									f=f->suiv;
-									if(strcmp(f->identifiant, "Retour à la ligne")){
+									if(strcasecmp(f->identifiant, "Retour à la ligne")){
 										strcat(mot1," ");
 									}
 								}
@@ -384,11 +387,11 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 	char copie[200];
 
 	/*les cas ou on ne fait rien .bss, : et retour ligne*/
-	if (!(strcmp(f->caractere, ".bss"))||!(strcmp(f->caractere, ":"))||!(strcmp(f->identifiant, "Retour à la ligne"))){
+	if (!(strcasecmp(f->caractere, ".bss"))||!(strcasecmp(f->caractere, ":"))||!(strcasecmp(f->identifiant, "Retour à la ligne"))){
 		return f;
 	}
 	else{
-		if (!strcmp(f->identifiant, "Etiquette")){
+		if (!strcasecmp(f->identifiant, "Etiquette")){
 			/*ajout dans la table des symboles d'attente*/
 			*co_bss_attente=ajout_symb(f->caractere, f->ligne, *cpt_bss,"BSS", *co_bss_attente);
 			return f;
@@ -397,7 +400,7 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 
 			/*dans la section .bss il peut y avoir que .space*/
 
-			if(!strcmp(f->caractere, ".space")){
+			if(!strcasecmp(f->caractere, ".space")){
 				while(!file_vide_symb(*co_bss_attente)){
 					/*ajout dans la table des symboles*/
 					mot=defiler_symb(co_bss_attente);
@@ -407,15 +410,15 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 				}
 
 				f=f->suiv;
-				while(strcmp(f->identifiant, "Retour à la ligne")){
-					if(!strcmp(f->identifiant, "Valeur Décimale") || !strcmp(f->identifiant, "Valeur Hexadécimale")){
+				while(strcasecmp(f->identifiant, "Retour à la ligne")){
+					if(!strcasecmp(f->identifiant, "Valeur Décimale") || !strcasecmp(f->identifiant, "Valeur Hexadécimale")){
 						/*Creer maillon bss, ici il peut y avoir apres space soit un hex qui est deja transformee en dec ou un dec*/
 						/* au final c'est un dec quoi qu'il arrive et positif car on veut une taille*/
 						*co_bss=ajout_bss(".space", f->ligne, *cpt_bss,f->caractere, 2, *co_bss);
 						*cpt_bss=(*cpt_bss)+atoi(f->caractere);
 					}
 					else{
-						if(strcmp(f->caractere, ",")){
+						if(strcasecmp(f->caractere, ",")){
 							*file_erreur = enfiler("Mauvaise commande après la directive .space", f->identifiant, f->ligne, *file_erreur);
 						}
 					}
@@ -434,7 +437,7 @@ file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int
 
 file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,file_jeu_instruction*file_erreur,file_jeu_instruction g,int ligne){
 	/*	printf("ligne %d\n",ligne);*/
-	if(strcmp(instruction,"NOP")==0){
+	if(strcasecmp(instruction,"NOP")==0){
 		/*printf("NOP\n");*/
 		file_jeu_instruction h=creer_file();
 		h=enfiler("Registre","$0",ligne,h);
@@ -444,15 +447,15 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 		*cpt_text=*cpt_text+4;
 	}
 	else{
-		if(strcmp(instruction,"LW")==0&&strcmp(g->suiv->identifiant,"Registre")==0){
+		if(strcasecmp(instruction,"LW")==0&&strcasecmp(g->suiv->identifiant,"Registre")==0){
 			/*printf("LW\n");*/
 
-			if(strcmp(g->identifiant,"Baseoffset")==0){
+			if(strcasecmp(g->identifiant,"Baseoffset")==0){
 				*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,g);
 				*cpt_text=*cpt_text+4;
 			}
 			else{
-				if(strcmp(g->identifiant,"Renvoie vers une étiquette")==0){
+				if(strcasecmp(g->identifiant,"Renvoie vers une étiquette")==0){
 
 					file_jeu_instruction h=creer_file();
 					file_jeu_instruction i=creer_file();
@@ -482,15 +485,15 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 			}
 		}
 		else{
-			if(strcmp(instruction,"SW")==0){
+			if(strcasecmp(instruction,"SW")==0){
 				/*printf("SW\n");*/
 
-				if(strcmp(g->caractere,"Baseoffset")==0){
+				if(strcasecmp(g->caractere,"Baseoffset")==0){
 				*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,g);
 				*cpt_text=*cpt_text+4;
 			}
 			else{
-				if(strcmp(g->identifiant,"Renvoie vers une étiquette")==0){
+				if(strcasecmp(g->identifiant,"Renvoie vers une étiquette")==0){
 					file_jeu_instruction h=creer_file();
 					file_jeu_instruction i=creer_file();
 					/*unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
@@ -520,7 +523,7 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 				}
 			}
 			else{
-				if(strcmp(instruction,"MOVE")==0){
+				if(strcasecmp(instruction,"MOVE")==0){
 					/*printf("MOVE\n");*/
 
 					g=enfiler("Registre","$0",ligne,g);
@@ -528,7 +531,7 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 					*cpt_text=*cpt_text+4;
 				}
 				else{
-					if(strcmp(instruction,"NEG")==0){
+					if(strcasecmp(instruction,"NEG")==0){
 						/*printf("NEG\n");*/
 
 						file_jeu_instruction h=creer_file();
@@ -539,7 +542,7 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 						*cpt_text=*cpt_text+4;
 					}
 					else{
-						if(strcmp(instruction,"LI")==0){
+						if(strcasecmp(instruction,"LI")==0){
 							/*printf("LI\n");*/
 
 							file_jeu_instruction h=creer_file();
@@ -597,23 +600,23 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 		/*printf("%s %d %s %s %s\n",a->nomInst,n,tab[0],tab[1],tab[2]);*/
 		f=a->op->suiv;
 		for(i=0;i<n;i++){
-			if(strcmp(tab[i],"Registre")==0){
+			if(strcasecmp(tab[i],"Registre")==0){
 				verif_registre_ope(file_erreur,f,a,tab_registre);
 			}
 			else{
-				if(strcmp(tab[i],"Immediat")==0){
+				if(strcasecmp(tab[i],"Immediat")==0){
 					verif_immediat_ope(file_erreur,f,a);
 				}
 				else{
-					if(strcmp(tab[i],"Shiftamount")==0){
+					if(strcasecmp(tab[i],"Shiftamount")==0){
 						verif_shiftamount_ope(file_erreur,f,a);
 					}
 					else{
-						if(strcmp(tab[i],"Relatif")==0){
+						if(strcasecmp(tab[i],"Relatif")==0){
 							verif_relatif_ope(file_erreur,f,a);
 						}
 						else{
-							if(strcmp(tab[i],"Absolu")==0){
+							if(strcasecmp(tab[i],"Absolu")==0){
 							verif_absolu_ope(file_erreur,f,a);
 							}
 							else{
@@ -639,23 +642,23 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 	/*printf("%s %d %s %s %s\n",a->nomInst,n,tab[0],tab[1],tab[2]);*/
 	f=a->op->suiv;
 	for(i=0;i<n;i++){
-		if(strcmp(tab[i],"Registre")==0){
+		if(strcasecmp(tab[i],"Registre")==0){
 			verif_registre_ope(file_erreur,f,a,tab_registre);
 		}
 		else{
-			if(strcmp(tab[i],"Immediat")==0){
+			if(strcasecmp(tab[i],"Immediat")==0){
 				verif_immediat_ope(file_erreur,f,a);
 			}
 			else{
-				if(strcmp(tab[i],"Shiftamount")==0){
+				if(strcasecmp(tab[i],"Shiftamount")==0){
 					verif_shiftamount_ope(file_erreur,f,a);
 				}
 				else{
-					if(strcmp(tab[i],"Relatif")==0){
+					if(strcasecmp(tab[i],"Relatif")==0){
 						verif_relatif_ope(file_erreur,f,a);
 					}
 					else{
-						if(strcmp(tab[i],"Absolu")==0){
+						if(strcasecmp(tab[i],"Absolu")==0){
 						verif_absolu_ope(file_erreur,f,a);
 						}
 						else{
@@ -673,19 +676,19 @@ void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hac
 }
 
 void verif_registre_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a,Liste_hach*tab_registre){
-	if(strcmp(f->identifiant,"Registre")!=0){
+	if(strcasecmp(f->identifiant,"Registre")!=0){
 		*file_erreur = enfiler("Type Registre attendu ", f->identifiant, a->ligne, *file_erreur);
 	}
 }
 
 void verif_baseoffset_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
-	if(strcmp(f->identifiant,"Baseoffset")!=0&&strcmp(f->identifiant,"EtiquettePFort")!=0&&strcmp(f->identifiant,"EtiquettePFaible")!=0){
+	if(strcasecmp(f->identifiant,"Baseoffset")!=0&&strcasecmp(f->identifiant,"EtiquettePFort")!=0&&strcasecmp(f->identifiant,"EtiquettePFaible")!=0){
 		*file_erreur = enfiler("Type Base Offset attendu ", f->identifiant, a->ligne, *file_erreur);
 	}
 }
 
 void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
-	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
+	if(strcasecmp(f->identifiant,"Valeur Hexadécimale")==0||strcasecmp(f->identifiant,"Valeur Décimale")==0){
 		if(atoi(f->caractere)<-32768||atoi(f->caractere)>32767){
 			*file_erreur = enfiler("Nombre sur 16 bit signé attendu", f->caractere, a->ligne, *file_erreur);
 		}
@@ -694,7 +697,7 @@ void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,
 		}
 	}
 	else{
-		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0||strcmp(f->identifiant,"EtiquettePFort")==0){
+		if(strcasecmp(f->identifiant,"Renvoie vers une étiquette")==0||strcasecmp(f->identifiant,"EtiquettePFort")==0){
 			return;
 		}
 		*file_erreur = enfiler("Type Immediat attendu", f->identifiant, a->ligne, *file_erreur);
@@ -702,7 +705,7 @@ void verif_immediat_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,
 }
 
 void verif_shiftamount_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
-	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
+	if(strcasecmp(f->identifiant,"Valeur Hexadécimale")==0||strcasecmp(f->identifiant,"Valeur Décimale")==0){
 		if(atoi(f->caractere)<0||atoi(f->caractere)>31){
 			*file_erreur = enfiler("Nombre entre 0 et 31 attendu", f->caractere, a->ligne, *file_erreur);
 		}
@@ -716,7 +719,7 @@ void verif_shiftamount_ope(file_jeu_instruction*file_erreur,file_jeu_instruction
 }
 
 void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
-	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
+	if(strcasecmp(f->identifiant,"Valeur Hexadécimale")==0||strcasecmp(f->identifiant,"Valeur Décimale")==0){
 		if(atoi(f->caractere)<-131072||atoi(f->caractere)>131071||atoi(f->caractere)%4!=0){
 			*file_erreur = enfiler("Nombre sur 18 bit signé attendu et divisible par 4", f->caractere, a->ligne, *file_erreur);
 		}
@@ -725,7 +728,7 @@ void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,f
 		}
 	}
 	else{
-		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0){
+		if(strcasecmp(f->identifiant,"Renvoie vers une étiquette")==0){
 			return;
 		}
 		*file_erreur = enfiler("Type Relatif attendu", f->identifiant, a->ligne, *file_erreur);
@@ -733,7 +736,7 @@ void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,f
 }
 
 void verif_absolu_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,file_text a){
-	if(strcmp(f->identifiant,"Valeur Hexadécimale")==0||strcmp(f->identifiant,"Valeur Décimale")==0){
+	if(strcasecmp(f->identifiant,"Valeur Hexadécimale")==0||strcasecmp(f->identifiant,"Valeur Décimale")==0){
 		if((atoi(f->caractere)<-134217728||atoi(f->caractere)>134217727)||atoi(f->caractere)%4!=0){
 			*file_erreur = enfiler("Nombre sur 18 bit signé attendu et divisible par 4", f->caractere, a->ligne, *file_erreur);
 		}
@@ -742,7 +745,7 @@ void verif_absolu_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,fi
 		}
 	}
 	else{
-		if(strcmp(f->identifiant,"Renvoie vers une étiquette")==0){
+		if(strcasecmp(f->identifiant,"Renvoie vers une étiquette")==0){
 			return;
 		}
 		*file_erreur = enfiler("Type Absolu attendu", f->identifiant, a->ligne, *file_erreur);

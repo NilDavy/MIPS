@@ -1,4 +1,0 @@
-Nom instruction : .word	 Ligne : 23	 Decalage : 0	 Etiquette : 0	Opérande : 12
-Nom instruction : .asciiz	 Ligne : 25	 Decalage : 4	 Etiquette : 0	Opérande : "ils disent : \"au ruuu!\""
-Nom instruction : .word	 Ligne : 26	 Decalage : 32	 Etiquette : 1	Opérande : MENU
-Nom instruction : .word	 Ligne : 27	 Decalage : 40	 Etiquette : 1	Opérande : Y

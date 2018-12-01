@@ -32,4 +32,5 @@ void liberer_text(file_text l);
 
 file_text supprimer_tete_text(file_text g);
 void ecrire_file_text(file_text f,FILE*a);
+file_text modif_etiquette(file_text co_text);
 #endif

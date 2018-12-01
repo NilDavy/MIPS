@@ -105,7 +105,7 @@ file_jeu_instruction supprime_commentaire(file_jeu_instruction f){
 	file_jeu_instruction h=f;
 	while(g!=f){
 		file_jeu_instruction i;
-		if(!strcmp(g->identifiant,"Commentaire")){
+		if(!strcasecmp(g->identifiant,"Commentaire")){
 			i=g;
 			h->suiv=g->suiv;
 			g=g->suiv;
@@ -118,7 +118,7 @@ file_jeu_instruction supprime_commentaire(file_jeu_instruction f){
 	}
 
 	file_jeu_instruction i;
-	if(!strcmp(g->identifiant,"Commentaire")){
+	if(!strcasecmp(g->identifiant,"Commentaire")){
 		i=g;
 		h->suiv=g->suiv;
 		g=g->suiv;
@@ -133,19 +133,19 @@ file_jeu_instruction modifie_instruction(file_jeu_instruction f){
 	file_jeu_instruction g=f->suiv->suiv;
 	file_jeu_instruction h=f->suiv;
 	while(g!=f){
-		if(strcmp(g->caractere,":")==0&&(strcmp(h->identifiant,"Instruction")==0||strcmp(h->identifiant,"Renvoie vers une étiquette")==0)){
+		if(strcasecmp(g->caractere,":")==0&&(strcasecmp(h->identifiant,"Instruction")==0||strcasecmp(h->identifiant,"Renvoie vers une étiquette")==0)){
 			strcpy(h->identifiant,"Etiquette");
 		}
-		if(strcmp(g->identifiant,"Retour à la ligne")==0&&strcmp(h->identifiant,"Instruction")==0&&strcmp(h->caractere,"NOP")!=0){
+		if(strcasecmp(g->identifiant,"Retour à la ligne")==0&&strcasecmp(h->identifiant,"Instruction")==0&&strcasecmp(h->caractere,"NOP")!=0){
 			strcpy(h->identifiant,"Renvoie vers une étiquette");
 		}
 		g=g->suiv;
 		h=h->suiv;
 	}
-	if(strcmp(g->caractere,":")==0&&(strcmp(h->identifiant,"Instruction")==0||strcmp(h->identifiant,"Renvoie vers une étiquette")==0)){
+	if(strcasecmp(g->caractere,":")==0&&(strcasecmp(h->identifiant,"Instruction")==0||strcasecmp(h->identifiant,"Renvoie vers une étiquette")==0)){
 		strcpy(h->identifiant,"Etiquette");
 	}
-	if(strcmp(g->identifiant,"Retour à la ligne")==0&&strcmp(h->identifiant,"Instruction")==0&&strcmp(h->caractere,"NOP")!=0){
+	if(strcasecmp(g->identifiant,"Retour à la ligne")==0&&strcasecmp(h->identifiant,"Instruction")==0&&strcasecmp(h->caractere,"NOP")!=0){
 		strcpy(h->identifiant,"Renvoie vers une étiquette");
 	}
 	return f;
@@ -160,10 +160,10 @@ void verif_renvoie_vers_etiquette(file_jeu_instruction*f,file_jeu_instruction*fi
 	file_jeu_instruction g=(*f)->suiv;
 	file_jeu_instruction h;
 	while(g!=(*f)){
-		if(!strcmp(g->identifiant,"Renvoie vers une étiquette")){
+		if(!strcasecmp(g->identifiant,"Renvoie vers une étiquette")){
 			file_renvoie=enfiler(g->identifiant, g->caractere,g->ligne, file_renvoie);
 		}
-		if(!strcmp(g->identifiant,"Etiquette")){
+		if(!strcasecmp(g->identifiant,"Etiquette")){
 			file_etiquette=enfiler(g->identifiant, g->caractere,g->ligne, file_etiquette);
 		}
 		g=g->suiv;
@@ -222,13 +222,13 @@ file_jeu_instruction verif_delimiteur_suite(file_jeu_instruction f,file_jeu_inst
 	file_jeu_instruction g=f->suiv->suiv;
 	file_jeu_instruction h=f->suiv;
 	while(g!=f){
-		if(strcmp(g->identifiant,"Délimiteur")==0&&strcmp(h->identifiant,"Délimiteur")==0&&strcmp(h->caractere,",")!=0){
+		if(strcasecmp(g->identifiant,"Délimiteur")==0&&strcasecmp(h->identifiant,"Délimiteur")==0&&strcasecmp(h->caractere,",")!=0){
 			*file_erreur=enfiler("Erreur ", "2 délimiteurs à la suite", g->ligne, *file_erreur);
 		}
 		g=g->suiv;
 		h=h->suiv;
 	}
-	if(strcmp(g->identifiant,"Délimiteur")==0&&strcmp(h->identifiant,"Délimiteur")==0&&strcmp(h->caractere,",")!=0){
+	if(strcasecmp(g->identifiant,"Délimiteur")==0&&strcasecmp(h->identifiant,"Délimiteur")==0&&strcasecmp(h->caractere,",")!=0){
 		*file_erreur=enfiler("Erreur ", "2 délimiteurs à la suite", g->ligne, *file_erreur);
 
 	}
@@ -239,7 +239,7 @@ file_jeu_instruction verif_remplacement_ecriture_registre(file_jeu_instruction f
 	file_jeu_instruction g=f->suiv;
 	char*mot=NULL;
 	while(g!=f){
-		if(strcmp(g->identifiant,"Registre")==0){
+		if(strcasecmp(g->identifiant,"Registre")==0){
 			if(rec_hachage_nbparam(g->caractere,tab_registre[hachage(g->caractere, dim_tab_registre)])==1){
 				*file_erreur=enfiler("Erreur ", "Interdit d'écrire dans ce registre", g->ligne, *file_erreur);
 			}
@@ -252,3 +252,37 @@ file_jeu_instruction verif_remplacement_ecriture_registre(file_jeu_instruction f
 	}
 	return f;
 }
+
+file_jeu_instruction modif_chaine_caractere(file_jeu_instruction f){
+	file_jeu_instruction g=f->suiv;
+	int i,j;
+	while(g!=f){
+		if(strcasecmp(g->identifiant,"Chaine de caractère")==0){
+			if(g->caractere[0]=='"'){
+				char modif[200]="";
+				for(i=1;i<strlen(g->identifiant);i++){
+					strcpy(modif+i-1,g->caractere+i);
+				}
+				strcpy(g->caractere,modif);
+			}
+			if(g->caractere[strlen(g->caractere)-1]=='"'&&g->caractere[strlen(g->caractere)-2]!='\\'){
+				char modif[200]=" ";
+				strncpy(modif,g->caractere,strlen(g->caractere)-1);
+				strcpy(g->caractere,modif);
+			}
+			for(i=0;i<(strlen(g->caractere)-1);i++){
+				if(g->caractere[i]=='\\' && g->caractere[i+1]=='"'){
+					char modif[200]="";
+					strncpy(modif,g->caractere,i);
+					for(j=i+1;j<(strlen(g->caractere));j++){
+						strcpy(modif+j-1,g->caractere+j);
+					}
+					strcpy(g->caractere,modif);
+				}
+			}
+		}
+		g=g->suiv;
+	}
+	return f;
+}
+

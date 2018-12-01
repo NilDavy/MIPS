@@ -1,30 +1,24 @@
 # TEST_RETURN_CODE = PASS
-#allons au ru
-.set noeorder
+# allons au ru
+.set noreorder
 .text
-add $8,$9,$10
-Lw $t0 , lunchtime 
-Lw $12, -200($7)
+Lw $t0 , lunchtime
+LW $6, -200($7)
 ADDI $t1,$t2,8
-boucle :
-add :
-BeQ  $t0 , $t1 , byebye # test 
-    NOP
+boucle:
+BEQ $t0 , $t1 , byebye
+NOP
 addi $t1 , $t1 , 1
 J boucle
-    NOP
-
+NOP
 byebye:
-JAL boucl
+JAL viteviteauru
 
 .data
 lunchtime:
-test:
-    .word 12
-.asciiz "ils disent : \"au ruuu!\""
-    .word menu
-
+.word 12
+.word menu
+.asciiz "ils disent : \"au ru!\""
 .bss
-
 menu:
-    .space 24
+.space 24

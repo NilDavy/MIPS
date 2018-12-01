@@ -1,30 +1,30 @@
 ADD 3 R
-ADD 3 R Registre Registre Registre
-ADDI 3 I Registre Registre Immediat
-SUB 3 R Registre Registre Registre
-MULT 2 R Registre Registre
-DIV 2 R Registre Registre
-AND 3 R Registre Registre Registre
-OR 3 R Registre Registre Registre
-XOR 3 R Registre Registre Registre
-ROTR 3 R Registre Registre Shiftamount
-SLL 3 R Registre Registre Shiftamount
-SRL 3 R Registre Registre Shiftamount
-SLT 3 R Registre Registre Registre
-LW 2 I Registre Baseoffset
-SW 2 I Registre Baseoffset
-LUI 2 I Registre Immediat
-MFHI 1 R Registre
-MFLO 1 R Registre
-BEQ 3 I Registre Registre Relatif
-BNE 3 I Registre Registre Relatif
-BGTZ 2 I Registre Relatif
-BLEZ 2 I Registre Relatif
-J 1 J Absolu
-JAL 1 J Absolu
-JR 1 R Registre
-NOP 0 R 
-MOVE 2 R Registre Registre
-NEG 2 R Registre Registre
-LI 2 I Registre Immediat
-BLT 3 R Registre Registre Absolu
+ADD 3 R Registre Registre Registre rd rs rt 000000 100000
+ADDI 3 I Registre Registre Immediat rt rs i 001000
+SUB 3 R Registre Registre Registre rd rs rt 000000 100010
+MULT 2 R Registre Registre rs rt 000000 011000
+DIV 2 R Registre Registre rs rt 00000 011010
+AND 3 R Registre Registre Registre rd rs rt 000000 100100
+OR 3 R Registre Registre Registre rd rs rt 000000 100101
+XOR 3 R Registre Registre Registre rd rs rt 000000 100110
+ROTR 3 R Registre Registre Shiftamount rd rt sa 000000 000010
+SLL 3 R Registre Registre Shiftamount rd rt sa 000000 000000
+SRL 3 R Registre Registre Shiftamount rd rt sa 000000 000010
+SLT 3 R Registre Registre Registre rd rs rt 000000 101010
+LW 2 I Registre Baseoffset rt bo 100011
+SW 2 I Registre Baseoffset rt bo 101011
+LUI 2 I Registre Immediat rt i 001111
+MFHI 1 R Registre rd 000000 010000
+MFLO 1 R Registre rd 000000 010010
+BEQ 3 I Registre Registre Relatif rs rt of 000100
+BNE 3 I Registre Registre Relatif rs rt of 000101
+BGTZ 2 I Registre Relatif rs of 000111
+BLEZ 2 I Registre Relatif rs of 000110
+J 1 J Absolu t 000010
+JAL 1 J Absolu t 000011
+JR 1 R Registre rs 000000 001000
+NOP 0 R 000000 000000
+MOVE 2 R Registre Registre rt rs
+NEG 2 R Registre Registre rt rs
+LI 2 I Registre Immediat rt i
+BLT 3 R Registre Registre Absolu rt rs t

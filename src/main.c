@@ -16,6 +16,8 @@
 #include "file_symb.h"
 #include "analyse_syntaxique.h"
 #include "table_relocation.h"
+#include "ecrire_binaire.h"
+
 /**
  * @ param exec Name of executable.
  * @ return Nothing.
@@ -64,7 +66,6 @@ int main ( int argc, char *argv[] ) {
 
 
 	file  	= argv[argc-1];
-
 
 	if ( NULL == file ) {
 		fprintf( stderr, "Missing ASM source file, aborting.\n" );
@@ -137,7 +138,6 @@ int main ( int argc, char *argv[] ) {
 	}
 	creation_liste_registre(tab_registre,dim_tab_registre);
 
-
 	Liste_hach tab_instruction[dim_tab_instruction];
 
 	for(i=0;i<dim_tab_instruction;i++){
@@ -145,8 +145,8 @@ int main ( int argc, char *argv[] ) {
 	}
 	creation_liste_instruction(tab_instruction,dim_tab_instruction);
 
-	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);
-	visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
+	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);*/
+	/*visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
 
 	/** variable interne contenant le code instancié **/
 	file_jeu_instruction file_lexeme=creer_file();
@@ -161,6 +161,10 @@ int main ( int argc, char *argv[] ) {
 	file_symb co_bss_attente=creerfile_symb();
 	table_reloc reloc_text = NULL;
 	table_reloc reloc_data = NULL;
+	
+	int nbtext;
+	int nbdata;
+	int cptbss;
 
 	/* ---------------- do the lexical analysis -------------------*/
 	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
@@ -171,7 +175,8 @@ int main ( int argc, char *argv[] ) {
 		file_lexeme=modifie_instruction(file_lexeme);
 		/*verif_renvoie_vers_etiquette(&file_lexeme,&file_erreur);*/
 		file_lexeme=verif_delimiteur_suite(file_lexeme,&file_erreur);
-		file_lexeme=verif_remplacement_ecriture_registre(file_lexeme,&file_erreur,tab_registre);
+	file_lexeme=verif_remplacement_ecriture_registre(file_lexeme,&file_erreur,tab_registre);
+		file_lexeme= modif_chaine_caractere(file_lexeme);
 	}
 
 
@@ -187,7 +192,7 @@ int main ( int argc, char *argv[] ) {
 		WARNING_MSG("Il y a des erreurs de lexique dans le code source !");
 		printf("************************  ERREUR  ************************\n \n");
 
-		/*visualiser_file(file_erreur);*/
+		visualiser_file(file_erreur);
 		ecrire_file(file_erreur, f_erreur);
 	printf("**********************************************************\n\n");
 	}
@@ -195,7 +200,9 @@ int main ( int argc, char *argv[] ) {
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 
 		/*analyse syntaxique*/
-		analyse_syntaxique(tab_instruction,&file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente);
+		analyse_syntaxique(tab_instruction,file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente,&nbtext,&nbdata,&cptbss);
+		
+		/*printf("text %d  data %d  bss %d\n",nbtext,nbdata,cptbss);*/
 		
 		/* Remplissage table de relocation */
 		
@@ -220,6 +227,7 @@ int main ( int argc, char *argv[] ) {
 		ecrire_table(reloc_text, f_reloc);
 		fprintf(f_reloc, "\n[.rel.data]\nOffset\t Type\t Value\n");
 		ecrire_table(reloc_data, f_reloc);
+		
 
 		if(!(file_vide(file_erreur))){
 			WARNING_MSG("Il y a des erreurs de syntaxe dans le code source !");
@@ -232,14 +240,60 @@ int main ( int argc, char *argv[] ) {
 		else{
 			DEBUG_MSG("Il n'y a pas d'erreur de syntaxe dans le code source !");
 			printf("\n**********************************************************\n\n");
+			co_text= modif_etiquette(co_text);
+
+			/* il reste à generer les codes binaires */
+			/* il faut creer les tables
+			 shstrtab : table des noms de section
+			 text, data : données (PROGBITS)
+			 bss : espace à alloué au lancement du programme
+			 strtab : autres chaînes de caractères (symboles)
+			 Symtab : symboles
+			 rel.text, rel.data : sections de relocation*/
+			
+			
+			char* machine = "mips";
+			int i;
+			int noreorder =1;
+			int lenght=strlen(file);
+			char name[lenght-2];
+			creer_nom_fichier(file,name);
+			/*printf("name %s\n",name);*/
+			
+			
+			/* prepare sections*/
+			section     text = NULL;
+			section     data = NULL;
+			section      bss = NULL;
+			section shstrtab = NULL;
+			section   strtab = NULL;
+			section   symtab = NULL;
+			section  reltext = NULL;
+			section  reldata = NULL;
+			
+			/*section shestrtab*/
+			shstrtab = make_shstrtab_section();
+			
+			/*section bss*/
+			if(!file_vide_bss(co_bss)){
+				creer_section_bss(&bss,cptbss);
+				print_section(bss);
+			}
+			
+			/*section data*/
+			if(!file_vide_data(co_data)){
+				creer_section_data(&data,nbdata,co_data);
+				print_section(data);
+			}
+			
+			/*section text*/
+			if(!file_vide_text(co_text)){
+				creer_section_text(&text,nbtext,co_text,tab_instruction,tab_registre);
+				print_section(text);
+			}
 		}
-
 	}
-
-
-
-
-
+	/*printf("%s %d %d\n","l",(int)'l',strlen("test"));*/
 
 	/* ---------------- Free memory and terminate -------------------*/
 
@@ -264,5 +318,15 @@ int main ( int argc, char *argv[] ) {
 	fclose(f_data);
 	fclose(f_text);
 	fclose(f_symb);
+	/*
+	 
+	 del_section(     text );
+	del_section(     data );
+	del_section(      bss );
+	del_section( shstrtab );
+	del_section(   strtab );
+	del_section(   symtab );
+	del_section(  reltext );
+	del_section(  reldata );*/
 	exit( EXIT_SUCCESS );
 }
