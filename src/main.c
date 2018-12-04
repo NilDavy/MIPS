@@ -151,7 +151,7 @@ int main ( int argc, char *argv[] ) {
 	/** variable interne contenant le code instancié **/
 	file_jeu_instruction file_lexeme=creer_file();
 	file_jeu_instruction file_erreur=creer_file();
-	
+
 	file_text co_text=creerfile_text();
 	file_bss co_bss=creerfile_bss();
 	file_data co_data=creerfile_data();
@@ -161,7 +161,7 @@ int main ( int argc, char *argv[] ) {
 	file_symb co_bss_attente=creerfile_symb();
 	table_reloc reloc_text = NULL;
 	table_reloc reloc_data = NULL;
-	
+
 	int nbtext;
 	int nbdata;
 	int cptbss;
@@ -203,9 +203,8 @@ int main ( int argc, char *argv[] ) {
 		analyse_syntaxique(tab_instruction,file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente,&nbtext,&nbdata,&cptbss);
 
 		/*printf("text %d  data %d  bss %d\n",nbtext,nbdata,cptbss);*/
-		
+
 		/* Remplissage table de relocation */
-		
 
 		if(!file_vide_data(co_data)){
 		reloc_data = remplirTableRelocationData(co_data,co_symb, tab_instruction, &file_erreur);
@@ -216,16 +215,19 @@ int main ( int argc, char *argv[] ) {
 			verif_operande(co_text,&file_erreur,tab_instruction,tab_registre);
 		}
 
+		/*visualiser_tab_hachage(tab_registre, dim_tab_registre);
+		visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
+
 
 		ecrire_file_bss(co_bss,f_bss);
 		ecrire_file_data(co_data,f_data);
 		ecrire_file_text(co_text,f_text);
 		ecrire_file_symb(co_symb,f_symb);
-
 		fprintf(f_reloc, "[.rel.text]\nOffset\t Type\t Value\n");
 		ecrire_table(reloc_text, f_reloc);
 		fprintf(f_reloc, "\n[.rel.data]\nOffset\t Type\t Value\n");
 		ecrire_table(reloc_data, f_reloc);
+
 
 		if(!(file_vide(file_erreur))){
 			WARNING_MSG("Il y a des erreurs de syntaxe dans le code source !");
@@ -248,47 +250,55 @@ int main ( int argc, char *argv[] ) {
 			 strtab : autres chaînes de caractères (symboles)
 			 Symtab : symboles
 			 rel.text, rel.data : sections de relocation*/
-			
-			
-			/*char* machine = "mips";
+
+
+			char* machine = "mips";
 			int i;
 			int noreorder =1;
 			int lenght=strlen(file);
 			char name[lenght-2];
-			creer_nom_fichier(file,name);*/
+			creer_nom_fichier(file,name);
 			/*printf("name %s\n",name);*/
-			
-			
+
+
 			/* prepare sections*/
-		/*	section     text = NULL;
+			section     text = NULL;
 			section     data = NULL;
 			section      bss = NULL;
 			section shstrtab = NULL;
 			section   strtab = NULL;
 			section   symtab = NULL;
 			section  reltext = NULL;
-			section  reldata = NULL;*/
-			
+			section  reldata = NULL;
+
 			/*section shestrtab*/
-			/*shstrtab = make_shstrtab_section();*/
-			
+			shstrtab = make_shstrtab_section();
+
+			/*section strtab*/
+			strtab = make_strtab_section(&co_symb);
+			print_section(strtab);
+
+			/*section symtab*/
+			symtab = make_symtab_section(shstrtab, strtab, co_symb);
+			print_section(symtab);
+
 			/*section bss*/
-		/*	if(!file_vide_bss(co_bss)){
+			if(!file_vide_bss(co_bss)){
 				creer_section_bss(&bss,cptbss);
 				print_section(bss);
-			}*/
-			
+			}
+
 			/*section data*/
-			/*if(!file_vide_data(co_data)){
+			if(!file_vide_data(co_data)){
 				creer_section_data(&data,nbdata,co_data);
 				print_section(data);
-			}*/
-			
+			}
+
 			/*section text*/
-			/*if(!file_vide_text(co_text)){
+			if(!file_vide_text(co_text)){
 				creer_section_text(&text,nbtext,co_text,tab_instruction,tab_registre);
 				print_section(text);
-			}*/
+			}
 		}
 	}
 	/*printf("%s %d %d\n","l",(int)'l',strlen("test"));*/
@@ -305,8 +315,8 @@ int main ( int argc, char *argv[] ) {
 	liberer_text(co_text);
 	liberer_file(file_lexeme);
 	liberer_file(file_erreur);
-	/*liberer_table(reloc_data);
-	liberer_table(reloc_text);*/
+	liberer_table(reloc_data);
+	liberer_table(reloc_text);
 	liberer_tab_hachage(tab_registre, dim_tab_registre);
 	liberer_tab_hachage(tab_instruction, dim_tab_instruction);
 	fclose(fp);
@@ -317,7 +327,7 @@ int main ( int argc, char *argv[] ) {
 	fclose(f_text);
 	fclose(f_symb);
 	/*
-	 
+
 	 del_section(     text );
 	del_section(     data );
 	del_section(      bss );

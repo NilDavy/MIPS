@@ -12,16 +12,17 @@
 #include "file_data.h"
 #include "file.h"
 #include "file_text.h"
+#include "file_symb.h"
 
 
 
 int elf_get_sym_index_from_name(section symtab, section strtab,  char* sym_name);
 section make_shstrtab_section( void );
-section make_strtab_section( char* symbols[], int nb_sym);
+section make_strtab_section(file_symb *co_symb);
 section make_data_section( int data_prog[], int nb_data );
 section make_text_section( int instructions[], int nb_inst);
 section make_bss_section( int bss_prog);
-section make_symtab_section(section shstrtab, section strtab,  Elf32_Sym symbols[], int nb_syms  );
+section make_symtab_section(section shstrtab, section strtab,  file_symb co_symb);
 section make_rel32_section(char *relname, Elf32_Rel relocations[], int nb_reloc);
 void swap(char*s2);
 void creer_nom_fichier(char*file,char*name);
