@@ -145,8 +145,8 @@ int main ( int argc, char *argv[] ) {
 	}
 	creation_liste_instruction(tab_instruction,dim_tab_instruction);
 
-	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);*/
-	/*visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
+	/*visualiser_tab_hachage(tab_registre, dim_tab_registre);
+	visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
 
 	/** variable interne contenant le code instancié **/
 	file_jeu_instruction file_lexeme=creer_file();

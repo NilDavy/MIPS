@@ -143,7 +143,7 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 	int i;
 	int n;
 	char*mot=calloc(5,sizeof(char));
-	char type[1];
+	char*type=calloc(1,sizeof(char));
 	int nbOp;
 	char oppcode[25];
 	char fonction[25];
@@ -156,6 +156,7 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 	fscanf(finstruction,"%s %d %s",mot,&nbOp, type);
 
 	for(i=0;i<nbre_instruction;i++){
+
 		fscanf(finstruction,"%s %d %s",mot,&nbOp, type);
 		/*printf("instruc: %s, nbop: %d, type: %s\n",mot,nbOp,type);
 		getchar();*/
@@ -168,7 +169,7 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 				fscanf(finstruction,"%s",fonction);
 			}
 			tab_instruction[n]=ajout_tete_hachage(mot, nbOp, type,mot1,"","",add1,"","",oppcode,fonction,tab_instruction[n]);
-			/*printf("%s %s %d\n",mot1,add1,oppcode);*/
+			/*printf("%s %s %s\n",mot1,add1,oppcode);*/
 			free(add1);
 			free(mot1);
 		}
@@ -183,7 +184,7 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 					fscanf(finstruction,"%s",fonction);
 				}
 				tab_instruction[n]=ajout_tete_hachage(mot, nbOp, type,mot1,mot2,"",add1,add2,"",oppcode,fonction,tab_instruction[n]);
-				/*printf("%s %s %s %s %d\n",mot1,mot2,add1,add2,oppcode);*/
+				/*printf("%s %s %s %s %s\n",mot1,mot2,add1,add2,oppcode);*/
 				free(mot1);
 				free(mot2);
 				free(add1);
@@ -202,7 +203,7 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 						fscanf(finstruction,"%s",fonction);
 					}
 					tab_instruction[n]=ajout_tete_hachage(mot, nbOp, type,mot1,mot2,mot3,add1,add2,add3,oppcode,fonction,tab_instruction[n]);
-					/*printf("%s %s %s %s %s %s %d\n",mot1,mot2,mot3,add1,add2,add3,oppcode);*/
+					/*printf("%s %s %s %s %s %s %s\n",mot1,mot2,mot3,add1,add2,add3,oppcode);*/
 					free(mot1);
 					free(mot2);
 					free(mot3);

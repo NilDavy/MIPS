@@ -1,0 +1,10 @@
+[.rel.text]
+Offset	 Type	 Value
+0 	R_MIPS_HI16	 DATA
+4 	R_MIPS_LO16	 DATA
+28 	R_MIPS_26	 TEXT
+36 	R_MIPS_26	 viteviteauru
+
+[.rel.data]
+Offset	 Type	 Value
+4	 R_MIPS_32	 BSS

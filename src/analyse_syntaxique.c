@@ -7,7 +7,9 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 	enum section etat = INIT;
 	file_jeu_instruction g=supprime_commentaire(file);
 	file_jeu_instruction h=g;
+	file_symb g=*co_symb;
 	g = g->suiv;
+	int t,b,d;
 	do
 	{
 		/*printf("Nouvelle ligne : %s\n",g->caractere);*/
@@ -20,6 +22,7 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 			printf("%s\n",g->caractere);
 			printf("%d\n\n\n",g->ligne);*/
 			etat = TEXT;
+			t=1;
 			g = processText(g, co_text, &cpt_text, file_erreur, co_symb,co_text_attente,tab_instruction);
 		}
 		else{
@@ -27,6 +30,7 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 				/*printf("data\n");
 				printf("%s\n",g->caractere);*/
 				etat = DATA;
+				d=1;
 				g = processData(g, co_data, &cpt_data, file_erreur, co_symb,co_data_attente);
 			}
 			else{
@@ -34,6 +38,7 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 					/*printf("bss\n");
 					printf("%s\n",g->caractere);*/
 					etat = BSS;
+					b=1;
 					g = processBss(g, co_bss, &cpt_bss, file_erreur, co_symb,co_bss_attente);
 				}
 				else{
@@ -73,6 +78,9 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 		g=g->suiv;
 	}
 	while(g!=h->suiv);
+	if(t==1){
+		
+	}
 	*cptbss=cpt_bss;
 	*nbdata=cpt_data;
 	*nbtext=cpt_text;
