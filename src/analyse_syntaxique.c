@@ -7,9 +7,36 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 	enum section etat = INIT;
 	file_jeu_instruction g=supprime_commentaire(file);
 	file_jeu_instruction h=g;
-	file_symb g=*co_symb;
 	g = g->suiv;
-	int t,b,d;
+	/*int t=0,b=0,d=0;
+	do{
+	if(!strcasecmp(g->caractere, ".text")){
+			t=1;
+			}
+	else{
+		if (!strcasecmp(g->caractere, ".data")){
+			d=1;
+		}
+		else{
+			if(!strcasecmp(g->caractere, ".bss")){
+			b=1;
+			}
+		}
+	}
+	g=g->suiv;}
+	while(g!=h->suiv);
+
+	printf("t %d b %d d%d\n",t,b,d);
+	if(t==1){
+		*co_symb=ajout_symb(".text", 0,0,".text", *co_symb);
+	}
+	if(d==1){
+		*co_symb=ajout_symb(".data", 0,0,".data", *co_symb);
+	}
+	if(b==1){
+		*co_symb=ajout_symb(".bss", 0,0,".bss", *co_symb);
+	}
+	visualiser_file_symb(*co_symb);*/
 	do
 	{
 		/*printf("Nouvelle ligne : %s\n",g->caractere);*/
@@ -22,7 +49,6 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 			printf("%s\n",g->caractere);
 			printf("%d\n\n\n",g->ligne);*/
 			etat = TEXT;
-			t=1;
 			g = processText(g, co_text, &cpt_text, file_erreur, co_symb,co_text_attente,tab_instruction);
 		}
 		else{
@@ -30,7 +56,6 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 				/*printf("data\n");
 				printf("%s\n",g->caractere);*/
 				etat = DATA;
-				d=1;
 				g = processData(g, co_data, &cpt_data, file_erreur, co_symb,co_data_attente);
 			}
 			else{
@@ -38,7 +63,6 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 					/*printf("bss\n");
 					printf("%s\n",g->caractere);*/
 					etat = BSS;
-					b=1;
 					g = processBss(g, co_bss, &cpt_bss, file_erreur, co_symb,co_bss_attente);
 				}
 				else{
@@ -78,9 +102,6 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 		g=g->suiv;
 	}
 	while(g!=h->suiv);
-	if(t==1){
-		
-	}
 	*cptbss=cpt_bss;
 	*nbdata=cpt_data;
 	*nbtext=cpt_text;
@@ -96,7 +117,6 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 {
 	file_jeu_instruction f = file;
 	file_jeu_instruction g=creer_file();
-	char*mot;
 	char copie[200];
 	char*instruction=NULL;
 	int nbop;
@@ -114,16 +134,19 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 			*co_text_attente=ajout_symb(f->caractere, f->ligne, *cpt_text,"TEXT", *co_text_attente);
 			return f;
 		}
+
 		else{
 			/* dans la section .text il y a que les instructions*/
 
 			if(!strcasecmp(f->identifiant, "Instruction")){
 				while(!file_vide_symb(*co_text_attente)){
+					char mot[200];
 					/*ajout dans la table des symboles*/
-					mot=defiler_symb(co_text_attente);
+					defiler_symb(co_text_attente,mot);
 					strcpy(copie,mot);
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_text,"TEXT", *co_symb);
 				}
+
 				instruction=f->caractere;
 
 				/*recherche nombre d'opération*/
@@ -198,17 +221,224 @@ file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, 
 
 		}
 	}
+	liberer_file(g);
 	return f;
 }
 
 
+file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,file_jeu_instruction*file_erreur,file_jeu_instruction g,int ligne){
+	/*	printf("ligne %d\n",ligne);*/
+	if(strcasecmp(instruction,"NOP")==0){
+		/*printf("NOP\n");*/
+		file_jeu_instruction h=creer_file();
+		h=enfiler("Registre","$0",ligne,h);
+		h=enfiler("Registre","$0",ligne,h);
+		h=enfiler("Valeur Décimale","0",ligne,h);
+		*co_text=ajout_text("SLL",3,ligne, *cpt_text, *co_text,h);
+		*cpt_text=*cpt_text+4;
+		liberer_file(h);
+	}
+	else{
+		if(strcasecmp(instruction,"LW")==0&&strcasecmp(g->suiv->identifiant,"Registre")==0){
+			/*printf("LW\n");*/
+
+			if(strcasecmp(g->identifiant,"Baseoffset")==0){
+				*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,g);
+				*cpt_text=*cpt_text+4;
+			}
+			else{
+				if(strcasecmp(g->identifiant,"Renvoie vers une étiquette")==0){
+
+					file_jeu_instruction h=creer_file();
+					file_jeu_instruction i=creer_file();
+					/*unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
+					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
+					char o_p_fort[30],o_p_faible[30];
+					sprintf(o_p_fort, "%d",octet_pfort);
+					sprintf(o_p_faible, "%d",octet_pfaible);
+					printf("poids faible %s\n",o_p_faible);
+					printf("poids fort %s\n",o_p_fort);
+					strcat(o_p_faible,g->caractere);
+					strcat(o_p_faible,"(");
+					strcat(o_p_faible,g->suiv->caractere);
+					strcat(o_p_faible,")");*/
+					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
+					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
+					*cpt_text=*cpt_text+4;
+					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
+					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
+					*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,i);
+					*cpt_text=*cpt_text+4;
+					liberer_file(h);
+					liberer_file(i);
+				}
+				else{
+					*file_erreur = enfiler("Mauvaise opérande après un LW", g->identifiant,ligne, *file_erreur);
+				}
+			}
+		}
+		else{
+			if(strcasecmp(instruction,"SW")==0){
+				/*printf("SW\n");*/
+
+				if(strcasecmp(g->caractere,"Baseoffset")==0){
+				*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,g);
+				*cpt_text=*cpt_text+4;
+			}
+			else{
+				if(strcasecmp(g->identifiant,"Renvoie vers une étiquette")==0){
+					file_jeu_instruction h=creer_file();
+					file_jeu_instruction i=creer_file();
+					/*unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
+					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
+					char o_p_fort[30],o_p_faible[30];
+					sprintf(o_p_fort, "%d",octet_pfort);
+					sprintf(o_p_faible, "%d",octet_pfaible);
+					printf("poids faible %s\n",o_p_faible);
+					printf("poids fort %s\n",o_p_fort);
+					strcat(o_p_faible,g->caractere);
+					strcat(o_p_faible,"(");
+					strcat(o_p_faible,g->suiv->caractere);
+					strcat(o_p_faible,")");*/
+					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
+					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
+					*cpt_text=*cpt_text+4;
+
+					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
+					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
+					*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,i);
+					*cpt_text=*cpt_text+4;
+					liberer_file(h);
+					liberer_file(i);
+				}
+				else{
+					*file_erreur = enfiler("Mauvaise opérande après un SW", g->identifiant,ligne, *file_erreur);
+				}
+				}
+			}
+			else{
+				if(strcasecmp(instruction,"MOVE")==0){
+					/*printf("MOVE\n");*/
+
+					g=enfiler("Registre","$0",ligne,g);
+					*co_text=ajout_text("ADD",3,ligne, *cpt_text, *co_text,g);
+					*cpt_text=*cpt_text+4;
+				}
+				else{
+					if(strcasecmp(instruction,"NEG")==0){
+						/*printf("NEG\n");*/
+
+						file_jeu_instruction h=creer_file();
+						h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+						h=enfiler("Registre","$0",ligne,h);
+						h=enfiler(g->identifiant,g->caractere,ligne,h);
+						*co_text=ajout_text("SUB",3,ligne, *cpt_text, *co_text,h);
+						*cpt_text=*cpt_text+4;
+						liberer_file(h);
+					}
+					else{
+						if(strcasecmp(instruction,"LI")==0){
+							/*printf("LI\n");*/
+
+							file_jeu_instruction h=creer_file();
+							h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+							h=enfiler("Registre","$0",ligne,h);
+							h=enfiler(g->identifiant,g->caractere,ligne,h);
+							*co_text=ajout_text("ADDI",3,ligne, *cpt_text, *co_text,h);
+							*cpt_text=*cpt_text+4;
+							liberer_file(h);
+						}
+						else{
+								/*instruction BLT*/
+							/*printf("BLT\n");*/
+
+								file_jeu_instruction h=creer_file();
+								file_jeu_instruction i=creer_file();
+								h=enfiler("Registre","$1",ligne,h);
+								h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+								h=enfiler(g->suiv->suiv->identifiant,g->suiv->suiv->caractere,ligne,h);
+								i=enfiler("Registre","$1",ligne,i);
+								i=enfiler("Registre","$0",ligne,i);
+								i=enfiler(g->suiv->suiv->suiv->identifiant,g->suiv->suiv->suiv->caractere,ligne,i);
+								*co_text=ajout_text("SLT",3,ligne, *cpt_text, *co_text,h);
+								*cpt_text=*cpt_text+4;
+								*co_text=ajout_text("BNE",3,ligne, *cpt_text, *co_text,i);
+								*cpt_text=*cpt_text+4;
+								liberer_file(h);
+								liberer_file(i);
+						}
+					}
+				}
+			}
+		}
+	}
+	return *co_text;
+}
+
+
+/* Fonction qui rempli la liste bss dans le cas ou on est dans .bss */
+file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int* cpt_bss, file_jeu_instruction *file_erreur, file_symb *co_symb, file_symb *co_bss_attente)
+{
+	file_jeu_instruction f = file;
+	char copie[200];
+
+	/*les cas ou on ne fait rien .bss, : et retour ligne*/
+	if (!(strcasecmp(f->caractere, ".bss"))||!(strcasecmp(f->caractere, ":"))||!(strcasecmp(f->identifiant, "Retour à la ligne"))){
+		return f;
+	}
+	else{
+		if (!strcasecmp(f->identifiant, "Etiquette")){
+			/*ajout dans la table des symboles d'attente*/
+			*co_bss_attente=ajout_symb(f->caractere, f->ligne, *cpt_bss,"BSS", *co_bss_attente);
+			return f;
+		}
+		else {
+
+			/*dans la section .bss il peut y avoir que .space*/
+
+			if(!strcasecmp(f->caractere, ".space")){
+				while(!file_vide_symb(*co_bss_attente)){
+					char mot[200];
+					/*ajout dans la table des symboles*/
+					defiler_symb(co_bss_attente,mot);
+					strcpy(copie,mot);
+					*co_symb=ajout_symb(copie, f->ligne, *cpt_bss,"BSS", *co_symb);
+
+				}
+
+				f=f->suiv;
+				while(strcasecmp(f->identifiant, "Retour à la ligne")){
+					if(!strcasecmp(f->identifiant, "Valeur Décimale") || !strcasecmp(f->identifiant, "Valeur Hexadécimale")){
+						/*Creer maillon bss, ici il peut y avoir apres space soit un hex qui est deja transformee en dec ou un dec*/
+						/* au final c'est un dec quoi qu'il arrive et positif car on veut une taille*/
+						*co_bss=ajout_bss(".space", f->ligne, *cpt_bss,f->caractere, 2, *co_bss);
+						*cpt_bss=(*cpt_bss)+atoi(f->caractere);
+					}
+					else{
+						if(strcasecmp(f->caractere, ",")){
+							*file_erreur = enfiler("Mauvaise commande après la directive .space", f->identifiant, f->ligne, *file_erreur);
+						}
+					}
+					f=f->suiv;
+				}
+			}
+			else{
+				*file_erreur = enfiler("Directive .space attendu à la place de :", f->caractere, f->ligne, *file_erreur);
+				f=f->suiv;
+			}
+
+		}
+	}
+	return f;
+}
 
 
 /* Fonction qui rempli la liste de data dans le cas ou on est dans .data */
 file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, int* cpt_data, file_jeu_instruction *file_erreur, file_symb *co_symb,file_symb *co_data_attente)
 {
 	file_jeu_instruction f = file;
-	char*mot;
 	int vide =0;
 	char copie[200];
 	/*les cas ou on ne fait rien .data, : et retour ligne*/
@@ -227,8 +457,9 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 
 			if(!strcasecmp(f->caractere, ".space")){
 				while(!file_vide_symb(*co_data_attente)){
+					char mot[200];
 					/*ajout dans la table des symboles*/
-					mot=defiler_symb(co_data_attente);
+					defiler_symb(co_data_attente,mot);
 					strcpy(copie,mot);
 					*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 				}
@@ -252,8 +483,9 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 			else{
 					if(!strcasecmp(f->caractere, ".byte")){
 						while(!file_vide_symb(*co_data_attente)){
+							char mot[200];
 							/*ajout dans la table des symboles*/
-							mot=defiler_symb(co_data_attente);
+							defiler_symb(co_data_attente,mot);
 							strcpy(copie,mot);
 							*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 						}
@@ -299,8 +531,9 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 								*cpt_data+=4-((*cpt_data)%4);
 							}
 							while(!file_vide_symb(*co_data_attente)){
+								char mot[200];
 								/*ajout dans la table des symboles*/
-								mot=defiler_symb(co_data_attente);
+								defiler_symb(co_data_attente,mot);
 								strcpy(copie,mot);
 								*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 							}
@@ -338,12 +571,12 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 								f=f->suiv;
 							}
 						}
-
 						else{
 							if(!strcasecmp(f->caractere, ".asciiz")){
 								while(!file_vide_symb(*co_data_attente)){
+									char mot[200];
 									/*ajout dans la table des symboles*/
-									mot=defiler_symb(co_data_attente);
+									defiler_symb(co_data_attente,mot);
 									strcpy(copie,mot);
 									*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 								}
@@ -363,11 +596,11 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 										strcat(mot1," ");
 									}
 								}
-								free(mot1);
 								if(vide==1){
 									*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
 									*cpt_data=(*cpt_data)+strlen(mot1);
 								}
+								free(mot1);
 							}
 							else{
 								*file_erreur = enfiler("Mauvaise directive dans la section .data", " ", f->ligne, *file_erreur);
@@ -379,210 +612,6 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 		}
 	}
 	return f;
-}
-
-
-
-
-
-
-
-/* Fonction qui rempli la liste bss dans le cas ou on est dans .bss */
-file_jeu_instruction processBss(file_jeu_instruction file, file_bss *co_bss, int* cpt_bss, file_jeu_instruction *file_erreur, file_symb *co_symb, file_symb *co_bss_attente)
-{
-	file_jeu_instruction f = file;
-	char*mot;
-	char copie[200];
-
-	/*les cas ou on ne fait rien .bss, : et retour ligne*/
-	if (!(strcasecmp(f->caractere, ".bss"))||!(strcasecmp(f->caractere, ":"))||!(strcasecmp(f->identifiant, "Retour à la ligne"))){
-		return f;
-	}
-	else{
-		if (!strcasecmp(f->identifiant, "Etiquette")){
-			/*ajout dans la table des symboles d'attente*/
-			*co_bss_attente=ajout_symb(f->caractere, f->ligne, *cpt_bss,"BSS", *co_bss_attente);
-			return f;
-		}
-		else {
-
-			/*dans la section .bss il peut y avoir que .space*/
-
-			if(!strcasecmp(f->caractere, ".space")){
-				while(!file_vide_symb(*co_bss_attente)){
-					/*ajout dans la table des symboles*/
-					mot=defiler_symb(co_bss_attente);
-					strcpy(copie,mot);
-					*co_symb=ajout_symb(copie, f->ligne, *cpt_bss,"BSS", *co_symb);
-
-				}
-
-				f=f->suiv;
-				while(strcasecmp(f->identifiant, "Retour à la ligne")){
-					if(!strcasecmp(f->identifiant, "Valeur Décimale") || !strcasecmp(f->identifiant, "Valeur Hexadécimale")){
-						/*Creer maillon bss, ici il peut y avoir apres space soit un hex qui est deja transformee en dec ou un dec*/
-						/* au final c'est un dec quoi qu'il arrive et positif car on veut une taille*/
-						*co_bss=ajout_bss(".space", f->ligne, *cpt_bss,f->caractere, 2, *co_bss);
-						*cpt_bss=(*cpt_bss)+atoi(f->caractere);
-					}
-					else{
-						if(strcasecmp(f->caractere, ",")){
-							*file_erreur = enfiler("Mauvaise commande après la directive .space", f->identifiant, f->ligne, *file_erreur);
-						}
-					}
-					f=f->suiv;
-				}
-			}
-			else{
-				*file_erreur = enfiler("Directive .space attendu à la place de :", f->caractere, f->ligne, *file_erreur);
-				f=f->suiv;
-			}
-
-		}
-	}
-	return f;
-}
-
-file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,file_jeu_instruction*file_erreur,file_jeu_instruction g,int ligne){
-	/*	printf("ligne %d\n",ligne);*/
-	if(strcasecmp(instruction,"NOP")==0){
-		/*printf("NOP\n");*/
-		file_jeu_instruction h=creer_file();
-		h=enfiler("Registre","$0",ligne,h);
-		h=enfiler("Registre","$0",ligne,h);
-		h=enfiler("Valeur Décimale","0",ligne,h);
-		*co_text=ajout_text("SLL",3,ligne, *cpt_text, *co_text,h);
-		*cpt_text=*cpt_text+4;
-	}
-	else{
-		if(strcasecmp(instruction,"LW")==0&&strcasecmp(g->suiv->identifiant,"Registre")==0){
-			/*printf("LW\n");*/
-
-			if(strcasecmp(g->identifiant,"Baseoffset")==0){
-				*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,g);
-				*cpt_text=*cpt_text+4;
-			}
-			else{
-				if(strcasecmp(g->identifiant,"Renvoie vers une étiquette")==0){
-
-					file_jeu_instruction h=creer_file();
-					file_jeu_instruction i=creer_file();
-					/*unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
-					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
-					char o_p_fort[30],o_p_faible[30];
-					sprintf(o_p_fort, "%d",octet_pfort);
-					sprintf(o_p_faible, "%d",octet_pfaible);
-					printf("poids faible %s\n",o_p_faible);
-					printf("poids fort %s\n",o_p_fort);
-					strcat(o_p_faible,g->caractere);
-					strcat(o_p_faible,"(");
-					strcat(o_p_faible,g->suiv->caractere);
-					strcat(o_p_faible,")");*/
-					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
-					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
-					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
-					*cpt_text=*cpt_text+4;
-					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
-					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
-					*co_text=ajout_text("LW",2,ligne, *cpt_text, *co_text,i);
-					*cpt_text=*cpt_text+4;
-				}
-				else{
-					*file_erreur = enfiler("Mauvaise opérande après un LW", g->identifiant,ligne, *file_erreur);
-				}
-			}
-		}
-		else{
-			if(strcasecmp(instruction,"SW")==0){
-				/*printf("SW\n");*/
-
-				if(strcasecmp(g->caractere,"Baseoffset")==0){
-				*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,g);
-				*cpt_text=*cpt_text+4;
-			}
-			else{
-				if(strcasecmp(g->identifiant,"Renvoie vers une étiquette")==0){
-					file_jeu_instruction h=creer_file();
-					file_jeu_instruction i=creer_file();
-					/*unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
-					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
-					char o_p_fort[30],o_p_faible[30];
-					sprintf(o_p_fort, "%d",octet_pfort);
-					sprintf(o_p_faible, "%d",octet_pfaible);
-					printf("poids faible %s\n",o_p_faible);
-					printf("poids fort %s\n",o_p_fort);
-					strcat(o_p_faible,g->caractere);
-					strcat(o_p_faible,"(");
-					strcat(o_p_faible,g->suiv->caractere);
-					strcat(o_p_faible,")");*/
-					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
-					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
-					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
-					*cpt_text=*cpt_text+4;
-
-					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
-					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
-					*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,i);
-					*cpt_text=*cpt_text+4;
-				}
-				else{
-					*file_erreur = enfiler("Mauvaise opérande après un SW", g->identifiant,ligne, *file_erreur);
-				}
-				}
-			}
-			else{
-				if(strcasecmp(instruction,"MOVE")==0){
-					/*printf("MOVE\n");*/
-
-					g=enfiler("Registre","$0",ligne,g);
-					*co_text=ajout_text("ADD",3,ligne, *cpt_text, *co_text,g);
-					*cpt_text=*cpt_text+4;
-				}
-				else{
-					if(strcasecmp(instruction,"NEG")==0){
-						/*printf("NEG\n");*/
-
-						file_jeu_instruction h=creer_file();
-						h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
-						h=enfiler("Registre","$0",ligne,h);
-						h=enfiler(g->identifiant,g->caractere,ligne,h);
-						*co_text=ajout_text("SUB",3,ligne, *cpt_text, *co_text,h);
-						*cpt_text=*cpt_text+4;
-					}
-					else{
-						if(strcasecmp(instruction,"LI")==0){
-							/*printf("LI\n");*/
-
-							file_jeu_instruction h=creer_file();
-							h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
-							h=enfiler("Registre","$0",ligne,h);
-							h=enfiler(g->identifiant,g->caractere,ligne,h);
-							*co_text=ajout_text("ADDI",3,ligne, *cpt_text, *co_text,h);
-							*cpt_text=*cpt_text+4;
-						}
-						else{
-								/*instruction BLT*/
-							/*printf("BLT\n");*/
-
-								file_jeu_instruction h=creer_file();
-								file_jeu_instruction i=creer_file();
-								h=enfiler("Registre","$1",ligne,h);
-								h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
-								h=enfiler(g->suiv->suiv->identifiant,g->suiv->suiv->caractere,ligne,h);
-								i=enfiler("Registre","$1",ligne,i);
-								i=enfiler("Registre","$0",ligne,i);
-								i=enfiler(g->suiv->suiv->suiv->identifiant,g->suiv->suiv->suiv->caractere,ligne,i);
-								*co_text=ajout_text("SLT",3,ligne, *cpt_text, *co_text,h);
-								*cpt_text=*cpt_text+4;
-								*co_text=ajout_text("BNE",3,ligne, *cpt_text, *co_text,i);
-								*cpt_text=*cpt_text+4;
-						}
-					}
-				}
-			}
-		}
-	}
-	return *co_text;
 }
 
 void verif_operande(file_text co_text,file_jeu_instruction*file_erreur,Liste_hach*tab_instruction,Liste_hach*tab_registre){
@@ -759,3 +788,4 @@ void verif_absolu_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,fi
 		*file_erreur = enfiler("Type Absolu attendu", f->identifiant, a->ligne, *file_erreur);
 	}
 }
+

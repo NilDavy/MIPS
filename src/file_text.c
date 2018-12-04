@@ -43,7 +43,14 @@ file_text ajout_text(char *nom, int nbop,int line, unsigned int dec, file_text f
 	e->ligne=line;
 	e->decalage=dec;
 	e->nbOp=nbop;
-	e->op=g;
+	e->op=creer_file();
+	file_jeu_instruction h=g;
+	h=h->suiv;
+	file_jeu_instruction i=g;
+	do{
+		e->op=enfiler(h->identifiant,h->caractere,h->ligne,e->op);
+	h=h->suiv;}
+	while(h!=i->suiv);
 	if(file_vide_text(f)){
 		e->suiv=e;
 		return e;
@@ -71,12 +78,14 @@ void liberer_text(file_text f){
 file_text supprimer_tete_text(file_text g){
 	file_text c;
 	if(g->suiv == g){
+		liberer_file(g->op);
 		free(g);
 		return NULL;
 	}
 	c = g;
 	g=c->suiv;
 	c->suiv=NULL;
+	liberer_file(c->op);
 	free(c);
 	return g;
 }

@@ -97,7 +97,6 @@ file_data ajout_data(char *nom, int line, unsigned int dec, char* op, int type, 
 			(e->op).ui =(unsigned int)*op;
 			break;
 		case 4:
-			(e->op).s = calloc(strlen(op),sizeof(char));
 			strcpy((e->op).s,op);
 			break;
 	}
@@ -134,9 +133,6 @@ file_data supprimer_tete_data(file_data g){
 	c = g;
 	g=c->suiv;
 	c->suiv=NULL;
-	if(c->type==4){
-		free((c->op).s);
-	}
 	free(c);
 	return g;
 }

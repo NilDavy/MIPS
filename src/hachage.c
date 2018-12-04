@@ -143,7 +143,7 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 	int i;
 	int n;
 	char*mot=calloc(5,sizeof(char));
-	char*type=calloc(1,sizeof(char));
+	char*type=calloc(5,sizeof(char));
 	int nbOp;
 	char oppcode[25];
 	char fonction[25];
@@ -219,6 +219,8 @@ void creation_liste_instruction(Liste_hach*tab_instruction,int dim){
 		}
 	}
 	/*visualiser_tab_hachage(tab_instruction, dim_tab_instruction);*/
+	free(mot);
+	free(type);
 	fclose(finstruction);
 }
 
