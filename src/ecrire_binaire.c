@@ -173,7 +173,6 @@ section make_bss_section( int bss_prog) {
 section make_symtab_section(section shstrtab, section strtab, file_symb co_symb) {
 
 	section    symtab = new_section( ".symtab", SECTION_CHUNK_SZ );
-	int i;
 	unsigned int offset = 0;
 
 	Elf32_Sym   entry= {0};
@@ -846,17 +845,17 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 			}
 		}
 	}
-	if(strcasecmp(a1,"i")==0||strcasecmp(a1,"of")==0){
+	if(strcasecmp(a1,"i")==0){
 		convertir_dec_bin(atoi(g->suiv->caractere),bin,16);
 		strcat(mot,bin);
 	}
 	else{
-		if(strcasecmp(a2,"i")==0||strcasecmp(a2,"of")==0){
+		if(strcasecmp(a2,"i")==0){
 			convertir_dec_bin(atoi(g->suiv->suiv->caractere),bin,16);
 			strcat(mot,bin);
 		}
 		else{
-			if(strcasecmp(a3,"i")==0||strcasecmp(a3,"of")==0){
+			if(strcasecmp(a3,"i")==0){
 				convertir_dec_bin(atoi(g->caractere),bin,16);
 				strcat(mot,bin);
 
@@ -878,7 +877,26 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 
 						}
 						else{
-							strcat(mot,"0000000000000000");
+							if(strcasecmp(a1,"of")==0){
+								convertir_dec_bin(atoi(offset),bin,16);
+								strcat(mot,bin);
+							}
+							else{
+								if(strcasecmp(a2,"of")==0){
+									convertir_dec_bin(atoi(offset),bin,16);
+									strcat(mot,bin);
+								}
+								else{
+									if(strcasecmp(a3,"of")==0){
+										convertir_dec_bin(atoi(offset),bin,16);
+										strcat(mot,bin);
+										
+									}
+									else{
+										strcat(mot,"0000000000000000");
+									}
+								}
+							}
 						}
 					}
 				}
@@ -971,9 +989,11 @@ long int convertir_bin_dec(char*mot,int n)
 void convertir_dec_bin(long int n,char*mot,int taille)
 {
 	char nombre[100];
+	char nombre_neg[100];
 	strcpy(nombre,"");
+	strcpy(nombre_neg,"");
 	long int b=n;
-	int i;
+	int i,retenue=0;
 	long int a=1;
 	for(i=0;i<taille-1;i++){
 		a=a*2;
@@ -994,6 +1014,38 @@ void convertir_dec_bin(long int n,char*mot,int taille)
 	else{
 		strcat(nombre,"1");
 	}
-	strcpy(mot,nombre);
+	if(n<0){
+		for(i=0;i<taille;i++){
+			if(nombre[i]=='0'){
+				strcat(nombre_neg,"1");
+			}
+			else{
+				strcat(nombre_neg,"0");
+			}
+		}
+		if(nombre_neg[taille-1]=='0'){
+			nombre_neg[taille-1]='1';
+		}
+		else{
+			nombre_neg[taille-1]='0';
+			retenue=1;
+			i=taille-2;
+			while(retenue==1){
+				if(nombre_neg[i]=='1'){
+					nombre_neg[i]='0';
+				}
+				else{
+					nombre_neg[i]='1';
+					retenue=0;
+				}
+				i=i-1;
+			}
+		}
+		strcpy(mot,nombre_neg);
+	}
+	else{
+		strcpy(mot,nombre);
+	}
+	/*printf("nombre %s nombre neg %s\n",nombre, nombre_neg);*/
 	return;
 }

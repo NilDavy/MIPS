@@ -219,7 +219,8 @@ void verif_caractere(char*token,char*mot2,char*current_address,char*delimiteur,L
 			*file=enfiler("Etiquette", token, nlines, *file);
 		}
 		else{
-			if(strcmp(mot2,"€")==0 || (strcmp(mot2,"€")!=0 && mot2[0]=='#')){
+			if(strcmp(mot2,"€")==0 || (strcmp(mot2,"€")!=0 && (mot2[0]=='#'|| mot2[0]==',')))
+			{
 				*file=enfiler("Renvoie vers une étiquette", token, nlines, *file);
 			}
 			else{

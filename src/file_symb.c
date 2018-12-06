@@ -138,3 +138,17 @@ struct cellulesymb* recuperer_cellule_symb(char* symb, file_symb s){
 	}
 	return s;
 }
+
+void verif_etiquette(file_symb f, file_jeu_instruction*file_erreur){
+	file_symb g=f->suiv;
+	do {
+		file_symb h=g->suiv;
+		do {
+			if(strcasecmp(h->nom,g->nom)==0){
+				*file_erreur=enfiler("Erreur 2 Etiquettes déclarées", h->nom,h->ligne, *file_erreur);
+			}
+			h=h->suiv;
+		} while (h!=f->suiv);
+		g=g->suiv;
+	} while (g!=f);
+}

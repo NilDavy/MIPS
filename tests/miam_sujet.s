@@ -4,6 +4,9 @@
 .text
 Lw $t0 , lunchtime
 LW $6, -200($7)
+
+
+
 ADDI $t1,$t2,8
 boucle:
 BEQ $t0 , $t1 , byebye
@@ -17,7 +20,7 @@ JAL viteviteauru
 .data
 lunchtime:
 .word 12
-.word menu
+.word menu, haha
 .asciiz "ils disent : \"au ru!\""
 .bss
 menu:

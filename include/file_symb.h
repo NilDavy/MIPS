@@ -6,6 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <strings.h>
+#include "file.h"
 #define longueur_str 30
 
 
@@ -35,4 +36,5 @@ int est_dans_file(char* symb, file_symb f);
 /* Ne pas utiliser avant d'avoir vérifier que le symbole est bien dans la collection
 de symbole avec la fct precedente */
 struct cellulesymb* recuperer_cellule_symb(char* symb, file_symb s);
+void verif_etiquette(file_symb f, file_jeu_instruction*file_erreur);
 #endif

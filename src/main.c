@@ -165,6 +165,9 @@ int main ( int argc, char *argv[] ) {
 	int nbtext;
 	int nbdata;
 	int cptbss;
+	int addresstext=0;
+	int addressbss=0;
+	int addressdata=0;
 
 	/* ---------------- do the lexical analysis -------------------*/
 	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
@@ -180,7 +183,7 @@ int main ( int argc, char *argv[] ) {
 	}
 
 
-	/*visualiser_file(file_lexeme);*/
+	/*visualiser_file(file_erreur);*/
 
 	/** Ecriture du code instancié dans le fichier **/
 
@@ -200,9 +203,9 @@ int main ( int argc, char *argv[] ) {
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 
 		/*analyse syntaxique*/
-		analyse_syntaxique(tab_instruction,file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente,&nbtext,&nbdata,&cptbss);
+		analyse_syntaxique(tab_instruction,file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente,&nbtext,&nbdata,&cptbss,&addressdata,&addresstext,&addressbss);
 
-		/*printf("text %d  data %d  bss %d\n",nbtext,nbdata,cptbss);*/
+		/*printf("text %d  addresstext %d adressdata %d data %d adressbss %d bss %d\n",nbtext,addresstext,addressdata,nbdata,addressbss,cptbss);*/
 
 		/* Remplissage table de relocation */
 
@@ -227,7 +230,10 @@ int main ( int argc, char *argv[] ) {
 		ecrire_table(reloc_text, f_reloc);
 		fprintf(f_reloc, "\n[.rel.data]\nOffset\t Type\t Value\n");
 		ecrire_table(reloc_data, f_reloc);
-
+		
+		if(!(file_vide_symb(co_symb))){
+			verif_etiquette(co_symb,&file_erreur);
+		}
 
 		if(!(file_vide(file_erreur))){
 			WARNING_MSG("Il y a des erreurs de syntaxe dans le code source !");

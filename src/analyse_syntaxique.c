@@ -1,6 +1,6 @@
 #include "analyse_syntaxique.h"
 
-void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, file_jeu_instruction* file_erreur, file_text *co_text, file_data *co_data, file_bss *co_bss, file_symb *co_symb,file_symb *co_text_attente, file_symb *co_data_attente, file_symb *co_bss_attente,int*nbtext, int*nbdata,int*cptbss)
+void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, file_jeu_instruction* file_erreur, file_text *co_text, file_data *co_data, file_bss *co_bss, file_symb *co_symb,file_symb *co_text_attente, file_symb *co_data_attente, file_symb *co_bss_attente,int*nbtext, int*nbdata,int*cptbss,int*addressdata,int*addresstext,int*addressbss)
 {
 	int cpt_text, cpt_data, cpt_bss;
 	cpt_text = cpt_data = cpt_bss = 0;
@@ -48,6 +48,9 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 			/*printf("text\n");
 			printf("%s\n",g->caractere);
 			printf("%d\n\n\n",g->ligne);*/
+			if(*addresstext==0){
+				*addresstext=cpt_text+cpt_data+cpt_bss;
+			}
 			etat = TEXT;
 			g = processText(g, co_text, &cpt_text, file_erreur, co_symb,co_text_attente,tab_instruction);
 		}
@@ -55,6 +58,9 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 			if (!strcasecmp(g->caractere, ".data")){
 				/*printf("data\n");
 				printf("%s\n",g->caractere);*/
+				if(*addressdata==0){
+					*addressdata=cpt_text+cpt_data+cpt_bss;
+				}
 				etat = DATA;
 				g = processData(g, co_data, &cpt_data, file_erreur, co_symb,co_data_attente);
 			}
@@ -62,6 +68,9 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 				if(!strcasecmp(g->caractere, ".bss")){
 					/*printf("bss\n");
 					printf("%s\n",g->caractere);*/
+					if(*addressbss==0){
+						*addressbss=cpt_text+cpt_data+cpt_bss;
+					}
 					etat = BSS;
 					g = processBss(g, co_bss, &cpt_bss, file_erreur, co_symb,co_bss_attente);
 				}
