@@ -723,6 +723,7 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 	strcpy(chaine_fin,"0x");
 	long int a;
 	int i,z;
+	
 	file_jeu_instruction g=f->op;
 
 	information(oppcode,fonction,a1,a2,a3,tab_instruction[n],f->nomInst);
@@ -846,17 +847,17 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 		}
 	}
 	if(strcasecmp(a1,"i")==0){
-		convertir_dec_bin(atoi(g->suiv->caractere),bin,16);
+		convertir_dec_bin(f->decalage,bin,16);
 		strcat(mot,bin);
 	}
 	else{
 		if(strcasecmp(a2,"i")==0){
-			convertir_dec_bin(atoi(g->suiv->suiv->caractere),bin,16);
+			convertir_dec_bin(f->decalage,bin,16);
 			strcat(mot,bin);
 		}
 		else{
 			if(strcasecmp(a3,"i")==0){
-				convertir_dec_bin(atoi(g->caractere),bin,16);
+				convertir_dec_bin(f->decalage,bin,16);
 				strcat(mot,bin);
 
 			}
@@ -878,17 +879,17 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 						}
 						else{
 							if(strcasecmp(a1,"of")==0){
-								convertir_dec_bin(atoi(offset),bin,16);
+								convertir_dec_bin(atoi(g->suiv->caractere),bin,16);
 								strcat(mot,bin);
 							}
 							else{
 								if(strcasecmp(a2,"of")==0){
-									convertir_dec_bin(atoi(offset),bin,16);
+									convertir_dec_bin(atoi(g->suiv->suiv->caractere),bin,16);
 									strcat(mot,bin);
 								}
 								else{
 									if(strcasecmp(a3,"of")==0){
-										convertir_dec_bin(atoi(offset),bin,16);
+										convertir_dec_bin(atoi(g->caractere),bin,16);
 										strcat(mot,bin);
 										
 									}
@@ -932,24 +933,23 @@ void construction_J(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 	strcpy(chaine_fin,"0x");
 	int i;
 	long int a;
-	file_jeu_instruction g=f->op;
 
 	information(oppcode,fonction,a1,a2,a3,tab_instruction[n],f->nomInst);
 
 	strcat(mot,oppcode);
 
 	if(strcasecmp(a1,"t")==0){
-		convertir_dec_bin(atoi(g->suiv->caractere),bin,26);
+		convertir_dec_bin(f->decalage,bin,26);
 		strcat(mot,bin);
 	}
 	else{
 		if(strcasecmp(a2,"t")==0){
-			convertir_dec_bin(atoi(g->suiv->suiv->caractere),bin,26);
+			convertir_dec_bin(f->decalage,bin,26);
 			strcat(mot,bin);
 		}
 		else{
 			if(strcasecmp(a3,"t")==0){
-				convertir_dec_bin(atoi(g->caractere),bin,26);
+				convertir_dec_bin(f->decalage,bin,26);
 				strcat(mot,bin);
 
 			}

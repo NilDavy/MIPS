@@ -17,6 +17,7 @@
 #include "analyse_syntaxique.h"
 #include "table_relocation.h"
 #include "ecrire_binaire.h"
+#include "pelf/section.h"
 
 /**
  * @ param exec Name of executable.
@@ -165,9 +166,6 @@ int main ( int argc, char *argv[] ) {
 	int nbtext;
 	int nbdata;
 	int cptbss;
-	int addresstext=0;
-	int addressbss=0;
-	int addressdata=0;
 
 	/* ---------------- do the lexical analysis -------------------*/
 	lex_load_file( file, &nlines,tab_registre,tab_instruction,&file_lexeme,&file_erreur);
@@ -203,9 +201,9 @@ int main ( int argc, char *argv[] ) {
 		DEBUG_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 
 		/*analyse syntaxique*/
-		analyse_syntaxique(tab_instruction,file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente,&nbtext,&nbdata,&cptbss,&addressdata,&addresstext,&addressbss);
+		analyse_syntaxique(tab_instruction,file_lexeme,&file_erreur,&co_text, &co_data, &co_bss, &co_symb,& co_text_attente,&co_data_attente,&co_bss_attente,&nbtext,&nbdata,&cptbss);
 
-		/*printf("text %d  addresstext %d adressdata %d data %d adressbss %d bss %d\n",nbtext,addresstext,addressdata,nbdata,addressbss,cptbss);*/
+		/*printf("text %d data %d bss %d\n",nbtext,nbdata,cptbss);*/
 
 		/* Remplissage table de relocation */
 

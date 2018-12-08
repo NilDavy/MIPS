@@ -240,13 +240,13 @@ file_jeu_instruction verif_remplacement_ecriture_registre(file_jeu_instruction f
 	char*mot=NULL;
 	while(g!=f){
 		if(strcasecmp(g->identifiant,"Registre")==0){
-			if(rec_hachage_nbparam(g->caractere,tab_registre[hachage(g->caractere, dim_tab_registre)])==1){
+			/*if(rec_hachage_nbparam(g->caractere,tab_registre[hachage(g->caractere, dim_tab_registre)])==1){
 				*file_erreur=enfiler("Erreur ", "Interdit d'écrire dans ce registre", g->ligne, *file_erreur);
 			}
-			else{
+			else{*/
 				mot=rec_hachage_type(g->caractere,tab_registre[hachage(g->caractere, dim_tab_registre)]);
 				strcpy(g->caractere,mot);
-			}
+			/*}*/
 		}
 		g=g->suiv;
 	}

@@ -4,9 +4,6 @@
 .text
 Lw $t0 , lunchtime
 LW $6, -200($7)
-
-
-
 ADDI $t1,$t2,8
 boucle:
 BEQ $t0 , $t1 , byebye

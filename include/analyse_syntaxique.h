@@ -15,7 +15,7 @@
 
 enum section{TEXT, DATA, BSS, INIT};
 
-void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, file_jeu_instruction* file_erreur, file_text *co_text, file_data *co_data, file_bss *co_bss, file_symb *co_symb,file_symb *co_text_attente, file_symb *co_data_attente, file_symb *co_bss_attente,int*nbtext, int*nbdata, int*cptbss,int*addressdata,int*addresstext,int*addressbss);
+void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, file_jeu_instruction* file_erreur, file_text *co_text, file_data *co_data, file_bss *co_bss, file_symb *co_symb,file_symb *co_text_attente, file_symb *co_data_attente, file_symb *co_bss_attente,int*nbtext, int*nbdata, int*cptbss);
 
 file_jeu_instruction processText(file_jeu_instruction file, file_text *co_text, int *cpt_text, file_jeu_instruction* file_erreur, file_symb *co_symb,file_symb *co_text_attente,Liste_hach*tab_instruction);
 
