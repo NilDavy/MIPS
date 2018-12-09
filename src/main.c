@@ -286,8 +286,8 @@ int main ( int argc, char *argv[] ) {
 			symtab = make_symtab_section(shstrtab, strtab, co_symb);
 			/*print_section(symtab);*/
 
-			/*reltext = make_rel32_section( ".rel.text", reloc_text, symtab, shstrtab, strtab);
-			reldata = make_rel32_section(".rel.data", reloc_data, symtab, shstrtab, strtab);*/
+			reltext = make_rel32_section( ".rel.text", reloc_text, symtab, shstrtab, strtab);
+			reldata = make_rel32_section(".rel.data", reloc_data, symtab, shstrtab, strtab);
 
 			/*section bss*/
 			if(!file_vide_bss(co_bss)){

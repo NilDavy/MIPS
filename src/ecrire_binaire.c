@@ -218,7 +218,7 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
 	if(file_vide_symb(a))
 			return symtab;
 		do{
-			if(strcasecmp(a->nom, "none")){
+			if(strcasecmp(a->section, "none")){
 					Elf32_Sym symb;
     			symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom );
     			symb.st_size = 0;
@@ -237,14 +237,15 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
 		}while(a != co_symb->suiv);
 		do{
 			/* Cas des symboles inconnus */
-				if(!strcasecmp(a->nom, "none")){
+
+				if(!strcasecmp(a->section, "none")){
 						Elf32_Sym symb;
-    				symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, "inconnu");
-    				symb.st_size = 0;
-    				symb.st_value = 0;
-    				symb.st_info = ELF32_ST_INFO( STB_GLOBAL, STT_NOTYPE );
-    				symb.st_other = 0;
-					symb.st_shndx = SHN_UNDEF;
+    					symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom);
+    					symb.st_size = 0;
+    					symb.st_value = 0;
+    					symb.st_info = ELF32_ST_INFO( STB_GLOBAL, STT_NOTYPE );
+    					symb.st_other = 0;
+						symb.st_shndx = SHN_UNDEF;
 						/*symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".bss" );*/
 						write_section( symtab, (unsigned char *)&symb, sizeof(symb), symtab->sz);
 				}
@@ -278,16 +279,23 @@ section make_rel32_section(char *relname, table_reloc reloc, section symtab, sec
 	}
 	do {
 		Elf32_Rel rel;
-   		rel.r_offset = r->symb->decalage;
-		if(!strcasecmp(r->symb->section, "TEXT"))
+		if(r->symb == NULL)
 		{
-			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".text"), r->type);
-		}else if (!strcasecmp(r->symb->section, "DATA")) {
-			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".data"), r->type);
-		}else if (!strcasecmp(r->symb->section, "BSS")) {
-			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".bss"), r->type);
-		}else{
-			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,"inconnu"),r->type);
+			rel.r_offset = 0;
+			rel.r_info=ELF32_R_INFO(8,6);
+		}
+		else{
+   			rel.r_offset = r->symb->decalage;
+
+
+			if(!strcasecmp(r->symb->section, "TEXT"))
+			{
+				rel.r_info=ELF32_R_INFO(1, 6);
+			}else if (!strcasecmp(r->symb->section, "DATA")) {
+				rel.r_info=ELF32_R_INFO(3,6);
+			}else if (!strcasecmp(r->symb->section, "BSS")) {
+				rel.r_info=ELF32_R_INFO(4, 6);
+			}
 		}
    		write_section( reltab, (unsigned char *)&rel, sizeof( rel ), reltab->sz);
 		r = r->suiv;
@@ -324,7 +332,7 @@ void creer_nom_fichier(char*file,char*name){
 	}
 	name[lenght-2]='.';
 	name[lenght-1]='o';
-
+	name[lenght]='\0';
 	return;
 }
 
