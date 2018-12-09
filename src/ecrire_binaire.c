@@ -281,13 +281,13 @@ section make_rel32_section(char *relname, table_reloc reloc, section symtab, sec
    		rel.r_offset = r->symb->decalage;
 		if(!strcasecmp(r->symb->section, "TEXT"))
 		{
-			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, shstrtab, strtab,".text"), r->type);
+			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".text"), r->type);
 		}else if (!strcasecmp(r->symb->section, "DATA")) {
-			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, shstrtab, strtab,".data"), r->type);
+			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".data"), r->type);
 		}else if (!strcasecmp(r->symb->section, "BSS")) {
-			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, shstrtab, strtab,".bss"), r->type);
+			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".bss"), r->type);
 		}else{
-			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, shstrtab, strtab,"inconnu"),r->type);
+			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,"inconnu"),r->type);
 		}
    		write_section( reltab, (unsigned char *)&rel, sizeof( rel ), reltab->sz);
 		r = r->suiv;

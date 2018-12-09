@@ -1,4 +1,5 @@
 #include "analyse_syntaxique.h"
+#include "pelf/elf-mips32.h"
 #ifndef table_relocation_h
 #define table_relocation_h
 enum type_reloc {R_MIPS_32 , R_MIPS_26 , R_MIPS_HI16 , R_MIPS_LO16 };
