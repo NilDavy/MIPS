@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "table_relocation.h"
 #include <pelf/pelf.h>
 #include <pelf/section.h>
 #include <pelf/elf-mips32.h>
@@ -13,7 +14,7 @@
 #include "file.h"
 #include "file_text.h"
 #include "file_symb.h"
-#include "table_relocation.h"
+
 
 
 int elf_get_sym_index_from_name(section symtab, section strtab,  char* sym_name);

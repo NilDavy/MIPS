@@ -262,7 +262,7 @@ int main ( int argc, char *argv[] ) {
 			int lenght=strlen(file);
 			char name[lenght-2];
 			creer_nom_fichier(file,name);
-			/*printf("name %s\n",name);*/
+			printf("name %s\n",name);
 
 
 			/* prepare sections*/
@@ -286,6 +286,9 @@ int main ( int argc, char *argv[] ) {
 			symtab = make_symtab_section(shstrtab, strtab, co_symb);
 			/*print_section(symtab);*/
 
+			/*reltext = make_rel32_section( ".rel.text", reloc_text, symtab, shstrtab, strtab);
+			reldata = make_rel32_section(".rel.data", reloc_data, symtab, shstrtab, strtab);*/
+
 			/*section bss*/
 			if(!file_vide_bss(co_bss)){
 				creer_section_bss(&bss,cptbss);
@@ -303,6 +306,15 @@ int main ( int argc, char *argv[] ) {
 				creer_section_text(&text,nbtext,co_text,tab_instruction,tab_registre);
 				/*print_section(text);*/
 			}
+			elf_write_relocatable( name, machine, noreorder,
+                           text->start, text->sz,
+                           data->start, data->sz,
+                           bss->start, bss->sz,
+                           shstrtab->start, shstrtab->sz,
+                           strtab->start, strtab->sz,
+                           symtab->start, symtab->sz,
+                           reltext->start, reltext->sz,
+                           reldata->start, reldata->sz);
 		}
 	}
 	/*printf("%s %d %d\n","l",(int)'l',strlen("test"));*/
