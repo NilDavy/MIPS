@@ -65,16 +65,17 @@ section make_shstrtab_section( void ) {
  * @return the completed strtab section
  */
 
- section make_strtab_section(file_symb *co_symb) {
+ section make_strtab_section(file_symb co_symb) {
      section strtab = new_section( ".strtab", SECTION_CHUNK_SZ );
 
      add_string_to_table( strtab, "" ); /* ELF string tables start with a '0' */
 
-     if(file_vide_symb(*co_symb))
+     if(file_vide_symb(co_symb))
      {
          return strtab;
      }
-     file_symb a = (*co_symb)->suiv;
+
+     file_symb a = co_symb->suiv;
      do {
        if(!(strcasecmp(a->nom, ".text") == 0 || strcasecmp(a->nom, ".data") == 0 || strcasecmp(a->nom, ".bss") == 0 || strcasecmp(a->section, "none") == 0))
        {
@@ -82,15 +83,15 @@ section make_shstrtab_section( void ) {
        }
 
        a =a->suiv;
-    } while(a != (*co_symb)->suiv);
-		do {
-			if(!strcasecmp(a->section, "none"))
-			{
-					add_string_to_table( strtab,a->nom);
-			}
+   }while(a != co_symb->suiv);
+	do {
+		if(!strcasecmp(a->section, "none"))
+		{
+				add_string_to_table( strtab,a->nom);
+		}
 
-			a =a->suiv;
-	 } while(a != (*co_symb)->suiv);
+		a =a->suiv;
+	} while(a != co_symb->suiv);
      return strtab;
  }
 
@@ -216,13 +217,12 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
 	file_symb a = co_symb->suiv;
 	if(file_vide_symb(a))
 			return symtab;
-		int j = 0;
 		do{
 			if(strcasecmp(a->nom, "none")){
 					Elf32_Sym symb;
     			symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom );
     			symb.st_size = 0;
-    			symb.st_value = j;
+    			symb.st_value = a->decalage;
     			symb.st_info = ELF32_ST_INFO( STB_LOCAL, STT_NOTYPE );
     			symb.st_other = 0;
 					if(!strcmp(a->section, "TEXT"))
@@ -232,21 +232,21 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
 					if(!strcmp(a->section, "BSS"))
 		    			symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".bss" );
 					write_section( symtab, (unsigned char *)&symb, sizeof(symb), symtab->sz);
-					j+=1;
 			}
 				a = a->suiv;
 		}while(a != co_symb->suiv);
 		do{
+			/* Cas des symboles inconnus */
 				if(!strcasecmp(a->nom, "none")){
 						Elf32_Sym symb;
-    				symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom );
+    				symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, "inconnu");
     				symb.st_size = 0;
-    				symb.st_value = j;
+    				symb.st_value = 0;
     				symb.st_info = ELF32_ST_INFO( STB_GLOBAL, STT_NOTYPE );
     				symb.st_other = 0;
+					symb.st_shndx = SHN_UNDEF;
 						/*symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".bss" );*/
 						write_section( symtab, (unsigned char *)&symb, sizeof(symb), symtab->sz);
-						j+=1;
 				}
 				a = a->suiv;
 		}while(a != co_symb->suiv);
@@ -267,16 +267,31 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
  * @return the completed section
  *
  */
-section make_rel32_section(char *relname, Elf32_Rel relocations[], int nb_reloc) {
+section make_rel32_section(char *relname, table_reloc reloc, section symtab, section shstrtab, section strtab) {
 
 	section reltab = new_section( relname, SECTION_CHUNK_SZ );
-	int i ;
 
-	for (i=0; i<nb_reloc; i++) {
-		Elf32_Rel rel = relocations[i];
-		write_section( reltab, (unsigned char *)&rel, sizeof( rel ), reltab->sz);
-
+	table_reloc r = reloc->suiv;
+	if(table_vide(r))
+	{
+		return reltab;
 	}
+	do {
+		Elf32_Rel rel;
+   		rel.r_offset = r->symb->decalage;
+		if(!strcasecmp(r->symb->section, "TEXT"))
+		{
+			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, shstrtab, strtab,".text"), r->type);
+		}else if (!strcasecmp(r->symb->section, "DATA")) {
+			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, shstrtab, strtab,".data"), r->type);
+		}else if (!strcasecmp(r->symb->section, "BSS")) {
+			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, shstrtab, strtab,".bss"), r->type);
+		}else{
+			rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, shstrtab, strtab,"inconnu"),r->type);
+		}
+   		write_section( reltab, (unsigned char *)&rel, sizeof( rel ), reltab->sz);
+		r = r->suiv;
+	} while(r != reloc->suiv);
 	return reltab;
 }
 
@@ -331,7 +346,7 @@ void creer_data_value(int*data_value,int*data_type,int nbdata,file_data co_data)
 				data_value[a]=(int)(e->op).c;
 				data_type[a]=0;
 				a=a+1;
-				break;
+			break;
 			case 1:
 				data_value[a]=(int)(e->op).uc;
 				data_type[a]=1;
@@ -723,7 +738,7 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 	strcpy(chaine_fin,"0x");
 	long int a;
 	int i,z;
-	
+
 	file_jeu_instruction g=f->op;
 
 	information(oppcode,fonction,a1,a2,a3,tab_instruction[n],f->nomInst);
@@ -891,7 +906,7 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 									if(strcasecmp(a3,"of")==0){
 										convertir_dec_bin(atoi(g->caractere),bin,16);
 										strcat(mot,bin);
-										
+
 									}
 									else{
 										strcat(mot,"0000000000000000");

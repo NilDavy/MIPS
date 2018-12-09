@@ -13,17 +13,17 @@
 #include "file.h"
 #include "file_text.h"
 #include "file_symb.h"
-
+#include "table_relocation.h"
 
 
 int elf_get_sym_index_from_name(section symtab, section strtab,  char* sym_name);
 section make_shstrtab_section( void );
-section make_strtab_section(file_symb *co_symb);
+section make_strtab_section(file_symb co_symb);
 section make_data_section( int data_prog[], int nb_data );
 section make_text_section( int instructions[], int nb_inst);
 section make_bss_section( int bss_prog);
 section make_symtab_section(section shstrtab, section strtab,  file_symb co_symb);
-section make_rel32_section(char *relname, Elf32_Rel relocations[], int nb_reloc);
+section make_rel32_section(char *relname, table_reloc reloc, section symtab, section shstrtab, section strtab);
 void swap(char*s2);
 void creer_nom_fichier(char*file,char*name);
 void creer_data_value(int*data_value,int*data_type,int nbdata,file_data co_data);

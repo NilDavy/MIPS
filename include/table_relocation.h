@@ -1,7 +1,7 @@
 #include "analyse_syntaxique.h"
 #ifndef table_relocation_h
 #define table_relocation_h
-enum type_reloc {R_MIPS_32, R_MIPS_26, R_MIPS_HI16, R_MIPS_LO16};
+enum type_reloc {R_MIPS_32 , R_MIPS_26 , R_MIPS_HI16 , R_MIPS_LO16 };
 
 
 struct cel_reloc{

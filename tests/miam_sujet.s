@@ -17,7 +17,7 @@ JAL viteviteauru
 .data
 lunchtime:
 .word 12
-.word menu, haha
+.word menu
 .asciiz "ils disent : \"au ru!\""
 .bss
 menu:

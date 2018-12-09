@@ -228,7 +228,7 @@ int main ( int argc, char *argv[] ) {
 		ecrire_table(reloc_text, f_reloc);
 		fprintf(f_reloc, "\n[.rel.data]\nOffset\t Type\t Value\n");
 		ecrire_table(reloc_data, f_reloc);
-		
+
 		if(!(file_vide_symb(co_symb))){
 			verif_etiquette(co_symb,&file_erreur);
 		}
@@ -279,29 +279,29 @@ int main ( int argc, char *argv[] ) {
 			shstrtab = make_shstrtab_section();
 
 			/*section strtab*/
-			strtab = make_strtab_section(&co_symb);
-			print_section(strtab);
+			strtab = make_strtab_section(co_symb);
+			/*print_section(strtab);*/
 
 			/*section symtab*/
 			symtab = make_symtab_section(shstrtab, strtab, co_symb);
-			print_section(symtab);
+			/*print_section(symtab);*/
 
 			/*section bss*/
 			if(!file_vide_bss(co_bss)){
 				creer_section_bss(&bss,cptbss);
-				print_section(bss);
+				/*print_section(bss);*/
 			}
 
 			/*section data*/
 			if(!file_vide_data(co_data)){
 				creer_section_data(&data,nbdata,co_data);
-				print_section(data);
+				/*print_section(data);*/
 			}
 
 			/*section text*/
 			if(!file_vide_text(co_text)){
 				creer_section_text(&text,nbtext,co_text,tab_instruction,tab_registre);
-				print_section(text);
+				/*print_section(text);*/
 			}
 		}
 	}
