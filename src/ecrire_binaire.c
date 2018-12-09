@@ -282,7 +282,7 @@ section make_rel32_section(char *relname, table_reloc reloc, section symtab, sec
 		if(r->symb == NULL)
 		{
 			rel.r_offset = 0;
-			rel.r_info=ELF32_R_INFO(8,6);
+			/*rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,"inconnu"),r->type);*/
 		}
 		else{
    			rel.r_offset = r->symb->decalage;
@@ -290,11 +290,11 @@ section make_rel32_section(char *relname, table_reloc reloc, section symtab, sec
 
 			if(!strcasecmp(r->symb->section, "TEXT"))
 			{
-				rel.r_info=ELF32_R_INFO(1, 6);
+				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".text"), r->type);
 			}else if (!strcasecmp(r->symb->section, "DATA")) {
-				rel.r_info=ELF32_R_INFO(3,6);
+				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".data"), r->type);
 			}else if (!strcasecmp(r->symb->section, "BSS")) {
-				rel.r_info=ELF32_R_INFO(4, 6);
+				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".bss"), r->type);
 			}
 		}
    		write_section( reltab, (unsigned char *)&rel, sizeof( rel ), reltab->sz);
