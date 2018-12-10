@@ -34,6 +34,27 @@ int elf_get_sym_index_from_name(section symtab, section strtab,  char* sym_name)
 
 }
 
+int elf_get_sym_index_from_name2(section symtab, section shstrtab, section strtab, char* sym_name) {
+    int i=0;
+    Elf32_Sym* symboles = (Elf32_Sym*) symtab->start;
+    int section_offset = elf_get_string_index( shstrtab->start, shstrtab->sz, sym_name );
+    int offset = elf_get_string_offset( strtab->start, strtab->sz, sym_name );
+
+    if (offset > 0 || section_offset > 0 ) {
+        for (i=0; i < (symtab->sz)/sizeof(Elf32_Sym); i++) {
+            if (ELF32_R_TYPE(symboles[i].st_info) == STT_SECTION) {
+                if (symboles[i].st_shndx == section_offset) {
+                    return i;
+                }
+            }
+            else if (symboles[i].st_name == offset)
+                return i;
+        }
+    }
+    return -1;
+
+}
+
 
 #define add_string_to_table( section, symbol ) /* Explicitly add terminal '\0' */ \
 write_section( section, (unsigned char *)symbol, 1+strlen(symbol), section->sz)
@@ -220,11 +241,11 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
 		do{
 			if(strcasecmp(a->section, "none")){
 					Elf32_Sym symb;
-    			symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom );
-    			symb.st_size = 0;
-    			symb.st_value = a->decalage;
-    			symb.st_info = ELF32_ST_INFO( STB_LOCAL, STT_NOTYPE );
-    			symb.st_other = 0;
+    				symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom );
+    				symb.st_size = 0;
+    				symb.st_value = a->decalage;
+    				symb.st_info = ELF32_ST_INFO( STB_LOCAL, STT_NOTYPE );
+    				symb.st_other = 0;
 					if(!strcmp(a->section, "TEXT"))
     					symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".text" );
 					if(!strcmp(a->section, "DATA"))
@@ -246,7 +267,6 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
     					symb.st_info = ELF32_ST_INFO( STB_GLOBAL, STT_NOTYPE );
     					symb.st_other = 0;
 						symb.st_shndx = SHN_UNDEF;
-						/*symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".bss" );*/
 						write_section( symtab, (unsigned char *)&symb, sizeof(symb), symtab->sz);
 				}
 				a = a->suiv;
@@ -281,8 +301,7 @@ section make_rel32_section(char *relname, table_reloc reloc, section symtab, sec
 		Elf32_Rel rel;
 		if(r->symb == NULL)
 		{
-			rel.r_offset = 0;
-			/*rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,"inconnu"),r->type);*/
+
 		}
 		else{
    			rel.r_offset = r->symb->decalage;
@@ -290,11 +309,14 @@ section make_rel32_section(char *relname, table_reloc reloc, section symtab, sec
 
 			if(!strcasecmp(r->symb->section, "TEXT"))
 			{
-				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".text"), r->type);
+				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name2(symtab, shstrtab, strtab,".text"), r->type);
 			}else if (!strcasecmp(r->symb->section, "DATA")) {
-				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".data"), r->type);
+				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name2(symtab, shstrtab, strtab,".data"), r->type);
 			}else if (!strcasecmp(r->symb->section, "BSS")) {
-				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name(symtab, strtab,".bss"), r->type);
+				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name2(symtab, shstrtab, strtab,".bss"), r->type);
+			}else {
+				/*rel.r_offset = 0;*/
+				rel.r_info=ELF32_R_INFO(elf_get_sym_index_from_name2(symtab, shstrtab, strtab,r->symb->nom),r->type);
 			}
 		}
    		write_section( reltab, (unsigned char *)&rel, sizeof( rel ), reltab->sz);

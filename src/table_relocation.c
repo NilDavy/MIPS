@@ -159,8 +159,9 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
 					    if(!est_dans_file(f->caractere, co_symb)){
                             /* Si non déclaré dans le même fichier */
 					/*printf("L'étiquette : \" %s\" n'est pas dans la collection de symbole \n", f->caractere);*/
-						    table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, NULL);
+
                             co_symb = ajout_symb(f->caractere, ft->ligne, ft->decalage,"none", co_symb);
+                            table = ajoutElement(table, ft->decalage, R_MIPS_26, f->caractere, co_symb);
 					    }else{
                             /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
                             struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
@@ -197,8 +198,9 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                             if(!est_dans_file(f->caractere, co_symb)){
 
                                 /* Si non déclaré dans le même fichier */
-    						    table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, NULL);
+
                                 co_symb = ajout_symb(f->caractere, ft->ligne, ft->decalage,"none", co_symb);
+                                table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, co_symb);
     					    }else{
                                 /*Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
                                 struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
@@ -214,7 +216,7 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                                 struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
                                 if(strcmp(ptr_symb->section,  "TEXT"))
                                     *file_erreur = enfiler("Saut relatif à une étiquette qui n'est pas dans la section .text", f->caractere, ft->ligne, *file_erreur);
-                                int offset = ptr_symb->decalage - ft->decalage;
+                                int offset = ptr_symb->decalage - (ft->decalage + 4);
                                 if(offset < -32768 || offset > 32767 || offset%4 != 0){
                                     *file_erreur = enfiler("Saut relatif trop grand", f->caractere, ft->ligne, *file_erreur);
                                 }else{
@@ -228,8 +230,9 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                     /*printf("Renvoie vers l'étiquette (relocation poid fort) : \" %s\" trouvée \n", f->caractere);*/
                     if(!est_dans_file(f->caractere, co_symb)){
                         /* Si non déclaré dans le même fichier */
-                        table = ajoutElement(table, ft->decalage, R_MIPS_HI16, f->caractere, NULL);
+
                         co_symb = ajout_symb(f->caractere, ft->ligne, ft->decalage,"none", co_symb);
+                        table = ajoutElement(table, ft->decalage, R_MIPS_HI16, f->caractere, co_symb);
                     }else{
                         /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
                         struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);

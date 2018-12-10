@@ -18,6 +18,7 @@
 
 
 int elf_get_sym_index_from_name(section symtab, section strtab,  char* sym_name);
+int elf_get_sym_index_from_name2(section symtab, section shstrtab, section strtab, char* sym_name);
 section make_shstrtab_section( void );
 section make_strtab_section(file_symb co_symb);
 section make_data_section( int data_prog[], int nb_data );
