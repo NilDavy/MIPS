@@ -532,15 +532,15 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 							f=f->suiv;
 							
 							
-	/*faire les verifs des 32 bits*/
+							/*les verifs des 32 bits*/
 							while(strcasecmp(f->identifiant, "Retour à la ligne")){
-								if(!strcasecmp(f->identifiant, "Valeur Décimale")|| !strcasecmp(f->identifiant, "Valeur Hexadécimale")){
+								if((!strcasecmp(f->identifiant, "Valeur Décimale")&&(unsigned long)atoi(f->caractere)<2147483647)|| (!strcasecmp(f->identifiant, "Valeur Hexadécimale")&&(unsigned long)atoi(f->caractere)<4294967296)){
 									*co_data=ajout_data(".word", f->ligne, *cpt_data, f->caractere, 2, *co_data,0);
 									*cpt_data=(*cpt_data)+4;
 								}
 								else{
 									/*si nombre negatif*/
-									if(!strcasecmp(f->identifiant, "Délimiteur") && (!strcasecmp(f->caractere, "-")) && !strcasecmp(f->suiv->identifiant, "Valeur Décimale")){
+									if(!strcasecmp(f->identifiant, "Délimiteur") && (!strcasecmp(f->caractere, "-")) && !strcasecmp(f->suiv->identifiant, "Valeur Décimale")&&(unsigned long)atoi(f->caractere)<2147483648){
 										char*mot2=calloc(200,sizeof(char));
 										strcat(mot2,f->caractere);
 										strcat(mot2,f->suiv->caractere);
@@ -586,24 +586,25 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 												*file_erreur = enfiler("Mauvaise commande après la directive .asciiz", f->identifiant, f->ligne, *file_erreur);
 										}
 										f=f->suiv;
-										strcat(mot1, " ");
 										if(!strcasecmp(f->identifiant, "Retour à la ligne")){
 											z = 0;
-											strcat(mot1," ");
-*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
-										*cpt_data=(*cpt_data)+strlen(mot1);
+											*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
+											*cpt_data=(*cpt_data)+strlen(mot1);
 										}
-										if(strcasecmp(f->caractere, ",")==0){
-											f=f->suiv;
-*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
-										*cpt_data=(*cpt_data)+strlen(mot1);
-										strcpy(mot1, "");
+										else{
+											if(strcasecmp(f->caractere, ",")==0){
+												f=f->suiv;
+												*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
+												*cpt_data=(*cpt_data)+strlen(mot1);
+											}
+											else{
+												strcat(mot1, " ");
+											}
 										}
-
 									}
-									}
-									free(mot1);
 								}
+								free(mot1);
+							}
 							else{
 								*file_erreur = enfiler("Mauvaise directive dans la section .data", " ", f->ligne, *file_erreur);
 								f=f->suiv;

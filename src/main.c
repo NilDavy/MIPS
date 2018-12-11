@@ -308,7 +308,7 @@ int main ( int argc, char *argv[] ) {
 			/*section data*/
 			if(!file_vide_data(co_data)){
 				creer_section_data(&data,nbdata,co_data,co_symb);
-				/*print_section(data);*/
+				print_section(data);
 				/*printf("data fini\n");*/
 			}
 
