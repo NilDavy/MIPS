@@ -1,0 +1,5 @@
+Nom instruction : viteviteauru	 Ligne : 15	 Section : none	 Decalage : 36
+Nom instruction : boucle	 Ligne : 9	 Section : TEXT	 Decalage : 16
+Nom instruction : byebye	 Ligne : 9	 Section : TEXT	 Decalage : 36
+Nom instruction : lunchtime	 Ligne : 5	 Section : DATA	 Decalage : 0
+Nom instruction : menu	 Ligne : 24	 Section : BSS	 Decalage : 0

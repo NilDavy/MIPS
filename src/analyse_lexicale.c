@@ -308,7 +308,7 @@ int verif_delimitateur(char*token,char*mot1,char*mot2){
 
 /** test de tous les delimiteurs**/
 
-		if((token[i]=='/') || (token[i]=='(')|| (token[i]==',')|| (token[i]==')')|| (token[i]==':')|| (token[i]=='-')|| (token[i]=='+') || (token[i] == 9)){
+		if((token[i]=='/') || (token[i]=='(')|| (token[i]==',')|| (token[i]==')')|| (token[i]==':')|| (token[i]=='-')|| (token[i]=='+') || (token[i] == 9)||(token[i]=='#')){
 			if (strlen(token)>1){
 				j=1;
 			}

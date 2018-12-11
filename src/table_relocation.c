@@ -165,6 +165,8 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
 					    }else{
                             /* Si le symbole est déclaré dans le fichier on récupère la section à lauqelle il appartient */
                             struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+			    if(ft->ligne < ptr_symb->ligne)
+				ptr_symb->ligne = ft->ligne;
                             table = ajoutElement(table, ft->decalage, R_MIPS_26, ptr_symb->section, ptr_symb);
 					    }
                     }else{
@@ -201,11 +203,13 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
 
                                 co_symb = ajout_symb(f->caractere, ft->ligne, ft->decalage,"none", co_symb);
                                 table = ajoutElement(table, ft->decalage, R_MIPS_LO16, f->caractere, co_symb);
-    					    }else{
+    			    }else{
                                 /*Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
                                 struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+				if(ft->ligne < ptr_symb->ligne)
+				    ptr_symb->ligne = ft->ligne;	
                                 table = ajoutElement(table, ft->decalage, R_MIPS_LO16, ptr_symb->section, ptr_symb);
-    					    }
+    			    }
                         }else{
                             /*Si on a un relatif */
                             if(!est_dans_file(f->caractere, co_symb)){
@@ -218,8 +222,11 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                                     *file_erreur = enfiler("Saut relatif à une étiquette qui n'est pas dans la section .text", f->caractere, ft->ligne, *file_erreur);
                                 int offset = ptr_symb->decalage - (ft->decalage + 4);
                                 if(offset < -32768 || offset > 32767 || offset%4 != 0){
+				
                                     *file_erreur = enfiler("Saut relatif trop grand", f->caractere, ft->ligne, *file_erreur);
                                 }else{
+				    if(ft->ligne < ptr_symb->ligne)
+				    	ptr_symb->ligne = ft->ligne;
                                     strcpy(f->identifiant, "Valeur Décimale");
                                     sprintf(f->caractere, "%d", offset);
                                 }
@@ -236,6 +243,8 @@ table_reloc remplirTableRelocationText(file_text co_text, file_symb co_symb, Lis
                     }else{
                         /* Si le symbole est déclaré dans le fichier on récupère la section à laquelle il appartient*/
                         struct cellulesymb* ptr_symb = recuperer_cellule_symb(f->caractere, co_symb);
+			if(ft->ligne < ptr_symb->ligne)
+				ptr_symb->ligne = ft->ligne;
                         table = ajoutElement(table, ft->decalage, R_MIPS_HI16, ptr_symb->section, ptr_symb);
                     }
                 }else if (!strcmp(f->identifiant, "EtiquettePFaible")){

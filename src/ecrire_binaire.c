@@ -192,7 +192,7 @@ section make_bss_section( int bss_prog) {
  * These entries are present even if they are not in the original text code
  *
  */
-section make_symtab_section(section shstrtab, section strtab, file_symb co_symb) {
+section make_symtab_section(section shstrtab, section strtab, file_symb co_symb, int nb_ligne) {
 
 	section    symtab = new_section( ".symtab", SECTION_CHUNK_SZ );
 	unsigned int offset = 0;
@@ -234,44 +234,50 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
 	entry.st_shndx = elf_get_string_index( shstrtab->start, shstrtab->sz, ".bss" );
 
 	write_section( symtab, (unsigned char *)&entry, sizeof(entry), symtab->sz);
-
-	file_symb a = co_symb->suiv;
+	if(file_vide_symb(co_symb))
+		return symtab;
+	file_symb a = co_symb->suiv;	
+	int i;
 	if(file_vide_symb(a))
 			return symtab;
-		do{
-			if(strcasecmp(a->section, "none")){
-					Elf32_Sym symb;
-    				symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom );
-    				symb.st_size = 0;
-    				symb.st_value = a->decalage;
-    				symb.st_info = ELF32_ST_INFO( STB_LOCAL, STT_NOTYPE );
-    				symb.st_other = 0;
-					if(!strcmp(a->section, "TEXT"))
-    					symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".text" );
-					if(!strcmp(a->section, "DATA"))
-	    				symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".data" );
-					if(!strcmp(a->section, "BSS"))
-		    			symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".bss" );
-					write_section( symtab, (unsigned char *)&symb, sizeof(symb), symtab->sz);
-			}
-				a = a->suiv;
-		}while(a != co_symb->suiv);
-		do{
-			/* Cas des symboles inconnus */
-
-				if(!strcasecmp(a->section, "none")){
+		for(i=1; i<= nb_ligne;i++){
+			do{
+				if(strcasecmp(a->section, "none")&& a->ligne == i){
+				
 						Elf32_Sym symb;
-    					symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom);
-    					symb.st_size = 0;
-    					symb.st_value = 0;
-    					symb.st_info = ELF32_ST_INFO( STB_GLOBAL, STT_NOTYPE );
-    					symb.st_other = 0;
-						symb.st_shndx = SHN_UNDEF;
-						write_section( symtab, (unsigned char *)&symb, sizeof(symb), symtab->sz);
+	    				symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom );
+	    				symb.st_size = 0;
+	    				symb.st_value = a->decalage;
+	    				symb.st_info = ELF32_ST_INFO( STB_LOCAL, STT_NOTYPE );
+	    				symb.st_other = 0;
+					if(!strcmp(a->section, "TEXT"))
+	    					symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".text" );
+					if(!strcmp(a->section, "DATA"))
+		    				symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".data" );
+					if(!strcmp(a->section, "BSS"))
+			    			symb.st_shndx  = elf_get_string_index( shstrtab->start, shstrtab->sz, ".bss" );
+					printf("Ajout du symbole : %s qui est utilisé à la ligne : %d\n", a->nom, a->ligne);
+					write_section( symtab, (unsigned char *)&symb, sizeof(symb), symtab->sz);
 				}
-				a = a->suiv;
+					a = a->suiv;
 		}while(a != co_symb->suiv);
-
+		}
+		for(i=1; i<= nb_ligne;i++){		
+			do{
+				/* Cas des symboles inconnus */
+					if(!strcasecmp(a->section, "none") && a->ligne == i){
+							Elf32_Sym symb;
+	    					symb.st_name = elf_get_string_offset( strtab->start, strtab->sz, a->nom);
+	    					symb.st_size = 0;
+	    					symb.st_value = 0;
+	    					symb.st_info = ELF32_ST_INFO( STB_GLOBAL, STT_NOTYPE );
+	    					symb.st_other = 0;
+							symb.st_shndx = SHN_UNDEF;
+							write_section( symtab, (unsigned char *)&symb, sizeof(symb), symtab->sz);
+					}
+					a = a->suiv;
+			}while(a != co_symb->suiv);
+		}
 
 
 	return symtab;
@@ -291,7 +297,8 @@ section make_symtab_section(section shstrtab, section strtab, file_symb co_symb)
 section make_rel32_section(char *relname, table_reloc reloc, section symtab, section shstrtab, section strtab) {
 
 	section reltab = new_section( relname, SECTION_CHUNK_SZ );
-
+	if(table_vide(reloc))
+		return reltab;
 	table_reloc r = reloc->suiv;
 	if(table_vide(r))
 	{
@@ -347,7 +354,7 @@ void swap(char*s2){
 }
 
 
-void creer_data_value(int*data_value,int*data_type,int nbdata,file_data co_data){
+void creer_data_value(int*data_value,int*data_type,int nbdata,file_data co_data,file_symb co_symb){
 	file_data e=co_data->suiv;
 	file_data h=co_data;
 	h->suiv=NULL;
@@ -390,11 +397,20 @@ void creer_data_value(int*data_value,int*data_type,int nbdata,file_data co_data)
 					a=a+strlen((e->op).s);
 				}
 				else{
-					for(b=0;b<strlen((e->op).s);b++){
-						data_value[a+b]=(int)(e->op).s[b];
-						data_type[a+b]=2;
+					/*forcement .wod avec renvoie vers une éiquette*/
+					struct cellulesymb* ptr_symb = recuperer_cellule_symb(e->op.s, co_symb);
+					if(!strcasecmp(ptr_symb->section, "none") || strcasecmp(ptr_symb->section, "DATA" )){
+						for(b=0;b<4;b++){
+							data_type[a+b]=4;
+							data_value[a+b]=0;
+						}
+						a=a+4;
 					}
-					a=a+strlen((e->op).s);
+					else{
+						data_type[a]=0;
+						data_value[a]=ptr_symb->decalage;
+						a=a+4;	
+					}
 				}
 				break;
 		}
@@ -540,13 +556,13 @@ void ordre_data(file_jeu_instruction f_data_bin,int*data_prog,int nbdata){
 	}
 }
 
-void creer_section_data(section*data,int nbdata,file_data co_data){
+void creer_section_data(section*data,int nbdata,file_data co_data,file_symb co_symb){
 	int*data_value= calloc(nbdata,sizeof(int));
 	int*data_type= calloc(nbdata,sizeof(int));
 	int*data_prog= calloc(nbdata,sizeof(int));
 	file_jeu_instruction f_data_bin=creer_file();
 
-	creer_data_value(data_value,data_type,nbdata,co_data);
+	creer_data_value(data_value,data_type,nbdata,co_data,co_symb);
 	/*printf("nb %d\n",nbdata);
 	 for(i=0;i<nbdata;i++){
 	 printf("%d\n",data_value[i]);
@@ -575,7 +591,7 @@ void creer_section_bss(section*bss,int cptbss){
 	}
 }
 
-void creer_section_text(section*text,int nbtext,file_text co_text,Liste_hach*tab_instruction,Liste_hach*tab_registre){
+void creer_section_text(section*text,int nbtext,file_text co_text,Liste_hach*tab_instruction,Liste_hach*tab_registre,file_symb co_symb){
 	int nbre=nbtext/4;
 	int compteur=0;
 	int n;
@@ -589,17 +605,18 @@ void creer_section_text(section*text,int nbtext,file_text co_text,Liste_hach*tab
 	do {
 		n=hachage(f->nomInst,dim_tab_instruction);
 		type=rec_hachage_type(f->nomInst,tab_instruction[n]);
+		/*printf("%s\n",f->nomInst);*/
 		if(strcasecmp(type,"R")==0){
 			construction_R(&compteur,text_prog,nbre,f,n,tab_instruction,tab_registre,&ligne);
 		}
 		else{
 			if(strcasecmp(type,"I")==0){
-				construction_I(&compteur,text_prog,nbre,f,n,tab_instruction,tab_registre,&ligne);
+				construction_I(&compteur,text_prog,nbre,f,n,tab_instruction,tab_registre,&ligne,co_symb);
 
 			}
 			else{
 				/*type J*/
-				construction_J(&compteur,text_prog,nbre,f,n,tab_instruction,tab_registre,&ligne);
+				construction_J(&compteur,text_prog,nbre,f,n,tab_instruction,tab_registre,&ligne,co_symb);
 			}
 		}
 		f=f->suiv;
@@ -733,7 +750,7 @@ void construction_R(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 	*ligne=f->ligne;
 }
 
-void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_hach*tab_instruction,Liste_hach*tab_registre,int*ligne){
+void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_hach*tab_instruction,Liste_hach*tab_registre,int*ligne, file_symb co_symb){
 	char mot[100];
 	char bin[100];
 	strcpy(bin,"");
@@ -881,19 +898,60 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 		}
 	}
 	if(strcasecmp(a1,"i")==0){
-		convertir_dec_bin(f->decalage,bin,16);
-		strcat(mot,bin);
+		if(!strcasecmp(g->suiv->identifiant, "renvoie vers une étiquette"))
+		{
+			struct cellulesymb* ptr_symb = recuperer_cellule_symb(g->suiv->caractere, co_symb);
+			if(!strcasecmp(ptr_symb->section, "none") || strcasecmp(ptr_symb->section, "TEXT")){
+			strcat(mot,"0000000000000000");
+			}
+			else{
+			printf("Symbole trouvé :%d\n",ptr_symb->decalage);
+				convertir_dec_bin(ptr_symb->decalage,bin,16);
+				strcat(mot,bin);
+			}
+		}
+		else{
+			convertir_dec_bin(atoi(g->suiv->caractere),bin,16);
+			strcat(mot,bin);
+		}
 	}
 	else{
 		if(strcasecmp(a2,"i")==0){
-			convertir_dec_bin(f->decalage,bin,16);
-			strcat(mot,bin);
+			if(!strcasecmp(g->suiv->suiv->identifiant, "renvoie vers une étiquette"))
+			{
+				struct cellulesymb* ptr_symb = recuperer_cellule_symb(g->suiv->suiv->caractere, co_symb);
+				if(!strcasecmp(ptr_symb->section, "none") || strcasecmp(ptr_symb->section, "TEXT" )){
+				strcat(mot,"0000000000000000");
+				}
+				else{
+			printf("Symbole trouvé :%d\n",ptr_symb->decalage);
+					convertir_dec_bin(ptr_symb->decalage,bin,16);
+					strcat(mot,bin);
+				}
+			}
+			else{
+				convertir_dec_bin(atoi(g->suiv->suiv->caractere),bin,16);
+				strcat(mot,bin);
+			}
 		}
 		else{
 			if(strcasecmp(a3,"i")==0){
-				convertir_dec_bin(f->decalage,bin,16);
+				if(!strcasecmp(g->identifiant, "renvoie vers une étiquette"))
+				{
+					struct cellulesymb* ptr_symb = recuperer_cellule_symb(g->caractere, co_symb);
+					if(!strcasecmp(ptr_symb->section, "none") || strcasecmp(ptr_symb->section, "TEXT")){
+					strcat(mot,"0000000000000000");
+					}
+				else{
+					printf("Symbole trouvé :%d\n",ptr_symb->decalage);
+					convertir_dec_bin(ptr_symb->decalage,bin,16);
+					strcat(mot,bin);
+					}
+				}
+			else{
+				convertir_dec_bin(atoi(g->caractere),bin,16);
 				strcat(mot,bin);
-
+			}
 			}
 			else{
 				if(strcasecmp(a1,"bo")==0){
@@ -952,7 +1010,7 @@ void construction_I(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 	*ligne=f->ligne;
 }
 
-void construction_J(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_hach*tab_instruction,Liste_hach*tab_registre,int*ligne){
+void construction_J(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_hach*tab_instruction,Liste_hach*tab_registre,int*ligne,file_symb co_symb){
 	char mot[100];
 	char bin[100];
 	strcpy(bin,"");
@@ -967,31 +1025,33 @@ void construction_J(int*compteur,int*text_prog,int nbre,file_text f,int n,Liste_
 	strcpy(chaine_fin,"0x");
 	int i;
 	long int a;
-
+	file_jeu_instruction g=f->op;
 	information(oppcode,fonction,a1,a2,a3,tab_instruction[n],f->nomInst);
 
 	strcat(mot,oppcode);
 
 	if(strcasecmp(a1,"t")==0){
-		convertir_dec_bin(f->decalage,bin,26);
-		strcat(mot,bin);
-	}
-	else{
-		if(strcasecmp(a2,"t")==0){
-			convertir_dec_bin(f->decalage,bin,26);
-			strcat(mot,bin);
-		}
-		else{
-			if(strcasecmp(a3,"t")==0){
-				convertir_dec_bin(f->decalage,bin,26);
-				strcat(mot,bin);
-
-			}
-			else{
+		if(!strcasecmp(g->identifiant, "renvoie vers une étiquette"))
+		{	
+			printf("Rcherche du symbole : %s\n", g->caractere);
+			struct cellulesymb* ptr_symb = recuperer_cellule_symb(g->caractere, co_symb);
+			if(!strcasecmp(ptr_symb->section, "none") || strcasecmp(ptr_symb->section, "TEXT") ){
+				printf("Symbole non trouvé : %s\n", g->caractere);
 				strcat(mot,"00000000000000000000000000");
 			}
+			else{
+			printf("Symbole trouvé : %s %d\n", g->caractere,ptr_symb->decalage);
+				convertir_dec_bin(ptr_symb->decalage/4,bin,26);
+				strcat(mot,bin);
+			}
 		}
+		else{
+			convertir_dec_bin(atoi(g->caractere),bin,26);
+			strcat(mot,bin);
+		}
+
 	}
+	
 	a=convertir_bin_dec(mot,strlen(mot));
 	sprintf(hexadecimal, "%lx", a);
 	for(i=0;i<(8-strlen(hexadecimal));i++){
@@ -1081,5 +1141,16 @@ void convertir_dec_bin(long int n,char*mot,int taille)
 		strcpy(mot,nombre);
 	}
 	/*printf("nombre %s nombre neg %s\n",nombre, nombre_neg);*/
+
+  /* int i = 0;
+	printf("mot %s %d\n",mot,atoi(mot));
+   for(i = taille; i >= 0; i--){
+     if((atoi(mot) & (1 << i)) != 0){
+       printf("1");
+     }else{
+       printf("0");
+     } 
+   }
+printf("\n");*/
 	return;
 }

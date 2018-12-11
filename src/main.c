@@ -181,7 +181,7 @@ int main ( int argc, char *argv[] ) {
 	}
 
 
-	/*visualiser_file(file_erreur);*/
+	/*visualiser_file(file_lexeme);*/
 
 	/** Ecriture du code instancié dans le fichier **/
 
@@ -244,7 +244,13 @@ int main ( int argc, char *argv[] ) {
 		else{
 			DEBUG_MSG("Il n'y a pas d'erreur de syntaxe dans le code source !");
 			printf("\n**********************************************************\n\n");
-			co_text= modif_etiquette(co_text);
+				
+			/*visualiser_file_text(co_text);
+			visualiser_file_symb(co_symb);
+			visualiser_file_data(co_data);
+			visualiser_file_bss(co_bss);*/
+
+			/*co_text= modif_etiquette(co_text);*/
 
 			/* il reste à generer les codes binaires */
 			/* il faut creer les tables
@@ -257,9 +263,7 @@ int main ( int argc, char *argv[] ) {
 
 
 			char* machine = "mips";
-			int i;
 			int noreorder =1;
-			int lenght=strlen(file);
 			char*name=calloc(strlen(file)+1,sizeof(char));
 			strncat(name,file,strlen(file)-2);
 			strcat(name,".o");
@@ -277,34 +281,42 @@ int main ( int argc, char *argv[] ) {
 
 			/*section shestrtab*/
 			shstrtab = make_shstrtab_section();
+			/*printf("shstrtab fini\n");*/
 
 			/*section strtab*/
 			strtab = make_strtab_section(co_symb);
 			/*print_section(strtab);*/
+			/*printf("strtab fini\n");*/
 
 			/*section symtab*/
-			symtab = make_symtab_section(shstrtab, strtab, co_symb);
+			symtab = make_symtab_section(shstrtab, strtab, co_symb, nlines);
 			/*print_section(symtab);*/
+			/*printf("symtab fini\n");*/
 
 			reltext = make_rel32_section( ".rel.text", reloc_text, symtab, shstrtab, strtab);
 			reldata = make_rel32_section(".rel.data", reloc_data, symtab, shstrtab, strtab);
+			/*printf("reloc table fini\n");*/
 
 			/*section bss*/
 			if(!file_vide_bss(co_bss)){
+				/*printf("debut creation bss\n");*/
 				creer_section_bss(&bss,cptbss);
 				/*print_section(bss);*/
+				/*printf("bss fini\n");*/
 			}
 
 			/*section data*/
 			if(!file_vide_data(co_data)){
-				creer_section_data(&data,nbdata,co_data);
+				creer_section_data(&data,nbdata,co_data,co_symb);
 				/*print_section(data);*/
+				/*printf("data fini\n");*/
 			}
 
 			/*section text*/
 			if(!file_vide_text(co_text)){
-				creer_section_text(&text,nbtext,co_text,tab_instruction,tab_registre);
+				creer_section_text(&text,nbtext,co_text,tab_instruction,tab_registre,co_symb);
 				/*print_section(text);*/
+				/*printf("text fini\n");*/
 			}
 			elf_write_relocatable( name, machine, noreorder,
                            text->start, text->sz,

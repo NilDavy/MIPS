@@ -43,6 +43,10 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 		/*getchar();*/
 
 		/*ici on regarde dans quelle section on se trouve avec une priorité mise en place si on change de section (.qqch avant l'etat courant)*/
+	if(strcasecmp(g->caractere, ".set")==0 || strcasecmp(g->identifiant, "Retour à la ligne")==0||strcasecmp(g->caractere,"noreorder")==0){
+		g=g->suiv;
+	}
+	else{
 
 		if(!strcasecmp(g->caractere, ".text")){
 			/*printf("text\n");
@@ -88,11 +92,8 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 								g = processBss(g, co_bss, &cpt_bss, file_erreur, co_symb,co_bss_attente);
 							}
 							else{
-								/*les cas ou il ne faut pas mettre d'erreur*/
-
-								if(strcasecmp(g->caractere, ".set") && strcasecmp(g->identifiant, "Retour à la ligne")&&strcasecmp(g->caractere,"noreorder")){
+								/*les cas ou il faut mettre d'erreur*/
 									*file_erreur = enfiler("Directive attendu à la place de :", g->caractere, g->ligne, *file_erreur);
-								}
 							}
 						}
 					}
@@ -100,6 +101,7 @@ void analyse_syntaxique(Liste_hach*tab_instruction,file_jeu_instruction file, fi
 			}
 		}
 		g=g->suiv;
+		}
 	}
 	while(g!=h->suiv);
 	*cptbss=cpt_bss;
@@ -282,40 +284,30 @@ file_text pseudo_instruction(int*cpt_text,char*instruction,file_text *co_text,fi
 			if(strcasecmp(instruction,"SW")==0){
 				/*printf("SW\n");*/
 
-				if(strcasecmp(g->caractere,"Baseoffset")==0){
+				if(strcasecmp(g->identifiant,"Baseoffset")==0){
+
 				*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,g);
 				*cpt_text=*cpt_text+4;
-			}
-			else{
-				if(strcasecmp(g->identifiant,"Renvoie vers une étiquette")==0){
-					file_jeu_instruction h=creer_file();
-					file_jeu_instruction i=creer_file();
-					/*unsigned octet_pfort=(atoi(g->caractere) &0xFFFF0000)>>16;
-					unsigned octet_pfaible=atoi(g->caractere)&0xFFFF;
-					char o_p_fort[30],o_p_faible[30];
-					sprintf(o_p_fort, "%d",octet_pfort);
-					sprintf(o_p_faible, "%d",octet_pfaible);
-					printf("poids faible %s\n",o_p_faible);
-					printf("poids fort %s\n",o_p_fort);
-					strcat(o_p_faible,g->caractere);
-					strcat(o_p_faible,"(");
-					strcat(o_p_faible,g->suiv->caractere);
-					strcat(o_p_faible,")");*/
-					h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
-					h=enfiler("EtiquettePFort",g->caractere,ligne,h);
-					*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
-					*cpt_text=*cpt_text+4;
-
-					i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
-					i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
-					*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,i);
-					*cpt_text=*cpt_text+4;
-					liberer_file(h);
-					liberer_file(i);
 				}
 				else{
-					*file_erreur = enfiler("Mauvaise opérande après un SW", g->identifiant,ligne, *file_erreur);
-				}
+					if(strcasecmp(g->identifiant,"Renvoie vers une étiquette")==0){
+						file_jeu_instruction h=creer_file();
+						file_jeu_instruction i=creer_file();
+						h=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,h);
+						h=enfiler("EtiquettePFort",g->caractere,ligne,h);
+						*co_text=ajout_text("LUI",2,ligne, *cpt_text, *co_text,h);
+						*cpt_text=*cpt_text+4;
+
+						i=enfiler(g->suiv->identifiant,g->suiv->caractere,ligne,i);
+						i=enfiler("EtiquettePFaible",g->caractere,ligne,i);
+						*co_text=ajout_text("SW",2,ligne, *cpt_text, *co_text,i);
+						*cpt_text=*cpt_text+4;
+						liberer_file(h);
+						liberer_file(i);
+					}
+					else{
+						*file_erreur = enfiler("Mauvaise opérande après un SW", g->identifiant,ligne, *file_erreur);
+					}
 				}
 			}
 			else{
@@ -581,27 +573,37 @@ file_jeu_instruction processData(file_jeu_instruction file, file_data *co_data, 
 									*co_symb=ajout_symb(copie, f->ligne, *cpt_data,"DATA", *co_symb);
 								}
 								f=f->suiv;
+								int z=1;
 								char*mot1=calloc(200,sizeof(char));
 								/*concat chaine de caractère*/
-								while(strcasecmp(f->identifiant, "Retour à la ligne")){
-									if(!strcasecmp(f->identifiant, "Chaine de caractère")){
-										strcat(mot1,f->caractere);
-										vide=1;
+								while(z==1){
+									while(strcasecmp(f->identifiant, "Retour à la ligne")&&(strcasecmp(f->identifiant, "Délimiateur")&&strcasecmp(f->caractere, ","))){
+										if(!strcasecmp(f->identifiant, "Chaine de caractère")){
+											strcat(mot1,f->caractere);
+											vide=1;
+										}
+										else{
+												*file_erreur = enfiler("Mauvaise commande après la directive .asciiz", f->identifiant, f->ligne, *file_erreur);
+										}
+										f=f->suiv;
+										strcat(mot1, " ");
+										if(!strcasecmp(f->identifiant, "Retour à la ligne")){
+											z = 0;
+											strcat(mot1," ");
+*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
+										*cpt_data=(*cpt_data)+strlen(mot1);
+										}
+										if(strcasecmp(f->caractere, ",")==0){
+											f=f->suiv;
+*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
+										*cpt_data=(*cpt_data)+strlen(mot1);
+										strcpy(mot1, "");
+										}
+
 									}
-									else{
-											*file_erreur = enfiler("Mauvaise commande après la directive .asciiz", f->identifiant, f->ligne, *file_erreur);
 									}
-									f=f->suiv;
-									if(strcasecmp(f->identifiant, "Retour à la ligne")){
-										strcat(mot1," ");
-									}
+									free(mot1);
 								}
-								if(vide==1){
-									*co_data=ajout_data(".asciiz", f->ligne, *cpt_data,mot1, 4, *co_data,0);
-									*cpt_data=(*cpt_data)+strlen(mot1);
-								}
-								free(mot1);
-							}
 							else{
 								*file_erreur = enfiler("Mauvaise directive dans la section .data", " ", f->ligne, *file_erreur);
 								f=f->suiv;
@@ -761,6 +763,10 @@ void verif_relatif_ope(file_jeu_instruction*file_erreur,file_jeu_instruction f,f
 			*file_erreur = enfiler("Nombre sur 18 bit signé attendu et divisible par 4", f->caractere, a->ligne, *file_erreur);
 		}
 		else{
+			int i = atoi(f->caractere)/4;
+			char buffer[26];
+			sprintf(buffer,"%d",i);			
+			strcpy(f->caractere,buffer);
 			return;
 		}
 	}
