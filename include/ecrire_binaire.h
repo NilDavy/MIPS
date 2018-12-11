@@ -27,7 +27,6 @@ section make_bss_section( int bss_prog);
 section make_symtab_section(section shstrtab, section strtab,  file_symb co_symb);
 section make_rel32_section(char *relname, table_reloc reloc, section symtab, section shstrtab, section strtab);
 void swap(char*s2);
-void creer_nom_fichier(char*file,char*name);
 void creer_data_value(int*data_value,int*data_type,int nbdata,file_data co_data);
 void creer_hexa_data(file_jeu_instruction*f_data_bin,int*data_type,int*data_value,int nbdata);
 void nombre_mot_data(int*nbdata);

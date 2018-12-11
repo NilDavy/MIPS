@@ -304,7 +304,7 @@ section make_rel32_section(char *relname, table_reloc reloc, section symtab, sec
 
 		}
 		else{
-   			rel.r_offset = r->symb->decalage;
+   			rel.r_offset = r->offset;
 
 
 			if(!strcasecmp(r->symb->section, "TEXT"))
@@ -346,17 +346,6 @@ void swap(char*s2){
 	return;
 }
 
-void creer_nom_fichier(char*file,char*name){
-	int i;
-	int lenght=strlen(file);
-	for(i=0;i<(lenght-2);i++){
-		name[i]=file[i];
-	}
-	name[lenght-2]='.';
-	name[lenght-1]='o';
-	name[lenght]='\0';
-	return;
-}
 
 void creer_data_value(int*data_value,int*data_type,int nbdata,file_data co_data){
 	file_data e=co_data->suiv;

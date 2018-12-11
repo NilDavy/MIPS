@@ -260,9 +260,9 @@ int main ( int argc, char *argv[] ) {
 			int i;
 			int noreorder =1;
 			int lenght=strlen(file);
-			char name[lenght-2];
-			creer_nom_fichier(file,name);
-			printf("name %s\n",name);
+			char*name=calloc(strlen(file)+1,sizeof(char));
+			strncat(name,file,strlen(file)-2);
+			strcat(name,".o");
 
 
 			/* prepare sections*/
