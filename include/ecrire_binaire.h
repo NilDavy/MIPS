@@ -29,7 +29,7 @@ section make_rel32_section(char *relname, table_reloc reloc, section symtab, sec
 void swap(char*s2);
 void creer_data_value(int*data_value,int*data_type,int nbdata,file_data co_data,file_symb co_symb);
 void creer_hexa_data(file_jeu_instruction*f_data_bin,int*data_type,int*data_value,int nbdata);
-void nombre_mot_data(int*nbdata);
+int nombre_mot_data(int nbdata);
 void ordre_data(file_jeu_instruction f_data_bin,int*data_prog,int nbdata);
 void creer_section_data(section*data,int nbdata,file_data co_data,file_symb co_symb);
 void creer_section_bss(section*bss,int cptbss);
