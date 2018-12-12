@@ -172,6 +172,8 @@ int main(int argc, char *argv[])
     /* ---------------- do the lexical analysis ------------------- */
     lex_load_file(file, &nlines, tab_registre, tab_instruction,
 		  &file_lexeme, &file_erreur);
+	
+	printf("\n");
     DEBUG_MSG("Le code source contient %d lignes", nlines);
     /*visualiser_file(file_lexeme); */
 
@@ -331,14 +333,14 @@ int main(int argc, char *argv[])
 	    if (!file_vide_bss(co_bss)) {
 		/*printf("debut creation bss\n"); */
 		creer_section_bss(&bss, cptbss);
-		/*print_section(bss); */
+		print_section(bss);
 		/*printf("bss fini\n"); */
 	    }
 
 	    /*section data */
 	    if (!file_vide_data(co_data)) {
 		creer_section_data(&data, nbdata, co_data, co_symb);
-		/*print_section(data); */
+		print_section(data);
 		/*printf("data fini\n"); */
 	    }
 
@@ -346,7 +348,7 @@ int main(int argc, char *argv[])
 	    if (!file_vide_text(co_text)) {
 		creer_section_text(&text, nbtext, co_text, tab_instruction,
 				   tab_registre, co_symb);
-		/*print_section(text); */
+		print_section(text);
 		/*printf("text fini\n"); */
 	    }
 	    elf_write_relocatable(name, machine, noreorder,

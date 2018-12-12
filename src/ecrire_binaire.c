@@ -478,9 +478,8 @@ void creer_data_value(int *data_value, int *data_type, int nbdata,
 		data_type[a] = 3;
 		a = a + 1;
 	    } else {
-		/*forcement .wod avec renvoie vers une éiquette */
-		struct cellulesymb *ptr_symb =
-		    recuperer_cellule_symb(e->op.s, co_symb);
+		/*forcement .word avec renvoie vers une éiquette */
+		struct cellulesymb *ptr_symb = recuperer_cellule_symb(e->op.s, co_symb);
 		if (!strcasecmp(ptr_symb->section, "none")
 		    || strcasecmp(ptr_symb->section, "DATA")) {
 		    for (b = 0; b < 4; b++) {
@@ -511,11 +510,10 @@ void creer_hexa_data(file_jeu_instruction * f_data_bin, int *data_type,
     for (i = 0; i < nbdata; i++) {
 	sprintf(hexadecimal, "%x", data_value[i]);
 	/*printf("%d %s\n",data_value[i],hexadecimal); */
-	*f_data_bin =
-	    enfiler("Binaire", hexadecimal, data_type[i], *f_data_bin);
+	*f_data_bin = enfiler("Binaire", hexadecimal, data_type[i], *f_data_bin);
     }
     for (i = 0; i < (4 - (nbdata % 4)); i++) {
-	*f_data_bin = enfiler("Binaire", "0", 0, *f_data_bin);
+		*f_data_bin = enfiler("Binaire", "0", 0, *f_data_bin);
     }
 }
 
@@ -543,6 +541,7 @@ void ordre_data(file_jeu_instruction f_data_bin, int *data_prog,
 	strcpy(s2, "0x");
 
 	if (f->ligne == 2) {
+		/*alignement .word*/
 	    if (strcmp(f->suiv->suiv->suiv->caractere, "0") == 0
 		&& strcmp(f->suiv->suiv->caractere, "0") == 0
 		&& strcmp(f->suiv->caractere, "0") == 0
@@ -660,13 +659,19 @@ void creer_section_data(section * data, int nbdata, file_data co_data,
     int *data_value = calloc(nombre_mot * 4, sizeof(int));
     int *data_type = calloc(nombre_mot * 4, sizeof(int));
     int *data_prog = calloc(nombre_mot * 4, sizeof(int));
+	
+	/*Permet de creer la valeur de chaque data en int*/
     creer_data_value(data_value, data_type, nbdata, co_data, co_symb);
     /*printf("nb %d\n",nbdata);
        for(i=0;i<nbdata;i++){
        printf("%d %d %d\n",i,data_value[i],data_type[i]);
        } */
+	
+	/*Transformation en hexa*/
     creer_hexa_data(&f_data_bin, data_type, data_value, nbdata);
     /*visualiser_file(f_data_bin); */
+	
+	/*Mise en place*/
     ordre_data(f_data_bin, data_prog, nombre_mot);
     /*for(i=0;i<nbdata;i++){
        printf("%d\n",data_prog[i]);
@@ -764,6 +769,8 @@ void construction_R(int *compteur, int *text_prog, int nbre, file_text f,
 		f->nomInst);
 
     strcat(mot, oppcode);
+	
+	/*on cacat d'abord rs, rt, rd, sa suivant les cas et l'ordre */
 
     if (strcasecmp(a1, "rs") == 0) {
 	strcpy(opp1,
@@ -772,8 +779,7 @@ void construction_R(int *compteur, int *text_prog, int nbre, file_text f,
 						(g->suiv->caractere,
 						 dim_tab_registre)]));
 	strcat(mot, opp1);
-    } else {
-	if (strcasecmp(a2, "rs") == 0) {
+	} else if (strcasecmp(a2, "rs") == 0) {
 	    strcpy(opp2,
 		   rec_hachage_oppcode(g->suiv->suiv->caractere,
 				       tab_registre[hachage
@@ -781,23 +787,21 @@ void construction_R(int *compteur, int *text_prog, int nbre, file_text f,
 						     suiv->caractere,
 						     dim_tab_registre)]));
 	    strcat(mot, opp2);
-	} else {
-	    if (strcasecmp(a3, "rs") == 0) {
+		
+	} else if (strcasecmp(a3, "rs") == 0) {
 		strcpy(opp3,
 		       rec_hachage_oppcode(g->caractere,
 					   tab_registre[hachage
 							(g->caractere,
 							 dim_tab_registre)]));
 		strcat(mot, opp3);
-	    } else {
-		if (strcasecmp(f->nomInst, "ROTR") == 0) {
+	    }
+		else if (strcasecmp(f->nomInst, "ROTR") == 0) {
 		    strcat(mot, "00001");
-		} else {
+		}
+		else {
 		    strcat(mot, "00000");
 		}
-	    }
-	}
-    }
     if (strcasecmp(a1, "rt") == 0) {
 	strcpy(opp1,
 	       rec_hachage_oppcode(g->suiv->caractere,
@@ -805,8 +809,7 @@ void construction_R(int *compteur, int *text_prog, int nbre, file_text f,
 						(g->suiv->caractere,
 						 dim_tab_registre)]));
 	strcat(mot, opp1);
-    } else {
-	if (strcasecmp(a2, "rt") == 0) {
+    } else if (strcasecmp(a2, "rt") == 0) {
 	    strcpy(opp2,
 		   rec_hachage_oppcode(g->suiv->suiv->caractere,
 				       tab_registre[hachage
@@ -814,8 +817,7 @@ void construction_R(int *compteur, int *text_prog, int nbre, file_text f,
 						     suiv->caractere,
 						     dim_tab_registre)]));
 	    strcat(mot, opp2);
-	} else {
-	    if (strcasecmp(a3, "rt") == 0) {
+	} else if (strcasecmp(a3, "rt") == 0) {
 		strcpy(opp3,
 		       rec_hachage_oppcode(g->caractere,
 					   tab_registre[hachage
@@ -823,10 +825,9 @@ void construction_R(int *compteur, int *text_prog, int nbre, file_text f,
 							 dim_tab_registre)]));
 		strcat(mot, opp3);
 	    } else {
-		strcat(mot, "00000");
+			strcat(mot, "00000");
 	    }
-	}
-    }
+	
     if (strcasecmp(a1, "rd") == 0) {
 	strcpy(opp1,
 	       rec_hachage_oppcode(g->suiv->caractere,
@@ -834,44 +835,37 @@ void construction_R(int *compteur, int *text_prog, int nbre, file_text f,
 						(g->suiv->caractere,
 						 dim_tab_registre)]));
 	strcat(mot, opp1);
-    } else {
-	if (strcasecmp(a2, "rd") == 0) {
+    } else if (strcasecmp(a2, "rd") == 0) {
 	    strcpy(opp2,
 		   rec_hachage_oppcode(g->suiv->suiv->caractere,
 				       tab_registre[hachage
 						    (g->suiv->
 						     suiv->caractere,
 						     dim_tab_registre)]));
-	    strcat(mot, opp2);
-	} else {
-	    if (strcasecmp(a3, "rd") == 0) {
+	    	strcat(mot, opp2);
+	} else if (strcasecmp(a3, "rd") == 0) {
 		strcpy(opp3,
 		       rec_hachage_oppcode(g->caractere,
 					   tab_registre[hachage
 							(g->caractere,
 							 dim_tab_registre)]));
-		strcat(mot, opp3);
+			strcat(mot, opp3);
 	    } else {
-		strcat(mot, "00000");
+			strcat(mot, "00000");
 	    }
-	}
-    }
+
     if (strcasecmp(a1, "sa") == 0) {
 	convertir_dec_bin(atoi(g->suiv->caractere), bin, 5);
 	strcat(mot, bin);
-    } else {
-	if (strcasecmp(a2, "sa") == 0) {
+    } else if (strcasecmp(a2, "sa") == 0) {
 	    convertir_dec_bin(atoi(g->suiv->suiv->caractere), bin, 5);
 	    strcat(mot, bin);
-	} else {
-	    if (strcasecmp(a3, "sa") == 0) {
-		convertir_dec_bin(atoi(g->caractere), bin, 5);
-		strcat(mot, bin);
+	} else if (strcasecmp(a3, "sa") == 0) {
+			convertir_dec_bin(atoi(g->caractere), bin, 5);
+			strcat(mot, bin);
 	    } else {
-		strcat(mot, "00000");
-	    }
-	}
-    }
+			strcat(mot, "00000");
+		}
 
     strcat(mot, fonction);
     a = convertir_bin_dec(mot, strlen(mot));
@@ -917,13 +911,12 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
     int i, z;
 
     file_jeu_instruction g = f->op;
-    /*visualiser_file(g); */
     information(oppcode, fonction, a1, a2, a3, tab_instruction[n],
 		f->nomInst);
 
     strcat(mot, oppcode);
 
-/*Si pseudo-instruction*/
+/*Si pseudo-instruction alors rt est devant*/
     if (*ligne == f->ligne) {
 	if (strcasecmp(a1, "rt") == 0) {
 	    strcpy(opp1,
@@ -932,8 +925,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 						    (g->suiv->caractere,
 						     dim_tab_registre)]));
 	    strcat(mot, opp1);
-	} else {
-	    if (strcasecmp(a2, "rt") == 0) {
+	} else if (strcasecmp(a2, "rt") == 0) {
 		strcpy(opp2,
 		       rec_hachage_oppcode(g->suiv->suiv->caractere,
 					   tab_registre[hachage
@@ -941,8 +933,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 							 suiv->caractere,
 							 dim_tab_registre)]));
 		strcat(mot, opp2);
-	    } else {
-		if (strcasecmp(a3, "rt") == 0) {
+	    } else if (strcasecmp(a3, "rt") == 0) {
 		    strcpy(opp3,
 			   rec_hachage_oppcode(g->caractere,
 					       tab_registre[hachage
@@ -952,18 +943,16 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 		} else {
 		    strcat(mot, "00000");
 		}
-	    }
-	}
-    } else {
-	if (strcasecmp(a1, "rs") == 0) {
+    }
+	/*sinon base offset ou rs est devant*/
+	else if (strcasecmp(a1, "rs") == 0) {
 	    strcpy(opp1,
 		   rec_hachage_oppcode(g->suiv->caractere,
 				       tab_registre[hachage
 						    (g->suiv->caractere,
 						     dim_tab_registre)]));
 	    strcat(mot, opp1);
-	} else {
-	    if (strcasecmp(a2, "rs") == 0) {
+	} else if (strcasecmp(a2, "rs") == 0) {
 		strcpy(opp2,
 		       rec_hachage_oppcode(g->suiv->suiv->caractere,
 					   tab_registre[hachage
@@ -971,16 +960,14 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 							 suiv->caractere,
 							 dim_tab_registre)]));
 		strcat(mot, opp2);
-	    } else {
-		if (strcasecmp(a3, "rs") == 0) {
+	    } else if (strcasecmp(a3, "rs") == 0) {
 		    strcpy(opp3,
 			   rec_hachage_oppcode(g->caractere,
 					       tab_registre[hachage
 							    (g->caractere,
 							     dim_tab_registre)]));
 		    strcat(mot, opp3);
-		} else {
-		    if (strcasecmp(a1, "bo") == 0) {
+		} else if (strcasecmp(a1, "bo") == 0) {
 			i = 0;
 			while (g->suiv->caractere[i] != '(') {
 			    i = i + 1;
@@ -999,8 +986,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 								(base,
 								 dim_tab_registre)]));
 			strcat(mot, opp1);
-		    } else {
-			if (strcasecmp(a2, "bo") == 0) {
+		    } else if (strcasecmp(a2, "bo") == 0) {
 			    i = 0;
 			    while (g->suiv->suiv->caractere[i] != '(') {
 				i = i + 1;
@@ -1020,8 +1006,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 								    (base,
 								     dim_tab_registre)]));
 			    strcat(mot, opp2);
-			} else {
-			    if (strcasecmp(a3, "bo") == 0) {
+			} else if (strcasecmp(a3, "bo") == 0) {
 				i = 0;
 				while (g->caractere[i] != '(') {
 				    i = i + 1;
@@ -1042,15 +1027,10 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 							     dim_tab_registre)]));
 				strcat(mot, opp3);
 			    } else {
-				strcat(mot, "00000");
+					strcat(mot, "00000");
 			    }
-			}
-		    }
-		}
-	    }
-	}
-    }
 
+	/*puis rt s'il existe*/
     if (strcasecmp(a1, "rt") == 0) {
 	strcpy(opp1,
 	       rec_hachage_oppcode(g->suiv->caractere,
@@ -1058,8 +1038,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 						(g->suiv->caractere,
 						 dim_tab_registre)]));
 	strcat(mot, opp1);
-    } else {
-	if (strcasecmp(a2, "rt") == 0) {
+    } else if (strcasecmp(a2, "rt") == 0) {
 	    strcpy(opp2,
 		   rec_hachage_oppcode(g->suiv->suiv->caractere,
 				       tab_registre[hachage
@@ -1067,8 +1046,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 						     suiv->caractere,
 						     dim_tab_registre)]));
 	    strcat(mot, opp2);
-	} else {
-	    if (strcasecmp(a3, "rt") == 0) {
+	} else if (strcasecmp(a3, "rt") == 0) {
 		strcpy(opp3,
 		       rec_hachage_oppcode(g->caractere,
 					   tab_registre[hachage
@@ -1078,8 +1056,8 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 	    } else {
 		strcat(mot, "00000");
 	    }
-	}
-    }
+	
+	/*ou un immediat*/
     if (strcasecmp(a1, "i") == 0) {
 	if (!strcasecmp
 	    (g->suiv->identifiant, "renvoie vers une étiquette")) {
@@ -1102,6 +1080,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 	    if (!strcasecmp
 		(g->suiv->suiv->identifiant,
 		 "renvoie vers une étiquette")) {
+			/*Verif renvoie  vers une etiquette pour remplacer*/
 		struct cellulesymb *ptr_symb =
 		    recuperer_cellule_symb(g->suiv->suiv->caractere,
 					   co_symb);
@@ -1117,8 +1096,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 		convertir_dec_bin(atoi(g->suiv->suiv->caractere), bin, 16);
 		strcat(mot, bin);
 	    }
-	} else {
-	    if (strcasecmp(a3, "i") == 0) {
+	} else if (strcasecmp(a3, "i") == 0) {
 		if (!strcasecmp
 		    (g->identifiant, "renvoie vers une étiquette")) {
 		    struct cellulesymb *ptr_symb =
@@ -1136,8 +1114,8 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 		    convertir_dec_bin(atoi(g->caractere), bin, 16);
 		    strcat(mot, bin);
 		}
-	    } else {
-		if (strcasecmp(a1, "bo") == 0) {
+	    } else if (strcasecmp(a1, "bo") == 0) {
+			/*Verif renvoie  vers une etiquette pour remplacer*/
 		    if (strcasecmp
 			(g->suiv->identifiant, "EtiquettePFaible") == 0) {
 			struct cellulesymb *ptr_symb =
@@ -1149,8 +1127,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 			convertir_dec_bin(atoi(offset), bin, 16);
 			strcat(mot, bin);
 		    }
-		} else {
-		    if (strcasecmp(a2, "bo") == 0) {
+		} else if (strcasecmp(a2, "bo") == 0) {
 			if (strcasecmp
 			    (g->suiv->suiv->identifiant,
 			     "EtiquettePFaible") == 0) {
@@ -1164,8 +1141,7 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 			    convertir_dec_bin(atoi(offset), bin, 16);
 			    strcat(mot, bin);
 			}
-		    } else {
-			if (strcasecmp(a3, "bo") == 0) {
+		    } else if (strcasecmp(a3, "bo") == 0) {
 			    if (strcasecmp
 				(g->suiv->identifiant,
 				 "EtiquettePFaible") == 0) {
@@ -1179,35 +1155,26 @@ void construction_I(int *compteur, int *text_prog, int nbre, file_text f,
 				convertir_dec_bin(atoi(offset), bin, 16);
 				strcat(mot, bin);
 			    }
-			} else {
-			    if (strcasecmp(a1, "of") == 0) {
+			} else if (strcasecmp(a1, "of") == 0) {
+				/*ou bien on a un offset*/
 				convertir_dec_bin(atoi(g->suiv->caractere),
 						  bin, 16);
 				strcat(mot, bin);
-			    } else {
-				if (strcasecmp(a2, "of") == 0) {
+			    } else if (strcasecmp(a2, "of") == 0) {
 				    convertir_dec_bin(atoi
 						      (g->suiv->
 						       suiv->caractere),
 						      bin, 16);
 				    strcat(mot, bin);
-				} else {
-				    if (strcasecmp(a3, "of") == 0) {
+				} else if (strcasecmp(a3, "of") == 0) {
 					convertir_dec_bin(atoi
 							  (g->caractere),
 							  bin, 16);
 					strcat(mot, bin);
 
 				    } else {
-					strcat(mot, "0000000000000000");
-				    }
-				}
-			    }
-			}
-		    }
-		}
-	    }
-	}
+						strcat(mot, "0000000000000000");
+					}
     }
     a = convertir_bin_dec(mot, strlen(mot));
     sprintf(hexadecimal, "%lx", a);
