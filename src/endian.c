@@ -131,7 +131,7 @@ void elf32_endian_flip_Rela(Elf32_Rela * rel)
 {
     elf_endian_flip32(&(rel->r_offset));
     elf_endian_flip32(&(rel->r_info));
-    elf_endian_flip32(&(rel->r_addend));
+    elf_endian_flip32((unsigned int*)&(rel->r_addend));
 }
 
 
