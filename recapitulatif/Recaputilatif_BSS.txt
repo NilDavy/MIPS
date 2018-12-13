@@ -1,1 +1,0 @@
-Nom instruction : .space	 Ligne : 5	 Decalage : 0	Opérande : 256
