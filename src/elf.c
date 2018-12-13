@@ -60,7 +60,7 @@ char *elf_next_string(unsigned char *table, size_t length, char **str)
 {
 
     if (!*str) {
-	*str = table + 1;
+	*str = (char*)(table + 1);
 	return *str;
     }
 

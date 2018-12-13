@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     /*WARNING_MSG("Un message WARNING_MSG !"); */
 
     /* macro INFO_MSG : uniquement si compilé avec -DVERBOSE. Cf. Makefile */
-    INFO_MSG("Un message INFO_MSG : Debut du programme %s", argv[0]);
+   /* INFO_MSG("Un message INFO_MSG : Debut du programme %s", argv[0]);*/
 
     /* macro DEBUG_MSG : uniquement si compilé avec -DDEBUG (ie : compilation avec make debug). Cf. Makefile */
     /*DEBUG_MSG("Un message DEBUG_MSG !"); */
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 		  &file_lexeme, &file_erreur);
 	
 	printf("\n");
-    DEBUG_MSG("Le code source contient %d lignes", nlines);
+	INFO_MSG("Le code source contient %d lignes", nlines);
     /*visualiser_file(file_lexeme); */
 
     if (!(file_vide(file_lexeme))) {
@@ -187,12 +187,12 @@ int main(int argc, char *argv[])
 	file_lexeme = modif_chaine_caractere(file_lexeme);
     }
 
-
-    /*visualiser_file(file_lexeme); */
+    /*visualiser_file(file_lexeme);*/
 
 	/** Ecriture du code instancié dans le fichier **/
-
-    ecrire_file(file_lexeme, fp);
+  	if (!(file_vide(file_lexeme))) {
+    	ecrire_file(file_lexeme, fp);
+	}
 
 	/** Vérification si présence d'erreurs **/
 
@@ -206,14 +206,15 @@ int main(int argc, char *argv[])
 	printf
 	    ("**********************************************************\n\n");
     } else {
-	DEBUG_MSG
-	    ("Il n'y a pas d'erreur de lexique dans le code source !");
+	INFO_MSG("Il n'y a pas d'erreur de lexique dans le code source !");
 
 	/*analyse syntaxique */
-	analyse_syntaxique(tab_instruction, file_lexeme, &file_erreur,
+		if (!(file_vide(file_lexeme))) {
+			analyse_syntaxique(tab_instruction, file_lexeme, &file_erreur,
 			   &co_text, &co_data, &co_bss, &co_symb,
 			   &co_text_attente, &co_data_attente,
 			   &co_bss_attente, &nbtext, &nbdata, &cptbss);
+		}
 
 	/*printf("text %d data %d bss %d\n",nbtext,nbdata,cptbss); */
 
@@ -263,10 +264,7 @@ int main(int argc, char *argv[])
 	    printf
 		("**********************************************************\n\n");
 	} else {
-	    DEBUG_MSG
-		("Il n'y a pas d'erreur de syntaxe dans le code source !");
-	    printf
-		("\n**********************************************************\n\n");
+		INFO_MSG("Il n'y a pas d'erreur de syntaxe dans le code source !");
 
 	    /*visualiser_file_text(co_text); */
 	    /*visualiser_file_symb(co_symb); */
@@ -295,7 +293,6 @@ int main(int argc, char *argv[])
 	    strncat(name, file, strlen(file) - 2);
 	    strcat(name, ".o");
 
-
 	    /* prepare sections */
 	    section text = NULL;
 	    section data = NULL;
@@ -310,6 +307,7 @@ int main(int argc, char *argv[])
 	    shstrtab = make_shstrtab_section();
 	    /*printf("shstrtab fini\n"); */
 
+
 	    /*section strtab */
 	    strtab = make_strtab_section(co_symb);
 	    /*print_section(strtab); */
@@ -321,7 +319,7 @@ int main(int argc, char *argv[])
 	    /*print_section(symtab); */
 	    /*printf("symtab fini\n"); */
 
-	    reltext =
+		reltext =
 		make_rel32_section(".rel.text", reloc_text, symtab,
 				   shstrtab, strtab);
 	    reldata =
@@ -329,7 +327,7 @@ int main(int argc, char *argv[])
 				   shstrtab, strtab);
 	    /*printf("reloc table fini\n"); */
 
-	    /*section bss */
+		/*section bss */
 	    if (!file_vide_bss(co_bss)) {
 		/*printf("debut creation bss\n"); */
 		creer_section_bss(&bss, cptbss);
@@ -351,6 +349,8 @@ int main(int argc, char *argv[])
 		/*print_section(text);*/
 		/*printf("text fini\n"); */
 	    }
+
+		if(text!=NULL&&data != NULL&&bss != NULL){
 	    elf_write_relocatable(name, machine, noreorder,
 				  text->start, text->sz,
 				  data->start, data->sz,
@@ -360,6 +360,14 @@ int main(int argc, char *argv[])
 				  symtab->start, symtab->sz,
 				  reltext->start, reltext->sz,
 				  reldata->start, reldata->sz);
+			INFO_MSG("Programme Terminé !");
+			printf
+			("\n**********************************************************\n\n");
+		}
+		else{
+			WARNING_MSG("Il manque au moins une section dans le code");
+			printf("\n**********************************************************\n\n");
+		}
 	    del_section(text);
 	    del_section(data);
 	    del_section(bss);
@@ -368,11 +376,13 @@ int main(int argc, char *argv[])
 	    del_section(symtab);
 	    del_section(reltext);
 	    del_section(reldata);
+
 	}
     }
     /* ---------------- Free memory and terminate ------------------- */
 
 	/** Libération des mémoires **/
+
     liberer_symb(co_symb);
     liberer_symb(co_bss_attente);
     liberer_symb(co_data_attente);

@@ -87,9 +87,9 @@ void elf64_endian_flip_Ehdr(Elf64_Ehdr * header)
     elf_endian_flip16(&(header->e_type));
     elf_endian_flip16(&(header->e_machine));
     elf_endian_flip32(&(header->e_version));
-    elf_endian_flip64(&(header->e_entry));
-    elf_endian_flip64(&(header->e_phoff));
-    elf_endian_flip64(&(header->e_shoff));
+    elf_endian_flip64((unsigned long*)(header->e_entry));
+    elf_endian_flip64((unsigned long*)(header->e_phoff));
+    elf_endian_flip64((unsigned long*)(header->e_shoff));
     elf_endian_flip32(&(header->e_flags));
     elf_endian_flip16(&(header->e_ehsize));
     elf_endian_flip16(&(header->e_phentsize));
@@ -139,18 +139,18 @@ void elf64_endian_flip_Sym(Elf64_Sym * sym)
 {
     elf_endian_flip32(&(sym->st_name));
     elf_endian_flip16(&(sym->st_shndx));
-    elf_endian_flip64(&(sym->st_value));
-    elf_endian_flip64(&(sym->st_size));
+    elf_endian_flip64((unsigned long*)(sym->st_value));
+    elf_endian_flip64((unsigned long*)(sym->st_size));
 }
 
 void elf64_endian_flip_Rel(Elf64_Rel * rel)
 {
-    return elf64_endian_flip_Rel((Elf64_Rel *) rel);
+    /*return elf64_endian_flip_Rel((Elf64_Rel *) rel);*/
 }
 
 void elf64_endian_flip_Rela(Elf64_Rela * rel)
 {
-    elf_endian_flip64(&(rel->r_offset));
-    elf_endian_flip64(&(rel->r_info));
-    elf_endian_flip64(&(rel->r_addend));
+    elf_endian_flip64((unsigned long*)(rel->r_offset));
+    elf_endian_flip64((unsigned long*)(rel->r_info));
+    elf_endian_flip64((unsigned long*)(rel->r_addend));
 }

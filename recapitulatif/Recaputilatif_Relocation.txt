@@ -1,0 +1,5 @@
+[.rel.text]
+Offset	 Type	 Value
+
+[.rel.data]
+Offset	 Type	 Value

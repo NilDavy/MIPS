@@ -1,0 +1,1 @@
+Nom instruction : .word	 Ligne : 2	 Decalage : 0	 Etiquette : 0	Opérande : 256

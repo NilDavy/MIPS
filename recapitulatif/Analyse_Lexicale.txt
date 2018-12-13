@@ -1,0 +1,20 @@
+Ligne : 1	 Directive	 .data
+
+Ligne : 1	 Retour à la ligne	  
+
+Ligne : 2	 Directive	 .word
+
+Ligne : 2	 Valeur Décimale	 256
+
+Ligne : 2	 Retour à la ligne	  
+
+Ligne : 4	 Directive	 .bss
+
+Ligne : 4	 Retour à la ligne	  
+
+Ligne : 5	 Directive	 .space
+
+Ligne : 5	 Valeur Décimale	 256
+
+Ligne : 5	 Retour à la ligne	  
+

@@ -265,7 +265,7 @@ unsigned char *elf_read_shstrtab(FILE * fp, Elf_Ehdr ehdr,
     unsigned char *shstrtab = NULL;
     int width = elf_width(ehdr);
     size_t index = PELF(width, Ehdr, &ehdr, e_shstrndx);
-    size_t offset = 0;
+    /*size_t offset = 0;*/
     size_t i;
     PELF_DECLARE2(Shdr, shdr, shtab);
 
