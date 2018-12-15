@@ -10,18 +10,20 @@
 
 #include <pelf/elf.h>
 
-static void elf_endian_flip16(unsigned short *v)
+static void
+elf_endian_flip16(unsigned short *v)
 {
-    unsigned char *p = (unsigned char *) v;
-    unsigned char s = p[1];
+    unsigned char  *p = (unsigned char *) v;
+    unsigned char   s = p[1];
     p[1] = p[0];
     p[0] = s;
 }
 
-static void elf_endian_flip32(unsigned int *v)
+static void
+elf_endian_flip32(unsigned int *v)
 {
-    unsigned char *p = (unsigned char *) v;
-    unsigned char s = p[3];
+    unsigned char  *p = (unsigned char *) v;
+    unsigned char   s = p[3];
     p[3] = p[0];
     p[0] = s;
 
@@ -30,10 +32,11 @@ static void elf_endian_flip32(unsigned int *v)
     p[1] = s;
 }
 
-static void elf_endian_flip64(size_t * v)
+static void
+elf_endian_flip64(size_t * v)
 {
-    unsigned char *p = (unsigned char *) v;
-    unsigned char s = p[7];
+    unsigned char  *p = (unsigned char *) v;
+    unsigned char   s = p[7];
     p[7] = p[0];
     p[0] = s;
 
@@ -50,7 +53,8 @@ static void elf_endian_flip64(size_t * v)
     p[3] = s;
 }
 
-void elf32_endian_flip_Ehdr(Elf32_Ehdr * header)
+void
+elf32_endian_flip_Ehdr(Elf32_Ehdr * header)
 {
     elf_endian_flip16(&(header->e_type));
     elf_endian_flip16(&(header->e_machine));
@@ -67,7 +71,8 @@ void elf32_endian_flip_Ehdr(Elf32_Ehdr * header)
     elf_endian_flip16(&(header->e_shstrndx));
 }
 
-void elf32_endian_flip_Shdr(Elf32_Shdr * header)
+void
+elf32_endian_flip_Shdr(Elf32_Shdr * header)
 {
     elf_endian_flip32(&(header->sh_name));
     elf_endian_flip32(&(header->sh_type));
@@ -82,14 +87,15 @@ void elf32_endian_flip_Shdr(Elf32_Shdr * header)
 }
 
 
-void elf64_endian_flip_Ehdr(Elf64_Ehdr * header)
+void
+elf64_endian_flip_Ehdr(Elf64_Ehdr * header)
 {
     elf_endian_flip16(&(header->e_type));
     elf_endian_flip16(&(header->e_machine));
     elf_endian_flip32(&(header->e_version));
-    elf_endian_flip64((unsigned long*)(header->e_entry));
-    elf_endian_flip64((unsigned long*)(header->e_phoff));
-    elf_endian_flip64((unsigned long*)(header->e_shoff));
+    elf_endian_flip64((unsigned long *) (header->e_entry));
+    elf_endian_flip64((unsigned long *) (header->e_phoff));
+    elf_endian_flip64((unsigned long *) (header->e_shoff));
     elf_endian_flip32(&(header->e_flags));
     elf_endian_flip16(&(header->e_ehsize));
     elf_endian_flip16(&(header->e_phentsize));
@@ -99,7 +105,8 @@ void elf64_endian_flip_Ehdr(Elf64_Ehdr * header)
     elf_endian_flip16(&(header->e_shstrndx));
 }
 
-void elf64_endian_flip_Shdr(Elf64_Shdr * header)
+void
+elf64_endian_flip_Shdr(Elf64_Shdr * header)
 {
     elf_endian_flip32(&(header->sh_name));
     elf_endian_flip32(&(header->sh_type));
@@ -113,7 +120,8 @@ void elf64_endian_flip_Shdr(Elf64_Shdr * header)
     elf_endian_flip32((unsigned int *) &(header->sh_entsize));
 }
 
-void elf32_endian_flip_Sym(Elf32_Sym * sym)
+void
+elf32_endian_flip_Sym(Elf32_Sym * sym)
 {
     elf_endian_flip32(&(sym->st_name));
     elf_endian_flip16(&(sym->st_shndx));
@@ -121,36 +129,43 @@ void elf32_endian_flip_Sym(Elf32_Sym * sym)
     elf_endian_flip32(&(sym->st_size));
 }
 
-void elf32_endian_flip_Rel(Elf32_Rel * rel)
+void
+elf32_endian_flip_Rel(Elf32_Rel * rel)
 {
     elf_endian_flip32(&(rel->r_offset));
     elf_endian_flip32(&(rel->r_info));
 }
 
-void elf32_endian_flip_Rela(Elf32_Rela * rel)
+void
+elf32_endian_flip_Rela(Elf32_Rela * rel)
 {
     elf_endian_flip32(&(rel->r_offset));
     elf_endian_flip32(&(rel->r_info));
-    elf_endian_flip32((unsigned int*)&(rel->r_addend));
+    elf_endian_flip32((unsigned int *) &(rel->r_addend));
 }
 
 
-void elf64_endian_flip_Sym(Elf64_Sym * sym)
+void
+elf64_endian_flip_Sym(Elf64_Sym * sym)
 {
     elf_endian_flip32(&(sym->st_name));
     elf_endian_flip16(&(sym->st_shndx));
-    elf_endian_flip64((unsigned long*)(sym->st_value));
-    elf_endian_flip64((unsigned long*)(sym->st_size));
+    elf_endian_flip64((unsigned long *) (sym->st_value));
+    elf_endian_flip64((unsigned long *) (sym->st_size));
 }
 
-void elf64_endian_flip_Rel(Elf64_Rel * rel)
+void
+elf64_endian_flip_Rel(Elf64_Rel * rel)
 {
-    /*return elf64_endian_flip_Rel((Elf64_Rel *) rel);*/
+    /*
+     * return elf64_endian_flip_Rel((Elf64_Rel *) rel); 
+     */
 }
 
-void elf64_endian_flip_Rela(Elf64_Rela * rel)
+void
+elf64_endian_flip_Rela(Elf64_Rela * rel)
 {
-    elf_endian_flip64((unsigned long*)(rel->r_offset));
-    elf_endian_flip64((unsigned long*)(rel->r_info));
-    elf_endian_flip64((unsigned long*)(rel->r_addend));
+    elf_endian_flip64((unsigned long *) (rel->r_offset));
+    elf_endian_flip64((unsigned long *) (rel->r_info));
+    elf_endian_flip64((unsigned long *) (rel->r_addend));
 }

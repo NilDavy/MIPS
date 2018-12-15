@@ -10,6 +10,8 @@
 
 #ifndef _ELF32_MIPS_H_
 #define _ELF32_MIPS_H_
+#include <strings.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {

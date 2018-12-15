@@ -1,21 +1,24 @@
 #include "file_text.h"
 
 /** Creer file **/
-file_text creerfile_text(void)
+file_text
+creerfile_text(void)
 {
     return NULL;
 }
 
 /** Verif file vide **/
-int file_vide_text(file_text f)
+int
+file_vide_text(file_text f)
 {
     return !f;
 }
 
 /** visaliser une file **/
-void visualiser_file_text(file_text f)
+void
+visualiser_file_text(file_text f)
 {
-    file_text g = NULL;
+    file_text       g = NULL;
     if (file_vide_text(f)) {
 	printf("File vide\n");
 	return;
@@ -37,10 +40,11 @@ void visualiser_file_text(file_text f)
 
 
 /** ajout d'un maillon a la file **/
-file_text ajout_text(char *nom, int nbop, int line, unsigned int dec,
-		     file_text f, file_jeu_instruction g)
+file_text
+ajout_text(char *nom, int nbop, int line, unsigned int dec,
+	   file_text f, file_jeu_instruction g)
 {
-    file_text e = calloc(1, sizeof(*e));
+    file_text       e = calloc(1, sizeof(*e));
     if (e == NULL) {
 	return NULL;
     }
@@ -68,12 +72,13 @@ file_text ajout_text(char *nom, int nbop, int line, unsigned int dec,
 
 /** liberation de la memoire de la file **/
 
-void liberer_text(file_text f)
+void
+liberer_text(file_text f)
 {
     if (file_vide_text(f)) {
 	return;
     }
-    file_text g = f->suiv;
+    file_text       g = f->suiv;
     f->suiv = NULL;
     while (g != NULL) {
 	g = supprimer_tete_text(g);
@@ -82,9 +87,10 @@ void liberer_text(file_text f)
 }
 
 /** liberation de la memoire d'un maillon de la file **/
-file_text supprimer_tete_text(file_text g)
+file_text
+supprimer_tete_text(file_text g)
 {
-    file_text c;
+    file_text       c;
     if (g->suiv == g) {
 	liberer_file(g->op);
 	free(g);
@@ -98,12 +104,13 @@ file_text supprimer_tete_text(file_text g)
     return g;
 }
 
-void ecrire_file_text(file_text f, FILE * a)
+void
+ecrire_file_text(file_text f, FILE * a)
 {
     if (file_vide_text(f)) {
 	return;
     }
-    file_text g = NULL;
+    file_text       g = NULL;
     g = f->suiv;
     while (g != f) {
 	fprintf(a,
@@ -118,9 +125,10 @@ void ecrire_file_text(file_text f, FILE * a)
     ecrire_file(g->op, a);
 }
 
-file_text modif_etiquette(file_text co_text)
+file_text
+modif_etiquette(file_text co_text)
 {
-    file_text a = co_text->suiv;
+    file_text       a = co_text->suiv;
     do {
 	file_jeu_instruction f = a->op->suiv;
 	do {
@@ -130,8 +138,10 @@ file_text modif_etiquette(file_text co_text)
 		strcpy(f->caractere, "0");
 	    }
 	    f = f->suiv;
-	} while (f != a->op->suiv);
+	}
+	while (f != a->op->suiv);
 	a = a->suiv;
-    } while (a != co_text->suiv);
+    }
+    while (a != co_text->suiv);
     return co_text;
 }

@@ -1,6 +1,7 @@
 #include <pelf/pelf.h>
 
-int elf_mips_reloc_num(char *rname)
+int
+elf_mips_reloc_num(char *rname)
 {
     elf_catch_reloc(rname, R_MIPS_NONE);
     elf_catch_reloc(rname, R_MIPS_16);
@@ -24,7 +25,8 @@ int elf_mips_reloc_num(char *rname)
     return -1;
 }
 
-char *elf_mips_print_reltype(unsigned int type)
+char           *
+elf_mips_print_reltype(unsigned int type)
 {
     switch (type) {
 	elf_catch_reloc_name(R_MIPS_NONE);

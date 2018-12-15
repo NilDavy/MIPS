@@ -14,7 +14,8 @@
 
 #include <pelf/pelf.h>
 
-int elf_read_ehdr(FILE * fp, Elf_Ehdr * ehdr)
+int
+elf_read_ehdr(FILE * fp, Elf_Ehdr * ehdr)
 {
 
     fseek(fp, 0L, SEEK_SET);
@@ -34,13 +35,14 @@ int elf_read_ehdr(FILE * fp, Elf_Ehdr * ehdr)
     return elf_width(ehdr);
 }
 
-unsigned char *elf_read_symtab(FILE * fp, Elf_Ehdr ehdr,
-			       unsigned char *shtab, size_t * symtabsz)
+unsigned char  *
+elf_read_symtab(FILE * fp, Elf_Ehdr ehdr, unsigned char *shtab,
+		size_t * symtabsz)
 {
-    unsigned char *symtab = NULL;
-    size_t i = 0;
-    int width = elf_width(ehdr);
-    size_t shnum = PELF(width, Ehdr, &ehdr, e_shnum);
+    unsigned char  *symtab = NULL;
+    size_t          i = 0;
+    int             width = elf_width(ehdr);
+    size_t          shnum = PELF(width, Ehdr, &ehdr, e_shnum);
     PELF_DECLARE2(Shdr, shdr, shtab);
 
     for (i = 0; i < shnum; PELF_NEXT2(shdr), i++) {
@@ -60,7 +62,7 @@ unsigned char *elf_read_symtab(FILE * fp, Elf_Ehdr ehdr,
 	    }
 
 	    if (PELF_HOST_ENDIANNESS != elf_endianness(ehdr)) {
-		size_t j;
+		size_t          j;
 		if (ELFCLASS64 == width) {
 		    for (j = 0; j < (*symtabsz) / PELF_SIZEOF(width, Sym);
 			 j++) {
@@ -81,16 +83,17 @@ unsigned char *elf_read_symtab(FILE * fp, Elf_Ehdr ehdr,
     return symtab;
 }
 
-unsigned char *elf_read_section_by_name(FILE * fp, Elf_Ehdr ehdr,
-					unsigned char *shstrtab,
-					unsigned char *shtab,
-					size_t * scnsz, char *scname)
+unsigned char  *
+elf_read_section_by_name(FILE * fp, Elf_Ehdr ehdr,
+			 unsigned char *shstrtab,
+			 unsigned char *shtab, size_t * scnsz,
+			 char *scname)
 {
-    unsigned char *scdata = NULL;
-    int width = elf_width(ehdr);
-    int endianness = elf_endianness(ehdr);
-    size_t shnum = PELF(width, Ehdr, &ehdr, e_shnum);
-    size_t i = 0;
+    unsigned char  *scdata = NULL;
+    int             width = elf_width(ehdr);
+    int             endianness = elf_endianness(ehdr);
+    size_t          shnum = PELF(width, Ehdr, &ehdr, e_shnum);
+    size_t          i = 0;
     PELF_DECLARE2(Shdr, shdr, shtab);
 
     *scnsz = 0;
@@ -103,7 +106,7 @@ unsigned char *elf_read_section_by_name(FILE * fp, Elf_Ehdr ehdr,
 		&& !strcmp(scname, (char *) shstrtab + shdr32->sh_name))) {
 
 
-	    size_t offset = PELF2(width, Shdr, shdr, sh_offset);
+	    size_t          offset = PELF2(width, Shdr, shdr, sh_offset);
 
 	    *scnsz = PELF2(width, Shdr, shdr, sh_size);
 	    scdata = calloc(1, *scnsz);
@@ -115,7 +118,7 @@ unsigned char *elf_read_section_by_name(FILE * fp, Elf_Ehdr ehdr,
 		PELF_DECLARE2(Rel, rel, scdata);
 		PELF_DECLARE2(Rela, rela, scdata);
 		PELF_DECLARE2(Sym, sym, scdata);
-		size_t i;
+		size_t          i;
 
 		switch (PELF2(width, Shdr, shdr, sh_type)) {
 		case SHT_REL:
@@ -149,14 +152,15 @@ unsigned char *elf_read_section_by_name(FILE * fp, Elf_Ehdr ehdr,
     return scdata;
 }
 
-static int elf_dump_section_by_name(FILE * fp, Elf_Ehdr ehdr, char *output,
-				    char *secname, unsigned char *shstrtab,
-				    unsigned char *shtab)
+static int
+elf_dump_section_by_name(FILE * fp, Elf_Ehdr ehdr, char *output,
+			 char *secname, unsigned char *shstrtab,
+			 unsigned char *shtab)
 {
 
-    char *scn = NULL;
-    size_t scnsz = 0;
-    FILE *fpout = NULL;
+    char           *scn = NULL;
+    size_t          scnsz = 0;
+    FILE           *fpout = NULL;
 
     fpout = fopen(output, "wb");
     if (!fpout) {
@@ -177,18 +181,21 @@ static int elf_dump_section_by_name(FILE * fp, Elf_Ehdr ehdr, char *output,
     return 0;
 }
 
-/* If secname is "all", dump all sections */
-int elf_dump_section(FILE * fp, char *input, char *secname)
+/*
+ * If secname is "all", dump all sections 
+ */
+int
+elf_dump_section(FILE * fp, char *input, char *secname)
 {
 
-    char output[256];
-    unsigned char *shtab = NULL;
-    size_t shnum = 0;
-    unsigned char *shstrtab = NULL;
-    size_t shstrtabsz = 0;
-    size_t i = 0;
-    char *name = 0;
-    Elf_Ehdr ehdr;
+    char            output[256];
+    unsigned char  *shtab = NULL;
+    size_t          shnum = 0;
+    unsigned char  *shstrtab = NULL;
+    size_t          shstrtabsz = 0;
+    size_t          i = 0;
+    char           *name = 0;
+    Elf_Ehdr        ehdr;
 
     elf_read_ehdr(fp, &ehdr);
 
@@ -222,12 +229,13 @@ int elf_dump_section(FILE * fp, char *input, char *secname)
     return 0;
 }
 
-unsigned char *elf_read_shtab(FILE * fp, Elf_Ehdr ehdr, size_t * shnum)
+unsigned char  *
+elf_read_shtab(FILE * fp, Elf_Ehdr ehdr, size_t * shnum)
 {
-    unsigned char *shtab = NULL;
-    int width = elf_width(ehdr);
-    int endianness = elf_endianness(ehdr);
-    size_t shdrsz = PELF_SIZEOF(width, Shdr);
+    unsigned char  *shtab = NULL;
+    int             width = elf_width(ehdr);
+    int             endianness = elf_endianness(ehdr);
+    size_t          shdrsz = PELF_SIZEOF(width, Shdr);
 
     *shnum = PELF(width, Ehdr, &ehdr, e_shnum);
 
@@ -239,7 +247,10 @@ unsigned char *elf_read_shtab(FILE * fp, Elf_Ehdr ehdr, size_t * shnum)
     fseek(fp, PELF(width, Ehdr, &ehdr, e_shoff), SEEK_SET);
     if (shdrsz != fread(shtab, *shnum, shdrsz, fp)) {
 	free(shtab);
-	/* PELF_ERROR( "Could not read enough section header descriptors (wanted %lu)." *shnum ); */
+	/*
+	 * PELF_ERROR( "Could not read enough section header descriptors
+	 * (wanted %lu)." *shnum ); 
+	 */
 	fprintf(stderr,
 		"Could not read enough section header descriptors (wanted %lu).",
 		*shnum);
@@ -247,7 +258,7 @@ unsigned char *elf_read_shtab(FILE * fp, Elf_Ehdr ehdr, size_t * shnum)
     }
 
     if (PELF_HOST_ENDIANNESS != endianness) {
-	unsigned int i;
+	unsigned int    i;
 	PELF_DECLARE2(Shdr, shdr, shtab);
 
 	for (i = 0; i < *shnum; PELF_NEXT2(shdr), i++) {
@@ -259,14 +270,17 @@ unsigned char *elf_read_shtab(FILE * fp, Elf_Ehdr ehdr, size_t * shnum)
 }
 
 
-unsigned char *elf_read_shstrtab(FILE * fp, Elf_Ehdr ehdr,
-				 unsigned char *shtab, size_t * shstrtabsz)
+unsigned char  *
+elf_read_shstrtab(FILE * fp, Elf_Ehdr ehdr,
+		  unsigned char *shtab, size_t * shstrtabsz)
 {
-    unsigned char *shstrtab = NULL;
-    int width = elf_width(ehdr);
-    size_t index = PELF(width, Ehdr, &ehdr, e_shstrndx);
-    /*size_t offset = 0;*/
-    size_t i;
+    unsigned char  *shstrtab = NULL;
+    int             width = elf_width(ehdr);
+    size_t          index = PELF(width, Ehdr, &ehdr, e_shstrndx);
+    /*
+     * size_t offset = 0; 
+     */
+    size_t          i;
     PELF_DECLARE2(Shdr, shdr, shtab);
 
     for (i = 0; i < index; PELF_NEXT2(shdr), i++);
@@ -285,13 +299,14 @@ unsigned char *elf_read_shstrtab(FILE * fp, Elf_Ehdr ehdr,
     return shstrtab;
 }
 
-unsigned char *elf_read_strtab(FILE * fp, Elf_Ehdr ehdr,
-			       unsigned char *shtab, size_t * strtabsz)
+unsigned char  *
+elf_read_strtab(FILE * fp, Elf_Ehdr ehdr, unsigned char *shtab,
+		size_t * strtabsz)
 {
-    unsigned char *strtab = NULL;
-    int width = elf_width(ehdr);
-    size_t i = 0;
-    size_t shnum = PELF(width, Ehdr, &ehdr, e_shnum);
+    unsigned char  *strtab = NULL;
+    int             width = elf_width(ehdr);
+    size_t          i = 0;
+    size_t          shnum = PELF(width, Ehdr, &ehdr, e_shnum);
     PELF_DECLARE2(Shdr, shdr, shtab);
 
     for (i = 0; i < shnum; PELF_NEXT2(shdr), i++) {
@@ -299,7 +314,7 @@ unsigned char *elf_read_strtab(FILE * fp, Elf_Ehdr ehdr,
 	if (PELF(width, Ehdr, &ehdr, e_shstrndx) != i &&
 	    SHT_STRTAB == PELF2(width, Shdr, shdr, sh_type)) {
 
-	    size_t offset = PELF2(width, Shdr, shdr, sh_offset);
+	    size_t          offset = PELF2(width, Shdr, shdr, sh_offset);
 	    *strtabsz = PELF2(width, Shdr, shdr, sh_size);
 
 	    strtab = calloc(1, *strtabsz);

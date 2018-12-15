@@ -1,21 +1,24 @@
 #include "file_bss.h"
 
 /** Creer file **/
-file_bss creerfile_bss(void)
+file_bss
+creerfile_bss(void)
 {
     return NULL;
 }
 
 /** Verif file vide **/
-int file_vide_bss(file_bss f)
+int
+file_vide_bss(file_bss f)
 {
     return !f;
 }
 
 /** visaliser une file **/
-void visualiser_file_bss(file_bss f)
+void
+visualiser_file_bss(file_bss f)
 {
-    file_bss g = NULL;
+    file_bss        g = NULL;
     if (file_vide_bss(f)) {
 	printf("File vide\n");
 	printf("\n");
@@ -71,10 +74,11 @@ void visualiser_file_bss(file_bss f)
 
 
 /** ajout d'un maillon a la file **/
-file_bss ajout_bss(char *nom, int line, unsigned int dec, char *op,
-		   int type, file_bss f)
+file_bss
+ajout_bss(char *nom, int line, unsigned int dec, char *op, int type,
+	  file_bss f)
 {
-    file_bss e = calloc(1, sizeof(*e));
+    file_bss        e = calloc(1, sizeof(*e));
     if (e == NULL) {
 	return NULL;
     }
@@ -111,12 +115,13 @@ file_bss ajout_bss(char *nom, int line, unsigned int dec, char *op,
 
 /** liberation de la memoire de la file **/
 
-void liberer_bss(file_bss f)
+void
+liberer_bss(file_bss f)
 {
     if (file_vide_bss(f)) {
 	return;
     }
-    file_bss g = f->suiv;
+    file_bss        g = f->suiv;
     f->suiv = NULL;
     while (g != NULL) {
 	g = supprimer_tete_bss(g);
@@ -125,9 +130,10 @@ void liberer_bss(file_bss f)
 }
 
 /** liberation de la memoire d'un maillon de la file **/
-file_bss supprimer_tete_bss(file_bss g)
+file_bss
+supprimer_tete_bss(file_bss g)
 {
-    file_bss c;
+    file_bss        c;
     if (g->suiv == g) {
 	free(g);
 	return NULL;
@@ -141,12 +147,13 @@ file_bss supprimer_tete_bss(file_bss g)
 
 
 /** Ecrire une file dans un fichier exterieur **/
-void ecrire_file_bss(file_bss f, FILE * a)
+void
+ecrire_file_bss(file_bss f, FILE * a)
 {
     if (file_vide_bss(f)) {
 	return;
     }
-    file_bss g = NULL;
+    file_bss        g = NULL;
     g = f->suiv;
     while (g != f) {
 	fprintf(a, "Nom instruction : %s\t Ligne : %d\t Decalage : %d\t",

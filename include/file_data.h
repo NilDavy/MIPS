@@ -22,6 +22,7 @@ struct celluledata{
 		int i;
 		unsigned int ui;
 		char s[200];
+		int wi;
 		
 	}op;
 	struct celluledata * suiv;};

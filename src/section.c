@@ -27,9 +27,10 @@
  *
  * the section is a binary data structure that manages size by buffer of SECTION_CHUNK size
  */
-section new_section(char *name, unsigned int sz)
+section
+new_section(char *name, unsigned int sz)
 {
-    section s = calloc(1, sizeof(*s));
+    section         s = calloc(1, sizeof(*s));
 
     s->name = strdup(name);
     s->sz =
@@ -46,9 +47,10 @@ section new_section(char *name, unsigned int sz)
 /**
  * @brief utility function to print out section information
  */
-void print_section(section s)
+void
+print_section(section s)
 {
-    unsigned int offset = 0;
+    unsigned int    offset = 0;
 
     if (0 == s->sz) {
 	fprintf(stdout, "Section %s: empty.\n", s->name);
@@ -78,7 +80,8 @@ void print_section(section s)
  * @param s the section to grow
  * @param increment the number of bytes to add to the current size
  */
-int grow_section(section s, unsigned int increment)
+int
+grow_section(section s, unsigned int increment)
 {
     if (s->sz % increment) {
 	s->start = realloc(s->start, increment + s->sz);
@@ -96,12 +99,13 @@ int grow_section(section s, unsigned int increment)
  * @param offset offset from the start of the section to write to
  */
 
-int write_section(section s, unsigned char *bytes, unsigned int nbytes,
-		  unsigned int offset)
+int
+write_section(section s, unsigned char *bytes, unsigned int nbytes,
+	      unsigned int offset)
 {
 
     if (offset + nbytes > s->sz + (s->sz % SECTION_CHUNK_SZ)) {
-	unsigned int nsz = offset + nbytes;
+	unsigned int    nsz = offset + nbytes;
 
 	nsz =
 	    nsz <
@@ -122,7 +126,8 @@ int write_section(section s, unsigned char *bytes, unsigned int nbytes,
  * Frees all memory allocated to the section
  */
 
-void del_section(section s)
+void
+del_section(section s)
 {
     if (s) {
 	free(s->name);

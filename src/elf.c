@@ -14,16 +14,17 @@
 #include <string.h>
 
 
-int elf_get_string_offset(unsigned char *table, size_t size, char *string)
+int
+elf_get_string_offset(unsigned char *table, size_t size, char *string)
 {
-    unsigned char *str = 1 + table;
+    unsigned char  *str = 1 + table;
 
   restart:
 
     if (!strcmp((char *) str, string)) {
 	return str - table;
     } else {
-	unsigned int len = strlen((char *) str);
+	unsigned int    len = strlen((char *) str);
 
 	if (str > table + size - 1)
 	    return -1;
@@ -34,17 +35,18 @@ int elf_get_string_offset(unsigned char *table, size_t size, char *string)
     }
 }
 
-int elf_get_string_index(unsigned char *table, size_t size, char *string)
+int
+elf_get_string_index(unsigned char *table, size_t size, char *string)
 {
-    unsigned char *str = 1 + table;
-    unsigned int idx = 1;	/* ELF first section is reserved. */
+    unsigned char  *str = 1 + table;
+    unsigned int    idx = 1;	/* ELF first section is reserved. */
 
   restart:
 
     if (!strcmp((char *) str, string)) {
 	return idx;
     } else {
-	unsigned int len = strlen((char *) str);
+	unsigned int    len = strlen((char *) str);
 
 	if (str > table + size - 1)
 	    return -1;
@@ -56,11 +58,12 @@ int elf_get_string_index(unsigned char *table, size_t size, char *string)
     }
 }
 
-char *elf_next_string(unsigned char *table, size_t length, char **str)
+char           *
+elf_next_string(unsigned char *table, size_t length, char **str)
 {
 
     if (!*str) {
-	*str = (char*)(table + 1);
+	*str = (char *) (table + 1);
 	return *str;
     }
 
@@ -75,7 +78,8 @@ char *elf_next_string(unsigned char *table, size_t length, char **str)
 #define catch_arch_name( arch, value )		\
   if ( !strcasecmp( arch, machinename ) ) return value;
 
-int elf_get_machine(char *machinename)
+int
+elf_get_machine(char *machinename)
 {
     catch_arch_name("none", EM_NONE);
     catch_arch_name("WE3200", EM_M32);
@@ -128,7 +132,8 @@ int elf_get_machine(char *machinename)
     return -1;
 }
 
-int elf_get_machine_class(unsigned int machine)
+int
+elf_get_machine_class(unsigned int machine)
 {
     if (EM_MIPS == machine)
 	return ELFCLASS32;
@@ -137,7 +142,8 @@ int elf_get_machine_class(unsigned int machine)
     return -1;
 }
 
-int elf_get_machine_endianness(unsigned int machine)
+int
+elf_get_machine_endianness(unsigned int machine)
 {
     if (EM_MIPS == machine)
 	return ELFDATA2MSB;
@@ -146,9 +152,10 @@ int elf_get_machine_endianness(unsigned int machine)
     return -1;
 }
 
-int elf_get_machine_ehsize(unsigned int machine)
+int
+elf_get_machine_ehsize(unsigned int machine)
 {
-    int ret = elf_get_machine_class(machine);
+    int             ret = elf_get_machine_class(machine);
 
     if (-1 != ret) {
 	return ELFCLASS32 == ret ? sizeof(Elf32_Ehdr) : sizeof(Elf64_Ehdr);
@@ -157,9 +164,10 @@ int elf_get_machine_ehsize(unsigned int machine)
     return -1;
 }
 
-int elf_get_machine_phentsize(unsigned int machine)
+int
+elf_get_machine_phentsize(unsigned int machine)
 {
-    int ret = elf_get_machine_class(machine);
+    int             ret = elf_get_machine_class(machine);
 
     if (-1 != ret) {
 	return ELFCLASS32 == ret ? sizeof(Elf32_Phdr) : sizeof(Elf64_Phdr);
@@ -168,9 +176,10 @@ int elf_get_machine_phentsize(unsigned int machine)
     return -1;
 }
 
-int elf_get_machine_shentsize(unsigned int machine)
+int
+elf_get_machine_shentsize(unsigned int machine)
 {
-    int ret = elf_get_machine_class(machine);
+    int             ret = elf_get_machine_class(machine);
 
     if (-1 != ret) {
 	return ELFCLASS32 == ret ? sizeof(Elf32_Shdr) : sizeof(Elf64_Shdr);
@@ -179,7 +188,8 @@ int elf_get_machine_shentsize(unsigned int machine)
     return -1;
 }
 
-int elf_reloc_num(unsigned int machine, char *rname)
+int
+elf_reloc_num(unsigned int machine, char *rname)
 {
 
     switch (machine) {

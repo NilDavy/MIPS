@@ -20,5 +20,5 @@ void verif_registre(char*, Liste_hach*tab_registre,file_jeu_instruction*file,uns
 int verif_delimitateur(char*,char*,char*);
 void verif_caractere(char*token,char*mot2,char*current_address,char*delimiteur,Liste_hach*tab_instruction,file_jeu_instruction *file,unsigned int nlines,file_jeu_instruction*file_erreur);
 void verif_numero(char*token,file_jeu_instruction *file,unsigned int nlines,file_jeu_instruction*file_erreur);
-void verif_chaine_de_caractere(char*token,char*current_address,char*delimiteur,file_jeu_instruction *file,unsigned int nlines,file_jeu_instruction*file_erreur,int*compteur);
+void verif_chaine_de_caractere(char*token,char*current_address,char*delimiteur,file_jeu_instruction *file,unsigned int nlines,file_jeu_instruction*file_erreur,int*compteur,char*mot2);
 #endif /* analyse_lexicale_h */

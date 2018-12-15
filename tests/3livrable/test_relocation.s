@@ -1,6 +1,6 @@
 # TEST_RETURN_CODE = PASS
 #allons au ru
-.set noeorder
+.set noreorder
 .text
 add $8,$9,$10
 Lw $t0 , lunchtime 

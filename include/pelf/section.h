@@ -12,6 +12,8 @@
 #define _SECTION_H_
 
 #define SECTION_CHUNK_SZ   1024
+#include <strings.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {

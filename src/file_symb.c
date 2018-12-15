@@ -1,21 +1,24 @@
 #include "file_symb.h"
 
 /** Creer file **/
-file_symb creerfile_symb(void)
+file_symb
+creerfile_symb(void)
 {
     return NULL;
 }
 
 /** Verif file vide **/
-int file_vide_symb(file_symb f)
+int
+file_vide_symb(file_symb f)
 {
     return !f;
 }
 
 /** visaliser une file **/
-void visualiser_file_symb(file_symb f)
+void
+visualiser_file_symb(file_symb f)
 {
-    file_symb g = NULL;
+    file_symb       g = NULL;
     if (file_vide_symb(f)) {
 	printf("File vide\n");
 	printf("\n");
@@ -39,19 +42,21 @@ void visualiser_file_symb(file_symb f)
 
 
 /** ajout d'un maillon a la file **/
-file_symb ajout_symb(char *nom, int line, unsigned int dec, char *sec,
-		     file_symb f)
+file_symb
+ajout_symb(char *nom, int line, unsigned int dec, char *sec, file_symb f)
 {
 
-    file_symb e = calloc(1, sizeof(*e));
+    file_symb       e = calloc(1, sizeof(*e));
     if (e == NULL) {
 	return NULL;
     }
-    /*printf("nom %s\n",nom);
-       printf("e->nom %s\n",e->nom); */
+    /*
+     * printf("nom %s\n",nom); printf("e->nom %s\n",e->nom); 
+     */
     strncpy(e->nom, nom, strlen(nom));
-    /*printf("nom1 %s\n",nom);
-       printf("e->nom1 %s\n",e->nom); */
+    /*
+     * printf("nom1 %s\n",nom); printf("e->nom1 %s\n",e->nom); 
+     */
     e->ligne = line;
     e->decalage = dec;
     strcpy(e->section, sec);
@@ -66,12 +71,13 @@ file_symb ajout_symb(char *nom, int line, unsigned int dec, char *sec,
 
 /** liberation de la memoire de la file **/
 
-void liberer_symb(file_symb f)
+void
+liberer_symb(file_symb f)
 {
     if (file_vide_symb(f)) {
 	return;
     }
-    file_symb g = f->suiv;
+    file_symb       g = f->suiv;
     f->suiv = NULL;
     while (g != NULL) {
 	g = supprimer_tete_symb(g);
@@ -80,9 +86,10 @@ void liberer_symb(file_symb f)
 }
 
 /** liberation de la memoire d'un maillon de la file **/
-file_symb supprimer_tete_symb(file_symb g)
+file_symb
+supprimer_tete_symb(file_symb g)
 {
-    file_symb c;
+    file_symb       c;
     if (g->suiv == g) {
 	free(g);
 	return NULL;
@@ -94,12 +101,13 @@ file_symb supprimer_tete_symb(file_symb g)
     return g;
 }
 
-void defiler_symb(file_symb * f, char *mot)
+void
+defiler_symb(file_symb * f, char *mot)
 {
-    char mot1[200];
+    char            mot1[200];
     strcpy(mot1, (*f)->suiv->nom);
     strcpy(mot, mot1);
-    file_symb c = creerfile_symb();
+    file_symb       c = creerfile_symb();
     c = (*f)->suiv;
     if ((*f) == (*f)->suiv) {
 	supprimer_tete_symb(c);
@@ -113,12 +121,13 @@ void defiler_symb(file_symb * f, char *mot)
     return;
 }
 
-void ecrire_file_symb(file_symb f, FILE * a)
+void
+ecrire_file_symb(file_symb f, FILE * a)
 {
     if (file_vide_symb(f)) {
 	return;
     }
-    file_symb g = NULL;
+    file_symb       g = NULL;
     g = f->suiv;
     while (g != f) {
 	fprintf(a,
@@ -131,32 +140,40 @@ void ecrire_file_symb(file_symb f, FILE * a)
 	    g->nom, g->ligne, g->section, g->decalage);
 }
 
-int est_dans_file(char *symb, file_symb f)
+int
+est_dans_file(char *symb, file_symb f)
 {
-    file_symb s = f;
+    file_symb       s = f;
     if (file_vide_symb(f))
 	return 0;
     do {
 	if (!strcmp(symb, s->nom))
 	    return 1;
 	s = s->suiv;
-    } while (s != f);
+    }
+    while (s != f);
     return 0;
 }
 
-struct cellulesymb *recuperer_cellule_symb(char *symb, file_symb s)
+struct cellulesymb *
+recuperer_cellule_symb(char *symb, file_symb s)
 {
     while (strcmp(symb, s->nom)) {
+	
 	s = s->suiv;
     }
     return s;
 }
 
-void verif_etiquette(file_symb f, file_jeu_instruction * file_erreur)
+void
+verif_etiquette(file_symb f, file_jeu_instruction * file_erreur)
 {
-    file_symb g = f->suiv;
+    file_symb       g = f->suiv;
+	if(file_vide_symb(f)||(f==f->suiv)){
+		return;
+	}
     do {
-	file_symb h = g->suiv;
+	file_symb       h = g->suiv;
 	do {
 	    if (strcasecmp(h->nom, g->nom) == 0) {
 		*file_erreur =
@@ -164,7 +181,9 @@ void verif_etiquette(file_symb f, file_jeu_instruction * file_erreur)
 			    h->ligne, *file_erreur);
 	    }
 	    h = h->suiv;
-	} while (h != f->suiv);
+	}
+	while (h != f->suiv);
 	g = g->suiv;
-    } while (g != f);
+    }
+    while (g != f);
 }

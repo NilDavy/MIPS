@@ -14,12 +14,12 @@
 
 #define ELF_RELOCATABLE_NSECTIONS 9
 
-static int elf_write_relocatable_preamble(FILE * fp, unsigned int machine,
-					  unsigned int shnum,
-					  unsigned int shstrndx,
-					  int noreorder)
+static int
+elf_write_relocatable_preamble(FILE * fp, unsigned int machine,
+			       unsigned int shnum,
+			       unsigned int shstrndx, int noreorder)
 {
-    Elf_Ehdr ehdr;
+    Elf_Ehdr        ehdr;
     PELF_DECLARE2(Ehdr, header, &ehdr);
 
     switch (elf_get_machine_class(machine)) {
@@ -38,7 +38,12 @@ static int elf_write_relocatable_preamble(FILE * fp, unsigned int machine,
 	header32->e_version = EV_CURRENT;
 	header32->e_entry = 0;
 	header32->e_phoff = 0;
-	header32->e_shoff = elf_get_machine_ehsize(machine);	/* Write SHT right after the header */
+	header32->e_shoff = elf_get_machine_ehsize(machine);	/* Write
+								 * SHT
+								 * right
+								 * after
+								 * the
+								 * header */
 	header32->e_flags = EF_MIPS_PIC + noreorder;
 	header32->e_ehsize = elf_get_machine_ehsize(machine);
 	header32->e_phentsize = elf_get_machine_phentsize(machine);
@@ -69,7 +74,12 @@ static int elf_write_relocatable_preamble(FILE * fp, unsigned int machine,
 	header64->e_version = EV_CURRENT;
 	header64->e_entry = 0;
 	header64->e_phoff = 0;
-	header64->e_shoff = elf_get_machine_ehsize(machine);	/* Write SHT right after the header */
+	header64->e_shoff = elf_get_machine_ehsize(machine);	/* Write
+								 * SHT
+								 * right
+								 * after
+								 * the
+								 * header */
 	header64->e_flags = EF_MIPS_PIC + noreorder;
 	header64->e_ehsize = elf_get_machine_ehsize(machine);
 	header64->e_phentsize = elf_get_machine_phentsize(machine);
@@ -120,33 +130,35 @@ static int elf_write_relocatable_preamble(FILE * fp, unsigned int machine,
   }									\
   }
 
-static int elf32_write_sections(FILE * fp,
-				int endianness,
-				unsigned char *text, unsigned int textsz,
-				unsigned char *data, unsigned int datasz,
-				unsigned char *bss, unsigned int bsssz,
-				unsigned char *shstrtab,
-				unsigned int shstrtabsz,
-				unsigned char *strtab,
-				unsigned int strtabsz,
-				unsigned char *symtab,
-				unsigned int symtabsz,
-				unsigned char *reltext,
-				unsigned int reltextsz,
-				unsigned char *reldata,
-				unsigned int reldatasz)
+static int
+elf32_write_sections(FILE * fp,
+		     int endianness,
+		     unsigned char *text, unsigned int textsz,
+		     unsigned char *data, unsigned int datasz,
+		     unsigned char *bss, unsigned int bsssz,
+		     unsigned char *shstrtab,
+		     unsigned int shstrtabsz,
+		     unsigned char *strtab,
+		     unsigned int strtabsz,
+		     unsigned char *symtab,
+		     unsigned int symtabsz,
+		     unsigned char *reltext,
+		     unsigned int reltextsz,
+		     unsigned char *reldata, unsigned int reldatasz)
 {
 
-    Elf32_Shdr shdr[1 + ELF_RELOCATABLE_NSECTIONS];
-    size_t filepos = ftell(fp);
-    int shnum = 0;
-    int prev_shnum = 0;
-    char *section = NULL;
-    unsigned char *ptr = NULL;
-    size_t size = 0;
-    unsigned int i;
+    Elf32_Shdr      shdr[1 + ELF_RELOCATABLE_NSECTIONS];
+    size_t          filepos = ftell(fp);
+    int             shnum = 0;
+    int             prev_shnum = 0;
+    char           *section = NULL;
+    unsigned char  *ptr = NULL;
+    size_t          size = 0;
+    unsigned int    i;
 
-    /* first section entry: special SHN_UNDEF */
+    /*
+     * first section entry: special SHN_UNDEF 
+     */
 
     fseek(fp, filepos + (1 + ELF_RELOCATABLE_NSECTIONS) * sizeof(shdr[0]),
 	  SEEK_SET);
@@ -164,7 +176,9 @@ static int elf32_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
 
 
-    /* .text section */
+    /*
+     * .text section 
+     */
     WITH_SECTION(".text", text);
     shdr[shnum].sh_type = SHT_PROGBITS;
     shdr[shnum].sh_flags = SHF_ALLOC + SHF_EXECINSTR;
@@ -174,7 +188,9 @@ static int elf32_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
     END_SECTION;
 
-    /* .rel.text section */
+    /*
+     * .rel.text section 
+     */
     WITH_SECTION(".rel.text", reltext);
     shdr[shnum].sh_type = SHT_REL;
     shdr[shnum].sh_flags = 0;
@@ -187,7 +203,9 @@ static int elf32_write_sections(FILE * fp,
     END_SECTION;
 
 
-    /* .data section */
+    /*
+     * .data section 
+     */
     WITH_SECTION(".data", data);
     shdr[shnum].sh_type = SHT_PROGBITS;
     shdr[shnum].sh_flags = SHF_ALLOC + SHF_WRITE;
@@ -197,7 +215,9 @@ static int elf32_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
     END_SECTION;
 
-    /* .rel.data section */
+    /*
+     * .rel.data section 
+     */
     WITH_SECTION(".rel.data", reldata);
     shdr[shnum].sh_type = SHT_REL;
     shdr[shnum].sh_flags = 0;
@@ -209,7 +229,9 @@ static int elf32_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = sizeof(Elf32_Rel);
     END_SECTION;
 
-    /* .bss section */
+    /*
+     * .bss section 
+     */
     WITH_SECTION(".bss", bss);
     shdr[shnum].sh_type = SHT_NOBITS;
     shdr[shnum].sh_flags = SHF_ALLOC + SHF_WRITE;
@@ -219,9 +241,15 @@ static int elf32_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
     END_SECTION;
 
-    /* .symtab section */
-    /* check ELF_Format page 19 www.skyfree.org/linux/references/ELF_Format.pdf
-       sh_info should contains One greater than the symbol table index of the last local symbol (binding STB_LOCAL). */
+    /*
+     * .symtab section 
+     */
+    /*
+     * check ELF_Format page 19
+     * www.skyfree.org/linux/references/ELF_Format.pdf sh_info should
+     * contains One greater than the symbol table index of the last local
+     * symbol (binding STB_LOCAL). 
+     */
     WITH_SECTION(".symtab", symtab);
     shdr[shnum].sh_type = SHT_SYMTAB;
     shdr[shnum].sh_flags = SHF_ALLOC;
@@ -232,7 +260,9 @@ static int elf32_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = sizeof(Elf32_Sym);
     END_SECTION;
 
-    /* .strtab section */
+    /*
+     * .strtab section 
+     */
     WITH_SECTION(".strtab", strtab);
     shdr[shnum].sh_type = SHT_STRTAB;
     shdr[shnum].sh_flags = SHF_ALLOC;
@@ -242,7 +272,9 @@ static int elf32_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
     END_SECTION;
 
-    /* .shstrtab section */
+    /*
+     * .shstrtab section 
+     */
     WITH_SECTION(".shstrtab", shstrtab);
     shdr[shnum].sh_type = SHT_STRTAB;
     shdr[shnum].sh_flags = 0;
@@ -253,7 +285,9 @@ static int elf32_write_sections(FILE * fp,
     END_SECTION;
 
 
-    /* Restore */
+    /*
+     * Restore 
+     */
     shdr[0].sh_offset = 0;
 
     if (PELF_HOST_ENDIANNESS != endianness) {
@@ -273,33 +307,35 @@ static int elf32_write_sections(FILE * fp,
     return ELF_RELOCATABLE_NSECTIONS * sizeof(shdr[0]);
 }
 
-static int elf64_write_sections(FILE * fp,
-				int endianness,
-				unsigned char *text, unsigned int textsz,
-				unsigned char *data, unsigned int datasz,
-				unsigned char *bss, unsigned int bsssz,
-				unsigned char *shstrtab,
-				unsigned int shstrtabsz,
-				unsigned char *strtab,
-				unsigned int strtabsz,
-				unsigned char *symtab,
-				unsigned int symtabsz,
-				unsigned char *reltext,
-				unsigned int reltextsz,
-				unsigned char *reldata,
-				unsigned int reldatasz)
+static int
+elf64_write_sections(FILE * fp,
+		     int endianness,
+		     unsigned char *text, unsigned int textsz,
+		     unsigned char *data, unsigned int datasz,
+		     unsigned char *bss, unsigned int bsssz,
+		     unsigned char *shstrtab,
+		     unsigned int shstrtabsz,
+		     unsigned char *strtab,
+		     unsigned int strtabsz,
+		     unsigned char *symtab,
+		     unsigned int symtabsz,
+		     unsigned char *reltext,
+		     unsigned int reltextsz,
+		     unsigned char *reldata, unsigned int reldatasz)
 {
 
-    Elf64_Shdr shdr[1 + ELF_RELOCATABLE_NSECTIONS];
-    size_t filepos = ftell(fp);
-    int shnum = 0;
-    int prev_shnum = 0;
-    char *section = NULL;
-    unsigned char *ptr = NULL;
-    size_t size = 0;
-    unsigned int i;
+    Elf64_Shdr      shdr[1 + ELF_RELOCATABLE_NSECTIONS];
+    size_t          filepos = ftell(fp);
+    int             shnum = 0;
+    int             prev_shnum = 0;
+    char           *section = NULL;
+    unsigned char  *ptr = NULL;
+    size_t          size = 0;
+    unsigned int    i;
 
-    /* first section entry: special SHN_UNDEF */
+    /*
+     * first section entry: special SHN_UNDEF 
+     */
 
     fseek(fp, filepos + (1 + ELF_RELOCATABLE_NSECTIONS) * sizeof(shdr[0]),
 	  SEEK_SET);
@@ -317,7 +353,9 @@ static int elf64_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
 
 
-    /* .text section */
+    /*
+     * .text section 
+     */
     WITH_SECTION(".text", text);
     shdr[shnum].sh_type = SHT_PROGBITS;
     shdr[shnum].sh_flags = SHF_ALLOC + SHF_EXECINSTR;
@@ -327,7 +365,9 @@ static int elf64_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
     END_SECTION;
 
-    /* .rel.text section */
+    /*
+     * .rel.text section 
+     */
     WITH_SECTION(".rel.text", reltext);
     shdr[shnum].sh_type = SHT_REL;
     shdr[shnum].sh_flags = 0;
@@ -339,7 +379,9 @@ static int elf64_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = sizeof(Elf64_Rel);
     END_SECTION;
 
-    /* .data section */
+    /*
+     * .data section 
+     */
     WITH_SECTION(".data", data);
     shdr[shnum].sh_type = SHT_PROGBITS;
     shdr[shnum].sh_flags = SHF_ALLOC + SHF_WRITE;
@@ -349,7 +391,9 @@ static int elf64_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
     END_SECTION;
 
-    /* .rel.data section */
+    /*
+     * .rel.data section 
+     */
     WITH_SECTION(".rel.data", reldata);
     shdr[shnum].sh_type = SHT_REL;
     shdr[shnum].sh_flags = 0;
@@ -361,7 +405,9 @@ static int elf64_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = sizeof(Elf64_Rel);
     END_SECTION;
 
-    /* .bss section */
+    /*
+     * .bss section 
+     */
     WITH_SECTION(".bss", bss);
     shdr[shnum].sh_type = SHT_NOBITS;
     shdr[shnum].sh_flags = SHF_ALLOC + SHF_WRITE;
@@ -371,7 +417,9 @@ static int elf64_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
     END_SECTION;
 
-    /* .symtab section */
+    /*
+     * .symtab section 
+     */
     WITH_SECTION(".symtab", symtab);
     shdr[shnum].sh_type = SHT_SYMTAB;
     shdr[shnum].sh_flags = SHF_ALLOC;
@@ -382,7 +430,9 @@ static int elf64_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = sizeof(Elf64_Sym);
     END_SECTION;
 
-    /* .strtab section */
+    /*
+     * .strtab section 
+     */
     WITH_SECTION(".strtab", strtab);
     shdr[shnum].sh_type = SHT_STRTAB;
     shdr[shnum].sh_flags = SHF_ALLOC;
@@ -392,7 +442,9 @@ static int elf64_write_sections(FILE * fp,
     shdr[shnum].sh_entsize = 0;
     END_SECTION;
 
-    /* .shstrtab section */
+    /*
+     * .shstrtab section 
+     */
     WITH_SECTION(".shstrtab", shstrtab);
     shdr[shnum].sh_type = SHT_STRTAB;
     shdr[shnum].sh_flags = 0;
@@ -403,7 +455,9 @@ static int elf64_write_sections(FILE * fp,
     END_SECTION;
 
 
-    /* Restore */
+    /*
+     * Restore 
+     */
     shdr[0].sh_offset = 0;
 
     if (PELF_HOST_ENDIANNESS != endianness) {
@@ -423,21 +477,22 @@ static int elf64_write_sections(FILE * fp,
     return ELF_RELOCATABLE_NSECTIONS * sizeof(shdr[0]);
 }
 
-int elf_write_relocatable(char *filename, char *machinename, int noreorder,
-			  unsigned char *text, unsigned int textsz,
-			  unsigned char *data, unsigned int datasz,
-			  unsigned char *bss, unsigned int bsssz,
-			  unsigned char *shstrtab, unsigned int shstrtabsz,
-			  unsigned char *strtab, unsigned int strtabsz,
-			  unsigned char *symtab, unsigned int symtabsz,
-			  unsigned char *reltext, unsigned int reltextsz,
-			  unsigned char *reldata, unsigned int reldatasz)
+int
+elf_write_relocatable(char *filename, char *machinename, int noreorder,
+		      unsigned char *text, unsigned int textsz,
+		      unsigned char *data, unsigned int datasz,
+		      unsigned char *bss, unsigned int bsssz,
+		      unsigned char *shstrtab, unsigned int shstrtabsz,
+		      unsigned char *strtab, unsigned int strtabsz,
+		      unsigned char *symtab, unsigned int symtabsz,
+		      unsigned char *reltext, unsigned int reltextsz,
+		      unsigned char *reldata, unsigned int reldatasz)
 {
 
-    int machine = elf_get_machine(machinename);
-    int width = elf_get_machine_class(machine);
-    int endianness = elf_get_machine_endianness(machine);
-    FILE *fp = NULL;
+    int             machine = elf_get_machine(machinename);
+    int             width = elf_get_machine_class(machine);
+    int             endianness = elf_get_machine_endianness(machine);
+    FILE           *fp = NULL;
 
     if (-1 == machine)
 	return -1;
@@ -464,7 +519,7 @@ int elf_write_relocatable(char *filename, char *machinename, int noreorder,
 	PELF_DECLARE2(Sym, sym, symtab);
 	PELF_DECLARE2(Rel, rel, reltext);
 
-	unsigned int i = 0;
+	unsigned int    i = 0;
 
 	for (i = 0; i < symtabsz / PELF_SIZEOF(width, Sym);
 	     PELF_NEXT2(sym), i++) {
@@ -496,8 +551,8 @@ int elf_write_relocatable(char *filename, char *machinename, int noreorder,
 				       shstrtab, shstrtabsz,
 				       strtab, strtabsz,
 				       symtab, symtabsz,
-				       reltext, reltextsz,
-				       reldata, reldatasz)) {
+				       reltext, reltextsz, reldata,
+				       reldatasz)) {
 	    fclose(fp);
 	    return -1;
 	}
@@ -510,8 +565,8 @@ int elf_write_relocatable(char *filename, char *machinename, int noreorder,
 				       shstrtab, shstrtabsz,
 				       strtab, strtabsz,
 				       symtab, symtabsz,
-				       reltext, reltextsz,
-				       reldata, reldatasz)) {
+				       reltext, reltextsz, reldata,
+				       reldatasz)) {
 	    fclose(fp);
 	    return -1;
 	}

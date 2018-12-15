@@ -24,7 +24,7 @@ J 1 J Absolu t 000010
 JAL 1 J Absolu t 000011
 JR 1 R Registre rs 000000 001000
 NOP 0 R 000000 000000
-MOVE 2 R Registre Registre rt rs
-NEG 2 R Registre Registre rt rs
-LI 2 I Registre Immediat rt i
-BLT 3 R Registre Registre Absolu rt rs t
+MOVE 2 R Registre Registre rt rs 000000 000000
+NEG 2 R Registre Registre rt rs 000000 000000
+LI 2 I Registre Immediat rt i 000000
+BLT 3 R Registre Registre Absolu rt rs t 000000 000000

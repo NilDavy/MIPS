@@ -1,21 +1,24 @@
 #include "file_data.h"
 
 /** Creer file **/
-file_data creerfile_data(void)
+file_data
+creerfile_data(void)
 {
     return NULL;
 }
 
 /** Verif file vide **/
-int file_vide_data(file_data f)
+int
+file_vide_data(file_data f)
 {
     return !f;
 }
 
 /** visaliser une file **/
-void visualiser_file_data(file_data f)
+void
+visualiser_file_data(file_data f)
 {
-    file_data g = NULL;
+    file_data       g = NULL;
     if (file_vide_data(f)) {
 	printf("File vide\n");
 	printf("\n");
@@ -44,6 +47,9 @@ void visualiser_file_data(file_data f)
 	case 4:
 	    printf("Opérande : %s\n", g->op.s);
 	    break;
+    case 5:
+	printf("Opérande : %d\n", g->op.wi);
+	break;
 	}
 	g = g->suiv;
     }
@@ -67,14 +73,18 @@ void visualiser_file_data(file_data f)
     case 4:
 	printf("Opérande : %s\n", g->op.s);
 	break;
+    case 5:
+	printf("Opérande : %d\n", g->op.wi);
+	break;
     }
     printf("\n");
 }
 
 
 /** ajout d'un maillon a la file **/
-file_data ajout_data(char *nom, int line, unsigned int dec, char *op,
-		     int type, file_data f, int etiq)
+file_data
+ajout_data(char *nom, int line, unsigned int dec, char *op,
+	   int type, file_data f, int etiq)
 {
     file_data e = calloc(1, sizeof(*e));
     if (e == NULL) {
@@ -101,6 +111,9 @@ file_data ajout_data(char *nom, int line, unsigned int dec, char *op,
     case 4:
 	strcpy((e->op).s, op);
 	break;
+	case 5:
+	(e->op).wi = atoi(op);
+	break;
     }
     if (file_vide_data(f)) {
 	e->suiv = e;
@@ -113,26 +126,27 @@ file_data ajout_data(char *nom, int line, unsigned int dec, char *op,
 
 /** liberation de la memoire de la file **/
 
-void liberer_data(file_data f)
+void
+liberer_data(file_data f)
 {
     if (file_vide_data(f)) {
 	return;
     }
-    file_data g = f->suiv;
+    file_data       g = f->suiv;
     f->suiv = NULL;
     while (g != NULL) {
 	g = supprimer_tete_data(g);
     }
-
 }
 
 /** liberation de la memoire d'un maillon de la file **/
-file_data supprimer_tete_data(file_data g)
+file_data
+supprimer_tete_data(file_data g)
 {
-    file_data c;
+    file_data       c;
     if (g->suiv == g) {
-	free(g);
-	return NULL;
+		free(g);
+		return NULL;
     }
     c = g;
     g = c->suiv;
@@ -141,12 +155,13 @@ file_data supprimer_tete_data(file_data g)
     return g;
 }
 
-void ecrire_file_data(file_data f, FILE * a)
+void
+ecrire_file_data(file_data f, FILE * a)
 {
     if (file_vide_data(f)) {
 	return;
     }
-    file_data g = NULL;
+    file_data       g = NULL;
     g = f->suiv;
     while (g != f) {
 	fprintf(a,
@@ -167,6 +182,9 @@ void ecrire_file_data(file_data f, FILE * a)
 	    break;
 	case 4:
 	    fprintf(a, "Opérande : %s\n", g->op.s);
+	    break;
+	case 5:
+	    fprintf(a, "Opérande : %d\n", g->op.wi);
 	    break;
 	}
 	g = g->suiv;
@@ -190,6 +208,9 @@ void ecrire_file_data(file_data f, FILE * a)
     case 4:
 	fprintf(a, "Opérande : %s\n", g->op.s);
 	break;
+	case 5:
+	    fprintf(a, "Opérande : %d\n", g->op.wi);
+	    break;
     }
 
 }
